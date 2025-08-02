@@ -1,0 +1,40 @@
+@font-face {
+  font-family: 'Anakotmai';
+  src: url('./assets/fonts/anakotmai-light.opqZnjhY.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Anakotmai';
+  src: url('./assets/fonts/anakotmai-medium.BE4ZYan3.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Anakotmai';
+  src: url('./assets/fonts/anakotmai-bold.DAPGwlZb.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  font-family: 'Anakotmai', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 500;
+  /* color-scheme: light dark; */
+  /* color: rgba(255, 255, 255, 0.87); */
+  /* background-color: #242424; */
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
