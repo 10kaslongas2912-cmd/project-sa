@@ -70,40 +70,65 @@ function AuthPage() {
               <img src={logo} alt="logo" className = "logo-img" />
             </div>
             <h1>สร้างบัญชี</h1>
-            <Form.Item name="first_name" rules={[{ required: true, message: "กรุณากรอกชื่อ !" }]}>
-              <Input placeholder="ชื่อจริง" />
-            </Form.Item>
-            <Form.Item name="last_name" rules={[{ required: true, message: "กรุณากรอกนามสกุล !" }]}>
-              <Input placeholder="นามสกุล" />
-            </Form.Item>
-            <Form.Item name="birthday" rules={[{ required: true, message: "กรุณาเลือกวันเกิด !" }]}>
-              <DatePicker style={{ width: "100%" }} placeholder="วันเกิด" />
-            </Form.Item>
-            <Form.Item name="phone_number" rules={[{ required: true, message: "กรุณากรอกเบอร์โทรศัพท์ !" }]}>
-              <Input placeholder="เบอร์โทรศัพท์" />
-            </Form.Item>
-            <Form.Item name="email" rules={[{ type: "email", required: true, message: "กรุณากรอกอีเมล !" }]}>
-              <Input placeholder="อีเมล" />
-            </Form.Item>
-            <Form.Item name="username" rules={[{ required: true, message: "กรุณากรอกชื่อผู้ใช้ !" }]}>
-              <Input placeholder="ชื่อผู้ใช้" />
-            </Form.Item>
-            <Form.Item name="password" rules={[{ required: true, message: "กรุณากรอกรหัสผ่าน !" }]}>
-              <Input.Password placeholder="รหัสผ่าน" />
-            </Form.Item>
-            <Form.Item name="gender_id" rules={[{ required: true, message: "กรุณาเลือกเพศ !" }]}>
-              <Select placeholder="เพศ" style={{ width: "100%"}}>
-                {gender?.map((item) => (
-                  <Select.Option value={item?.ID} key={item?.ID}>
-                    {item?.gender}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-            <Button htmlType="submit">สมัครสมาชิก</Button>
-            <Button onClick={() => setIsLoginActive(true)}>
-                ลงชื่อเข้าใช้
-            </Button>
+            <div className="name">
+              <div className="fn">
+                <h4>ชื่อจริง</h4>
+                <Form.Item name="first_name" rules={[{ required: true, message: "กรุณากรอกชื่อ !" }]}>
+                  <Input placeholder="ชื่อจริง" />
+                </Form.Item>
+              </div>
+              <div className="ln">
+                <h4>นามสกุล</h4>
+                <Form.Item name="last_name" rules={[{ required: true, message: "กรุณากรอกนามสกุล !" }]}>
+                  <Input placeholder="นามสกุล" />
+                </Form.Item>
+              </div>
+            </div>
+            <div className="tel-birth-gender">
+              <div className="gender">
+                <h4>เพศ</h4>
+                <Form.Item className='gen'name="gender_id" rules={[{ required: true, message: "กรุณาเลือกเพศ !" }]}>
+                  <Select placeholder="เพศ" style={{ width: "100%"}}>
+                    {gender?.map((item) => (
+                      <Select.Option value={item?.ID} key={item?.ID}>
+                        {item?.gender}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
+              <div className="birth">
+                <h4>วัน/เดือน/ปี เกิด</h4>
+                <Form.Item name="birthday" rules={[{ required: true, message: "กรุณาเลือกวันเกิด !" }]}>
+                  <DatePicker style={{ width: "100%" }} placeholder="วันเกิด" />
+                </Form.Item>
+              </div>
+              <div className="tel">
+                <h4>เบอร์โทรศัพท์</h4>
+                <Form.Item name="phone_number" rules={[{ required: true, message: "กรุณากรอกเบอร์โทรศัพท์ !" }]}>
+                  <Input placeholder="เบอร์โทรศัพท์" />
+                </Form.Item>
+              </div>
+            </div>
+            <div className="mail">
+              <h4>อีเมล</h4>
+              <Form.Item className='email'name="email" rules={[{ type: "email", required: true, message: "กรุณากรอกอีเมล !" }]}>
+                <Input placeholder="อีเมล" />
+              </Form.Item>
+            </div>
+            <div className="password">
+              <h4>รหัสผ่าน</h4>
+              <Form.Item className='i-form' name="password" rules={[{ required: true, message: "กรุณากรอกรหัสผ่าน !" }]}>
+                <Input.Password placeholder="รหัสผ่าน" />
+              </Form.Item>
+            </div>
+            <div className="btn">
+              <Button className='btn1' htmlType="submit">สมัครสมาชิก</Button>
+              <Button className='btn2' onClick={() => setIsLoginActive(true)}>
+                  ลงชื่อเข้าใช้
+              </Button>
+
+            </div>
           </Form>
         </div>
 
@@ -114,17 +139,19 @@ function AuthPage() {
           </div>
           <Form onFinish={onFinishLogin} layout="vertical">
             <h1>ลงชื่อเข้าใช้</h1>
-            <Form.Item name="username" rules={[{ required: true, message: "กรุณากรอกชื่อผู้ใช้!" }]}>
+            <Form.Item className = "i-form" name="username" rules={[{ required: true, message: "กรุณากรอกชื่อผู้ใช้!" }]}>
               <Input placeholder="ชื่อผู้ใช้" />
             </Form.Item>
-            <Form.Item name="password" rules={[{ required: true, message: "กรุณากรอกรหัสผ่าน!" }]}>
+            <Form.Item className ="i-form" name="password" rules={[{ required: true, message: "กรุณากรอกรหัสผ่าน!" }]}>
               <Input.Password placeholder="รหัสผ่าน" />
             </Form.Item>
             <a href="#">ลืมรหัสผ่าน?</a>
-            <Button htmlType="submit">เข้าสู่ระบบ</Button>
-            <Button onClick={() => setIsLoginActive(false)}>
-              สมัครสมาชิก
-            </Button>
+            <div className='btn'>
+              <Button className='btn1'htmlType="submit">เข้าสู่ระบบ</Button>
+              <Button className='btn2'onClick={() => setIsLoginActive(false)}>
+                สมัครสมาชิก
+              </Button>
+            </div>
           </Form>
         </div>
 
