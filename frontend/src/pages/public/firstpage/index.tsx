@@ -2,12 +2,12 @@ import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import './style.css';
 import './style.css';
-import AnimatedNumber from '../../components/AnimatedNumber';
-import dog from "../../assets/dog.png";
-import vaccine from "../../assets/vaccine.png";
-import treatment from "../../assets/treat.png";
-import shelter from "../../assets/shelter.png";
-import adoption from "../../assets/adopt.png";
+import AnimatedNumber from '../../../components/AnimatedNumber';
+import dog from "../../../assets/dog.png";
+import vaccine from "../../../assets/vaccine.png";
+import treatment from "../../../assets/treat.png";
+import shelter from "../../../assets/shelter.png";
+import adoption from "../../../assets/adopt.png";
 
 const carouselImages = [
     'https://longwoodvetcenter.com/wp-content/uploads/2023/05/Animal-Shelters-in-Pennsylvania.jpg',

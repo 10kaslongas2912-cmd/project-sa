@@ -23,13 +23,13 @@ const DonationConfirmationPage: React.FC = () => {
     sessionStorage.removeItem('donationMoneyFormData');
 
     // นำทางไปยังหน้าสำเร็จ หรือหน้าแรก
-    navigate('/donation-success'); // หรือหน้าอื่นที่เหมาะสม
+    navigate('/'); // หรือหน้าอื่นที่เหมาะสม
   };
 
   return (
     <div className="confirmation-page-container">
       <div className="confirmation-card">
-        <button onClick={() => navigate('/donation-money')} className="back-link">
+        <button onClick={() => navigate('../')} className="back-link">
           &lt; ย้อนกลับ
         </button>
         <h1 className="confirmation-title">ยืนยันข้อมูลการบริจาค</h1>

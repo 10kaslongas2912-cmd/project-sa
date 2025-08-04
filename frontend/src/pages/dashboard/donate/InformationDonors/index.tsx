@@ -42,14 +42,14 @@ const InformationDonors: React.FC<DonationInfoFormProps> = ({ onSubmit }) => {
     if (onSubmit) {
       onSubmit(formData);
     }
-    navigate('/donation-money'); // ย้าย navigate มาที่นี่
+    navigate('../money'); // ย้าย navigate มาที่นี่
   };
 
   return (
     <div className="form-page-container">
       <div className="form-card">
         {/* ปุ่มย้อนกลับ */}
-        <button onClick={() => navigate('/donate-options')} className="back-link">
+        <button onClick={() => navigate('../options')} className="back-link">
           &lt; ย้อนกลับ
         </button>
         <h1 className="form-title">ข้อมูลการบริจาค</h1>

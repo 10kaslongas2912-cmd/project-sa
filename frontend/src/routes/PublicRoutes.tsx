@@ -6,7 +6,7 @@ import Loadable from "../components/third-patry/Loadable";
 
 import MainLayout from "../layout/MainLayout";
 
-const MainPages = Loadable(lazy(() => import("../pages/firstpage")));
+const MainPages = Loadable(lazy(() => import("../pages/public/firstpage")));
 
 
 const PublicRoutes = (): RouteObject => {
