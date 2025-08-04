@@ -1,3 +1,7 @@
+/* ======================================= */
+/* Global Styles               */
+/* ======================================= */
+
 * {
   margin: 0;
   padding: 0;
@@ -7,12 +11,23 @@
 
 .container {
   background-color: #fff;
-  /* ลบ border-radius และ box-shadow เพื่อให้เต็มจอ */
   position: relative;
   overflow: hidden;
-  width: 100vw; /* <-- ปรับความกว้างเต็มจอ */
-  min-height: 100vh; /* <-- ปรับความสูงเต็มจอ */
+  width: 100vw;
+  min-height: 100vh;
   max-width: 100%;
+}
+
+/* ======================================= */
+/* Typography & Text Elements       */
+/* ======================================= */
+
+.container h1 {
+  font-size: 40px;
+}
+
+.container h4 {
+  padding-left: 5px;
 }
 
 .container p {
@@ -22,9 +37,6 @@
   margin: 20px 0;
 }
 
-.container h1 {
-  font-size: 40px;
-}
 .container span {
   font-size: 12px;
 }
@@ -36,30 +48,15 @@
   margin: 15px 0 10px;
 }
 
-.i-form {
-  width: 400px;
-  height: auto;
-}
-.container button {
-  color: #fff;
-  font-size: 12 px;
-  padding: 10px 45px;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  margin-top: 10px;
-  cursor: pointer;
-}
+/* ======================================= */
+/* Layout & Containers            */
+/* ======================================= */
 
-.container form  {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  padding: 0 40px;
-  /* height: 100%; */
+.form-container {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transition: all 0.6s ease-in-out;
 }
 
 .logo-box {
@@ -67,98 +64,154 @@
   justify-content: center;
   padding-top: 10%;
   padding-bottom: 5%;
-  /* background-color: #512da8; */
+  width: 100%; /* <--- เพิ่ม width 100% เพื่อให้ div มีขนาดเท่ากับ form */
 }
-.logo-box img{
+
+.logo-box img {
   width: 400px;
 }
-.container input {
-  background-color: #eee;
-  border: none;
-  margin-top: 2px;
-  margin-bottom: 8px;
-  padding: 8px 15px;
-  font-size: 18px;
-  border-radius: 8px;
+
+/* Layout ของฟอร์มลงทะเบียน */
+.name,
+.tel-birth-gender,
+.mail,
+.password {
   width: 100%;
-  outline: none;
-}
-
-.form-container {
-  /* background: aqua; */
-  position: absolute;
-  top: 0;
-  height: 100%;
-  transition: all 0.6s ease-in-out;
-}
-
-.name {
   display: flex;
-  width: 100%;
+
   gap: 10px;
 }
+
+.name .fn,
+.name .ln,
+.tel-birth-gender .gender,
+.tel-birth-gender .birth,
+.tel-birth-gender .tel {
+  flex-grow: 1; /* ทำให้แต่ละส่วนขยายเต็มพื้นที่ที่เหลือใน flex container */
+}
+
+.tel-birth-gender {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+}
+
+/* กลุ่มปุ่ม */
 .btn {
   display: flex;
   flex-direction: row-reverse;
   gap: 30px;
+  margin-top: 20px;
 }
-.btn button {
-  height: 40px;
 
+/* ======================================= */
+/* Form Components Styles         */
+/* ======================================= */
+
+.container form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 40px;
+  /* max-width: 500px;  <--- อาจจะลบหรือไม่ใช้ max-width เพื่อให้ logo อยู่กลางได้ง่ายขึ้น */
+  width: 100%;
 }
+/* สไตล์สำหรับ Input, Select, DatePicker ที่ใช้ในฟอร์ม */
+.container .ant-input,
+.container .ant-select-selector,
+.container .ant-picker,
+.container .ant-input-password,
+.container .ant-input-affix-wrapper {
+  background-color: #eee;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 15px;
+  font-size: 18px;
+  height: 44px;
+  box-sizing: border-box;
+  width: 100%; /* <--- ให้ input มีความกว้างเต็ม Form.Item */
+}
+
+/* เพิ่มสไตล์สำหรับ DatePicker เพื่อให้ความกว้างเต็มพื้นที่ */
+.container .ant-picker {
+  width: 100%;
+}
+
+
+.i-form {
+  width: 400px;
+  height: auto;
+}
+.email {
+  width: 400px;
+}
+/* แก้ไข Input.Password ที่มี icon */
+.container .ant-input-password {
+  background-color: #eee;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 15px;
+  font-size: 18px;
+  height: 44px;
+}
+
+.container .ant-form-item {
+  width: 100%;
+}
+/* ลบสไตล์ที่ซ้ำซ้อนสำหรับ Input ที่ไม่ได้ใช้ */
+/* .container input { ... } */
+
+/* สไตล์สำหรับปุ่ม */
+.btn button {
+  color: #fff;
+  font-size: 12px;
+  padding: 10px 45px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  height: 40px;
+  cursor: pointer;
+}
+
 .btn1 {
   background-color: #ff8800;
 }
 
 .btn2 {
-  background-color: #512da8
+  background-color: #512da8;
 }
+
+/* ======================================= */
+/* Animation & Layout           */
+/* ======================================= */
+
 .sign-in {
   left: 0;
-  width: 30%; /* <-- ปรับความกว้างฟอร์มเป็น 30% */
+  width: 30%;
   z-index: 2;
-}
-.tel-birth-gender {
-  width: 100%;
-  display: flex;
-  flex-direction: row-reverse;
-  justify-content: flex-end;
-  gap: 10px;
-}
-.mail {
-  width: 100%;
-}
-.email {
-  width: 400px;
-}
-.password {
-  width: 100%;
-}
-
-h4 {
-  padding-left: 5px;
-}
-
-.container.active .sign-in {
-  transform: translateX(233.33%); /* <-- ปรับการเลื่อนเพื่อให้ชิดขวาพอดี (70% / 30% * 100) */
-  opacity: 0;
-  z-index: 1;
 }
 
 .sign-up {
   left: 0;
-  width: 30%; /* <-- ปรับความกว้างฟอร์มเป็น 30% */
+  width: 30%;
+  opacity: 0;
+  z-index: 1;
+}
+
+.container.active .sign-in {
+  transform: translateX(233.33%);
   opacity: 0;
   z-index: 1;
 }
 
 .container.active .sign-up {
-  transform: translateX(233.33%); /* <-- ปรับการเลื่อนเพื่อให้ชิดขวาพอดี */
+  transform: translateX(233.33%);
   opacity: 1;
   z-index: 5;
   animation: move 0.6s;
 }
-
 
 @keyframes move {
   0%,
@@ -173,22 +226,11 @@ h4 {
   }
 }
 
-.social-icons a {
-  border: 1px solid #ccc;
-  border-radius: 20%;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 3px;
-  width: 40px;
-  height: 40px;
-}
-
 .toggle-container {
   position: absolute;
   top: 0;
-  left: 30%; /* <-- ปรับตำแหน่งเริ่มต้นของ Toggle */
-  width: 70%; /* <-- ปรับความกว้างของ Toggle ให้เต็มพื้นที่ที่เหลือ */
+  left: 30%;
+  width: 70%;
   height: 100%;
   overflow: hidden;
   transition: all 0.6s ease-in-out;
@@ -197,7 +239,7 @@ h4 {
 }
 
 .container.active .toggle-container {
-  transform: translateX(-42.85%); /* <-- ปรับการเลื่อนให้ไปทางซ้ายพอดี (30% / 70% * 100) */
+  transform: translateX(-42.85%);
   border-radius: 0 150px 100px 0;
 }
 
@@ -219,33 +261,4 @@ h4 {
 
 .container.active .toggle {
   transform: translateX(50%);
-}
-
-.toggle-panel {
-  position: absolute;
-  width: 50%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  padding: 0 30px;
-  text-align: center;
-  top: 0;
-  transform: translateX(0);
-  transition: all 0.6s ease-in-out;
-}
-
-
-.container.active .toggle-left {
-  transform: translateX(0);
-}
-
-.toggle-right {
-  right: 0;
-  transform: translateX(0);
-}
-
-.container.active .toggle-right {
-  transform: translateX(200%);
 }
