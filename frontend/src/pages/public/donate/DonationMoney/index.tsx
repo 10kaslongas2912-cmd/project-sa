@@ -40,14 +40,14 @@ const DonationMoneyForm: React.FC<DonationMoneyFormProps> = ({ onSubmit }) => {
     if (onSubmit) {
       onSubmit(formData);
     }
-    navigate('/donation-confirmation'); // นำทางไปยังหน้ายืนยันข้อมูล
+    navigate('../confirmation'); // นำทางไปยังหน้ายืนยันข้อมูล
   };
 
   return (
     <div className="form-page-container">
       <div className="form-card">
         {/* ปุ่มย้อนกลับ */}
-        <button onClick={() => navigate('/information-donors')} className="back-link">
+        <button onClick={() => navigate('../donors-info')} className="back-link">
           &lt; ย้อนกลับ
         </button>
         <h1 className="form-title">ข้อมูลการบริจาคเงิน</h1>

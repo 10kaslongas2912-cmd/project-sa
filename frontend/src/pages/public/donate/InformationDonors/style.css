@@ -1,6 +1,6 @@
 
 .form-page-container {
-  background-image: url('..\..\assets\flatten.jpg');
+  background-image: url('..\..\..\assets\flatten.jpg');
   display: flex;
   justify-content: center;
   align-items: center;

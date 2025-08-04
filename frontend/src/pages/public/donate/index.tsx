@@ -1,8 +1,8 @@
 import React from 'react';
 
 import './style.css';
-import CheckmarkIcon from '../../components/CheckmarkIcon';
-import NavigationBar from '../../components/NavigationBar';
+import CheckmarkIcon from '../../../components/CheckmarkIcon';
+import NavigationBar from '../../../components/NavigationBar';
 import { useNavigate } from "react-router-dom"; // <-- เพิ่ม useNavigate
 
 const DonationPage: React.FC = () => {

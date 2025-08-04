@@ -1,12 +1,12 @@
 @font-face {
   font-family: 'Anakotmai';
-  src: url('../../assets/fonts/anakotmai-bold.BE4ZYan3.woff2') format('woff2');
+  src: url('../../../assets/fonts/anakotmai-bold.BE4ZYan3.woff2') format('woff2');
   font-weight: bold;
   font-style: normal;
 }
 
 .page-container {
-  background-image: url('../../assets/donate_background.webp');
+  background-image: url('../../../assets/donate_background.webp');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
