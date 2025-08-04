@@ -48,7 +48,7 @@ const NavigationBar: React.FC = () => {
                 <Link to="/donate" className="btn btn-action donate-btn">
                     <span className="heart-icon">&#x2764;</span> บริจาค
                 </Link>
-                <Link to="/auth/login" className="btn btn-action login-btn">
+                <Link to="/auth" className="btn btn-action login-btn">
                     <span >เข้าสู่ระบบ</span> 
                 </Link>
             </div>
