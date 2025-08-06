@@ -1,0 +1,78 @@
+import React from 'react';
+import './style.css'; // ไฟล์ CSS เดิมของคุณ
+// import DogList from '../../../components/DogCard/DogList'; // ไม่ต้องใช้แล้ว
+
+import sponsorImage from '../../../assets/sponsor/ChatGPT Image Jul 31, 2025, 08_14_47 PM.png';
+import frameImage1 from '../../../assets/sponsor/HD-wallpaper-1-month-year-old-pup-dog-german-shepherd-thumbnail.jpg';
+import frameImage2 from '../../../assets/sponsor/images (1).jpg';
+import frameImage3 from '../../../assets/sponsor/images.jpg';
+// ข้อมูลสุนัขจำลองสำหรับส่วน bottom-section
+const dogData = [
+  { id: 1, name: 'น้อง H2K', age: '7 ปี 3 เดือน', size: 'ขนาดกลาง', image: frameImage1},
+  { id: 2, name: 'น้อง H2K', age: '7 ปี 3 เดือน', size: 'ขนาดกลาง', image: frameImage2 },
+  { id: 3, name: 'น้อง H2K', age: '7 ปี 3 เดือน', size: 'ขนาดกลาง', image: frameImage3 },
+  { id: 3, name: 'น้อง H2K', age: '7 ปี 3 เดือน', size: 'ขนาดกลาง', image: frameImage1 },
+  { id: 3, name: 'น้อง H2K', age: '7 ปี 3 เดือน', size: 'ขนาดกลาง', image: frameImage2 },
+  { id: 3, name: 'น้อง H2K', age: '7 ปี 3 เดือน', size: 'ขนาดกลาง', image: frameImage3 },
+];
+
+const SponsorPage: React.FC = () => {
+  return (
+    <>
+      <div className="sponsor-page-wrapper">
+        <div className="top-section">
+          <div className="image-box">
+            <img src={sponsorImage} alt="Sponsor a Dog" />
+          </div>
+          <div className="text-box">
+            <div className="content">
+              <h1>ร่วมอุปถัมภ์น้องๆ</h1>
+              <p>
+                สำหรับพวกเขา เราอาจเป็นแค่ช่วงหนึ่งของชีวิต <br />
+                แต่สำหรับเรา พวกเขากลับเป็นดวงใจหัวใจ <br />
+                จงเปิดใจให้ปังปอนด์ได้เข้ามาในความรักของคุณ <br />
+                ไม่ใช่เพราะเราสงสาร<br />
+                แต่เพราะเขาคือพระเจ้าชีวิตใหม่ให้แก่เรา<br />
+                และคุณ...คือบทผู้กอบกู้ของเขาในวันนี้
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* ส่วนนี้คือ bottom-section ที่ถูกแก้ไข */}
+        <div className="bottom-section">
+          <h2 className="bottom-title text-4xl font-bold mb-10 text-center">น้องหมาที่รอคุณอุปถัมภ์</h2>
+          <div className="card wrapper">
+            <div className="card container ">
+                {dogData.map((dog) => (
+                  <div key={dog.id} className="card info">
+                    <div className="card img">
+                      <img src={dog.image} alt={`รูปภาพของ ${dog.name}`} className="w-full h-full object-cover" />
+                    </div>
+                  
+                    <div className="card text">
+                      <h3 className="dogname">{dog.name}</h3>
+                        <p className="dog-info">
+                          อายุ {dog.age}<br />
+                          {dog.size}
+                        </p>
+                        <p className="dog-info">
+                          
+                        </p>
+                    </div>
+                    <div className="card btn">
+                      <button>
+                        อุปถัมภ์น้อง
+                      </button>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default SponsorPage;

@@ -1,9 +1,7 @@
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import './style.css';
-import './style.css';
 import AnimatedNumber from '../../../components/AnimatedNumber';
-
 import dog from "../../../assets/dog.png";
 import vaccine from "../../../assets/vaccine.png";
 import treatment from "../../../assets/treat.png";
@@ -19,8 +17,6 @@ const carouselImages = [
 function FirstPage() {
     return (
         <div className="main-container">
-
-
             <Carousel
                 autoPlay={true}
                 infiniteLoop={true}

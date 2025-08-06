@@ -4,7 +4,7 @@ import PublicRoutes from "./PublicRoutes";
 import AuthRoutes from "./AuthRoutes";
 import DashboardRoutes from "./DashboardRoutes";
 import DonateRoutes from "./DonateRoutes";
-
+import SponsorRoutes from "./SponsorRoutes";
 
 function ConfigRoutes() {
 
@@ -14,6 +14,7 @@ function ConfigRoutes() {
     AuthRoutes(),
     DashboardRoutes(),
     DonateRoutes(),
+    SponsorRoutes(),
   ];
 
   return useRoutes(allRoutes);

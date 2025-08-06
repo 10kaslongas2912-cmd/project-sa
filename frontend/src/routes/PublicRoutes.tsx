@@ -1,10 +1,9 @@
 import type { RouteObject } from "react-router-dom";
 import { lazy } from "react";
 
-
 import Loadable from "../components/third-patry/Loadable";
 
-import MainLayout from "../layout/MainLayout";
+import MainLayout from "../layout/PublicLayout";
 
 const MainPages = Loadable(lazy(() => import("../pages/public/firstpage")));
 
