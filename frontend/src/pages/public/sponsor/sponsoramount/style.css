@@ -1,0 +1,166 @@
+/* SponsorPage.css */
+
+/* Main Container */
+.sponsor-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 160px); /* ปรับ min-height ให้เท่ากับหน้าจอ ลบ Navbar */
+  background-color: #f0f2f5;
+  padding: 2rem;
+  font-family: 'Sukhumvit Set', sans-serif;
+}
+
+.sponsor-card {
+  width: 100%;
+  max-width: 800px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem;
+  box-sizing: border-box;
+}
+
+/* Header */
+.sponsor-header {
+  margin-bottom: 2rem;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #7a7a7a;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  padding: 0;
+}
+
+.sponsor-title {
+  font-size: 2.25rem;
+  font-weight: bold;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.sponsor-subtitle {
+  font-size: 1rem;
+  color: #7a7a7a;
+  margin-top: 0.5rem;
+}
+
+/* Progress Bar */
+.sponsor-progress {
+  margin-bottom: 3rem;
+}
+
+.progress-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.progress-step {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1rem;
+  z-index: 1;
+}
+
+.progress-step.active {
+  background-color: #ff8800;
+}
+
+.progress-line {
+position: absolute;
+width: 100%;
+height: 2px;
+background-color: #e0e0e0;
+
+}
+
+/* Content */
+.sponsor-content {
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #1a1a1a;
+  margin-bottom: 1rem;
+}
+
+.custom-amount-title {
+  margin-top: 2rem;
+}
+
+.donation-options {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.donation-button {
+  flex: 1;
+  min-width: 150px;
+  padding: 1.25rem;
+  border: 2px solid #e0e0e0;
+  background-color: #ffffff;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #4a4a4a;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.donation-button:hover {
+  background-color: #fffaf5;
+  border-color: #ff8800;
+  color: #ff8800;
+}
+
+.donation-button.selected {
+  background-color: #fffaf5;
+  border-color: #ff8800;
+  color: #ff8800;
+  box-shadow: 0 0 0 2px rgba(255, 136, 0, 0.2);
+}
+.custom-amount-input {
+  width: 100%;
+  padding: 1.25rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  box-sizing: border-box;
+}
+
+/* Footer */
+.sponsor-footer {
+  text-align: right;
+}
+
+.next-button {
+  background-color: #ff8800;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.next-button:hover {
+  background-color: #e67d00;
+}

@@ -1,22 +1,41 @@
 import React from 'react';
 import './style.css'; // ไฟล์ CSS เดิมของคุณ
-// import DogList from '../../../components/DogCard/DogList'; // ไม่ต้องใช้แล้ว
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 
 import sponsorImage from '../../../assets/sponsor/ChatGPT Image Jul 31, 2025, 08_14_47 PM.png';
 import frameImage1 from '../../../assets/sponsor/HD-wallpaper-1-month-year-old-pup-dog-german-shepherd-thumbnail.jpg';
 import frameImage2 from '../../../assets/sponsor/images (1).jpg';
 import frameImage3 from '../../../assets/sponsor/images.jpg';
-// ข้อมูลสุนัขจำลองสำหรับส่วน bottom-section
-const dogData = [
-  { id: 1, name: 'น้อง H2K', age: '7 ปี 3 เดือน', size: 'ขนาดกลาง', image: frameImage1},
+
+
+interface Dog {
+  id: number;
+  name: string;
+  age: string;
+  size: string;
+  image: string;
+}
+
+// ข้อมูลที่นำมาแสดงผล
+const dogData: Dog[] = [
+  { id: 1, name: 'น้อง H2K', age: '7 ปี 3 เดือน', size: 'ขนาดกลาง', image: frameImage1 },
   { id: 2, name: 'น้อง H2K', age: '7 ปี 3 เดือน', size: 'ขนาดกลาง', image: frameImage2 },
   { id: 3, name: 'น้อง H2K', age: '7 ปี 3 เดือน', size: 'ขนาดกลาง', image: frameImage3 },
-  { id: 3, name: 'น้อง H2K', age: '7 ปี 3 เดือน', size: 'ขนาดกลาง', image: frameImage1 },
-  { id: 3, name: 'น้อง H2K', age: '7 ปี 3 เดือน', size: 'ขนาดกลาง', image: frameImage2 },
-  { id: 3, name: 'น้อง H2K', age: '7 ปี 3 เดือน', size: 'ขนาดกลาง', image: frameImage3 },
+  { id: 4, name: 'น้อง H2K', age: '7 ปี 3 เดือน', size: 'ขนาดกลาง', image: frameImage1 },
+  { id: 5, name: 'น้อง H2K', age: '7 ปี 3 เดือน', size: 'ขนาดกลาง', image: frameImage2 },
+  { id: 6, name: 'น้อง H2K', age: '7 ปี 3 เดือน', size: 'ขนาดกลาง', image: frameImage3 },
 ];
 
 const SponsorPage: React.FC = () => {
+  const navigate = useNavigate();
+  const handleClick = (data:Dog) => {
+    navigate('dog-info', {
+      state: data,
+    });
+  };
+  
   return (
     <>
       <div className="sponsor-page-wrapper">
@@ -47,7 +66,9 @@ const SponsorPage: React.FC = () => {
                 {dogData.map((dog) => (
                   <div key={dog.id} className="card info">
                     <div className="card img">
-                      <img src={dog.image} alt={`รูปภาพของ ${dog.name}`} className="w-full h-full object-cover" />
+                      <Link to = 'dog-info'>
+                        <img src={dog.image} alt={`รูปภาพของ ${dog.name}`} className="w-full h-full object-cover" /> 
+                      </Link>
                     </div>
                   
                     <div className="card text">
@@ -60,8 +81,8 @@ const SponsorPage: React.FC = () => {
                           
                         </p>
                     </div>
-                    <div className="card btn">
-                      <button>
+                    <div className="card-button">
+                      <button className="primary-button" onClick={() => handleClick(dog)}>
                         อุปถัมภ์น้อง
                       </button>
                     </div>
