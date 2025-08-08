@@ -28,7 +28,7 @@
 }
 
 .orange-header {
-  background-color: #ff8800; /* สีส้ม */
+  background: linear-gradient(135deg, #ff9028, #ffee52);
 }
 
 .back-button {
@@ -196,6 +196,7 @@
 }
 
 .confirm-button {
+  width: 79%;
   background-color: #ff8800;
   color: #ffffff;
 }

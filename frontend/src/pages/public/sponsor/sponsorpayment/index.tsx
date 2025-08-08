@@ -29,11 +29,11 @@ const SponsorPaymentPage: React.FC = () => {
     <div className="sponsor-container">
       <div className="sponsor-card">
         <div className="sponsor-header orange-header">
-          <button className="back-button" onClick={() => navigate(-1)}>
-            ← Back to Dogs
+          <button className="back-button" onClick={() => navigate('/sponsor')}>
+            ← กลับไปหน้าอุปถัมภ์
           </button>
-          <h1 className="sponsor-title-form">Sponsor Luna</h1>
-          <p className="sponsor-subtitle-form">Help us provide the best care for Luna with your generous sponsorship</p>
+          <h1 className="sponsor-title-form">Sponsor</h1>
+          <p className="sponsor-subtitle-form">ช่วยให้เราดูแลสุนัขได้ดีที่สุด ด้วยการอุปถัมภ์อย่างมีน้ำใจของคุณ</p>
         </div>
 
         <div className="sponsor-progress">
@@ -47,7 +47,7 @@ const SponsorPaymentPage: React.FC = () => {
         </div>
 
         <div className="sponsor-form-content">
-          <h3 className="section-title">Payment Method</h3>
+          <h3 className="section-title">เลือกวิธีการชำระเงิน</h3>
           <div className="payment-options">
             <button
               className={`payment-button ${selectedMethod === 'Credit Card' ? 'selected' : ''}`}
@@ -73,9 +73,9 @@ const SponsorPaymentPage: React.FC = () => {
           </div>
 
           <div className="payment-summary">
-            <h3 className="section-title">Payment Summary</h3>
+            <h3 className="section-title">จำนวนเงินทั้งหมด</h3>
             <div className="summary-row">
-              <span className="summary-label">Sponsorship for Luna</span>
+              <span className="summary-label">Sponsorship for Dog</span>
               <span className="summary-value">฿{paymentSummary.sponsorship}</span>
             </div>
             <div className="summary-row total">
@@ -86,8 +86,8 @@ const SponsorPaymentPage: React.FC = () => {
         </div>
 
         <div className="sponsor-form-footer">
-          <button className="previous-button" onClick={handlePreviousClick}>Previous</button>
-          <button className="next-button confirm-button" onClick={handleConfirmPayment}>Confirm Payment</button>
+          <button className="previous-button" onClick={handlePreviousClick}>ย้อนกลับ</button>
+          <button className="next-button confirm-button" onClick={handleConfirmPayment}>ยืนยันการชำระเงิน</button>
         </div>
       </div>
     </div>

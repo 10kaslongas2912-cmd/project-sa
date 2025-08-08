@@ -48,11 +48,11 @@ const SponsorAmountPage: React.FC = () => {
       <div className="sponsor-card">
         {/* Header */}
         <div className="sponsor-header">
-          <button className="back-button" onClick={() => navigate(-1)}>
-            ← Back to Dogs
+          <button className="back-button" onClick={() => navigate('/sponsor')}>
+            ← กลับไปหน้าอุปถัมภ์
           </button>
-          <h1 className="sponsor-title">Sponsor {dog?.name || 'a Dog'}</h1>
-          <p className="sponsor-subtitle">Help us provide the best care for {dog?.name || 'the dog'} with your generous sponsorship</p>
+          <h1 className="sponsor-title">อุปถัมภ์น้องหมา</h1>
+          <p className="sponsor-subtitle">ช่วยให้เราดูแลสุนัขได้ดีที่สุด ด้วยการอุปถัมภ์อย่างมีน้ำใจของคุณ</p>
         </div>
 
         {/* Progress Bar */}
@@ -68,7 +68,7 @@ const SponsorAmountPage: React.FC = () => {
 
         {/* Content */}
         <div className="sponsor-content">
-          <h3 className="section-title">Select Donation Amount</h3>
+          <h3 className="section-title">เลือกจำนวนเงิน</h3>
           <div className="donation-options">
             {donationAmounts.map((amount) => (
               <button
@@ -81,11 +81,11 @@ const SponsorAmountPage: React.FC = () => {
             ))}
           </div>
 
-          <h3 className="section-title custom-amount-title">Custom Amount (THB)</h3>
+          <h3 className="section-title custom-amount-title">ระบุจำนวนเงิน (บาท)</h3>
           <input
             type="number"
             className="custom-amount-input"
-            placeholder="Enter amount"
+            placeholder="กรอกจำนวนเงิน"
             value={customAmount}
             onChange={handleCustomAmountChange}
           />
@@ -93,7 +93,7 @@ const SponsorAmountPage: React.FC = () => {
 
         {/* Footer */}
         <div className="sponsor-footer">
-          <button className="next-button" onClick={handleNextClick}>Next</button>
+          <button className="next-button" onClick={handleNextClick}>ถัดไป</button>
         </div>
       </div>
     </div>
