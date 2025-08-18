@@ -7,13 +7,13 @@
   align-items: center;
   min-height: 100vh;
   background-color: #f0f2f5;
-  padding: 2rem;
+  padding: 6rem;
   font-family: 'Anakotmai', sans-serif;
 }
 
 .thankyou-card {
   width: 100%;
-  max-width: 600px;
+  max-width: 800px;
   background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -21,14 +21,16 @@
   overflow: hidden;
   text-align: center;
 }
-
 /* Header */
 .thankyou-header {
   padding: 2.5rem;
-  background: linear-gradient(135deg, #4a90e2, #7b68ee); /* Gradient สีน้ำเงิน-ม่วง */
+  background: linear-gradient(135deg, #ff9028, #ffee52);
   color: #ffffff;
 }
-
+.sponsor-progress {
+  margin: 2.5rem auto;
+  width: 80%;
+}
 .thankyou-title {
   font-size: 2.25rem;
   font-weight: bold;
@@ -42,7 +44,7 @@
 
 /* Content */
 .thankyou-content {
-  padding: 3rem 2.5rem;
+  padding: 0rem 2.5rem 3rem 2.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -74,7 +76,7 @@
 }
 
 .done-button {
-  background-color: #4a90e2;
+  background-color: #ff9028;
   color: #ffffff;
   border: none;
   border-radius: 8px;
@@ -86,5 +88,5 @@
 }
 
 .done-button:hover {
-  background-color: #3878b8;
+  background-color: #ffde23;
 }

@@ -6,5 +6,5 @@ export interface Dog {
   size: string;
   age: string;
   personality: string;
-  careInstructions: string;
+  careInstructions: string; 
 }

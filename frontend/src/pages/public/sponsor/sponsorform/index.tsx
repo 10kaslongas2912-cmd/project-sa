@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { CreditCardOutlined, DollarOutlined, SmileOutlined, SolutionOutlined } from '@ant-design/icons';
+import { Steps } from 'antd';
 import './style.css'; // ใช้ CSS แยกไฟล์สำหรับหน้านี้
 
 const SponsorFormPage: React.FC = () => {
@@ -27,13 +29,30 @@ const SponsorFormPage: React.FC = () => {
         </div>
 
         <div className="sponsor-progress">
-          <div className="progress-bar">
-            <div className="progress-step done">1</div>
-            <div className="progress-line done-line"></div>
-            <div className="progress-step active">2</div>
-            <div className="progress-line"></div>
-            <div className="progress-step">3</div>
-          </div>
+                <Steps
+                    items={[
+                    {
+                        title: 'Select Amount',
+                        status: 'finish',
+                        icon: <DollarOutlined />,
+                    },
+                    {
+                        title: 'Verification',
+                        status: 'process',
+                        icon: <SolutionOutlined />,
+                    },
+                    {
+                        title: 'Pay',
+                        status: 'wait',
+                        icon: <CreditCardOutlined />,
+                    },
+                    {
+                        title: 'Done',
+                        status: 'wait',
+                        icon: <SmileOutlined />,
+                    },
+                    ]}
+                />
         </div>
 
         <div className="sponsor-form-content">

@@ -1,5 +1,7 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { Steps } from 'antd';
+import { CreditCardOutlined, DollarOutlined, SmileOutlined, SolutionOutlined } from '@ant-design/icons';
 import './style.css';
 import Confetti from '../../../../components/Confetti/Confetti';
 
@@ -19,7 +21,32 @@ const SponsorThankYouPage: React.FC = () => {
           <h1 className="thankyou-title">Sponsor {dog?.name || 'a Dog'}</h1>
           <p className="thankyou-subtitle">Help us provide the best care for {dog?.name || 'the dog'} with your generous sponsorship</p>
         </div>
-
+        <div className="sponsor-progress">
+          <Steps
+              items={[
+              {
+                  title: 'Select Amount',
+                  status: 'finish',
+                  icon: <DollarOutlined />,
+              },
+              {
+                  title: 'Verification',
+                  status: 'finish',
+                  icon: <SolutionOutlined />,
+              },
+              {
+                  title: 'Pay',
+                  status: 'finish',
+                  icon: <CreditCardOutlined />,
+              },
+              {
+                  title: 'Done',
+                  status: 'finish',
+                  icon: <SmileOutlined />,
+              },
+              ]}
+          />
+        </div>
         <div className="thankyou-content">
           <div className="thankyou-icon">
             {/* สามารถใช้รูปภาพหรือ SVG แทน Icon ได้ */}

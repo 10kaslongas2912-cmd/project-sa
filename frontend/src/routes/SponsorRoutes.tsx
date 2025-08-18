@@ -5,7 +5,7 @@ import { lazy } from 'react';
 import Loadable from "../components/third-patry/Loadable";
 
 import PublicLayout from "../layout/PublicLayout"; // Component ที่ใช้สำหรับ Layout ของหน้านี้ 
-const SponsorPage = Loadable(lazy(() => import("../pages/public/sponsor")));
+const SponsorPage = Loadable(lazy(() => import("../pages/public/sponsor/mainpage")));
 const DogInfoPage = Loadable(lazy(() => import("../pages/public/sponsor/doginfo")));
 const SponsorAmountPage = Loadable(lazy(() => import("../pages/public/sponsor/sponsoramount")));
 const SponsorFormPage = Loadable(lazy(() => import("../pages/public/sponsor/sponsorform")));
@@ -39,8 +39,7 @@ const SponsorRoutes = (): RouteObject => {
         {
             path: 'thankyou',
             element: <SponsorThankyouPage />
-        },
-        
+        },  
     ]
   };
 };

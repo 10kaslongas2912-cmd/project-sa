@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { CreditCardOutlined, DollarOutlined, SmileOutlined, SolutionOutlined } from '@ant-design/icons';
+import { Steps } from 'antd';
 import './style.css';
 import { CreditCard, Building2, QrCode } from 'lucide-react'; // Icon จาก lucide-react
 
@@ -37,13 +39,30 @@ const SponsorPaymentPage: React.FC = () => {
         </div>
 
         <div className="sponsor-progress">
-          <div className="progress-bar">
-            <div className="progress-step done">1</div>
-            <div className="progress-line done-line"></div>
-            <div className="progress-step done">2</div>
-            <div className="progress-line done-line"></div>
-            <div className="progress-step active">3</div>
-          </div>
+          <Steps
+              items={[
+              {
+                  title: 'Select Amount',
+                  status: 'finish',
+                  icon: <DollarOutlined />,
+              },
+              {
+                  title: 'Verification',
+                  status: 'finish',
+                  icon: <SolutionOutlined />,
+              },
+              {
+                  title: 'Pay',
+                  status: 'process',
+                  icon: <CreditCardOutlined />,
+              },
+              {
+                  title: 'Done',
+                  status: 'wait',
+                  icon: <SmileOutlined />,
+              },
+              ]}
+          />
         </div>
 
         <div className="sponsor-form-content">

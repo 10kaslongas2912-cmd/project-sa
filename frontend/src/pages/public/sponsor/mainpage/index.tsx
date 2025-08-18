@@ -1,15 +1,38 @@
 import React from 'react';
+import { Link, useNavigate } from "react-router-dom";
+import { Button, ConfigProvider, Space } from 'antd';
+import { createStyles } from 'antd-style';
 import './style.css'; // ไฟล์ CSS เดิมของคุณ
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 
 
-import sponsorImage from '../../../assets/sponsor/ChatGPT Image Jul 31, 2025, 08_14_47 PM.png';
-import frameImage1 from '../../../assets/sponsor/HD-wallpaper-1-month-year-old-pup-dog-german-shepherd-thumbnail.jpg';
-import frameImage2 from '../../../assets/sponsor/images (1).jpg';
-import frameImage3 from '../../../assets/sponsor/images.jpg';
+import sponsorImage from '../../../../assets/sponsor/ChatGPT Image Jul 31, 2025, 08_14_47 PM.png';
+import frameImage1 from '../../../../assets/sponsor/HD-wallpaper-1-month-year-old-pup-dog-german-shepherd-thumbnail.jpg';
+import frameImage2 from '../../../../assets/sponsor/images (1).jpg';
+import frameImage3 from '../../../../assets/sponsor/images.jpg';
 
+const useStyle = createStyles(({ prefixCls, css }) => ({
+  linearGradientButton: css`
+    &.${prefixCls}-btn-primary:not([disabled]):not(.${prefixCls}-btn-dangerous) {
+      > span {
+        position: relative;
+      }
 
+      &::before {
+        content: '';
+        background: linear-gradient(135deg, #ff8800, #ff6f43ff);
+        position: absolute;
+        inset: -1px;
+        opacity: 1;
+        transition: all 0.3s;
+        border-radius: inherit;
+      }
+
+      &:hover::before {
+        opacity: 0;
+      }
+    }
+  `,
+}));
 interface Dog {
   id: number;
   name: string;
@@ -29,6 +52,7 @@ const dogData: Dog[] = [
 ];
 
 const SponsorPage: React.FC = () => {
+  const { styles } = useStyle();
   const navigate = useNavigate();
   const handleClick = (data:Dog) => {
     navigate('dog-info', {
@@ -82,9 +106,17 @@ const SponsorPage: React.FC = () => {
                         </p>
                     </div>
                     <div className="card-button">
-                      <button className="primary-button" onClick={() => handleClick(dog)}>
-                        อุปถัมภ์น้อง
-                      </button>
+                      <ConfigProvider
+                        button={{
+                          className: styles.linearGradientButton,
+                        }}
+                      >
+                        <Space>
+                          <Button type="primary" size="large" onClick={() => handleClick(dog)}>
+                            อุปถัมภ์น้อง
+                          </Button>
+                        </Space>
+                      </ConfigProvider>
                     </div>
                   </div>
                 ))}

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { CreditCardOutlined, DollarOutlined, SmileOutlined, SolutionOutlined } from '@ant-design/icons';
+import { Steps } from 'antd';
 import './style.css'; // Import CSS สำหรับหน้านี้
 
 interface Dog {
@@ -55,17 +57,32 @@ const SponsorAmountPage: React.FC = () => {
           <p className="sponsor-subtitle">ช่วยให้เราดูแลสุนัขได้ดีที่สุด ด้วยการอุปถัมภ์อย่างมีน้ำใจของคุณ</p>
         </div>
 
-        {/* Progress Bar */}
-        <div className="sponsor-progress">
-          <div className="progress-bar">
-            <div className="progress-step active">1</div>
-            <div className="progress-line"></div>
-            <div className="progress-step">2</div>
-            <div className="progress-line"></div>
-            <div className="progress-step">3</div>
-          </div>
-        </div>
-
+        <div className="sponsor-progress">
+            <Steps
+                items={[
+                {
+                    title: 'Select Amount',
+                    status: 'process',
+                    icon: <DollarOutlined />,
+                },
+                {
+                    title: 'Verification',
+                    status: 'wait',
+                    icon: <SolutionOutlined />,
+                },
+                {
+                    title: 'Pay',
+                    status: 'wait',
+                    icon: <CreditCardOutlined />,
+                },
+                {
+                    title: 'Done',
+                    status: 'wait',
+                    icon: <SmileOutlined />,
+                },
+                ]}
+            />
+        </div>
         {/* Content */}
         <div className="sponsor-content">
           <h3 className="section-title">เลือกจำนวนเงิน</h3>

@@ -8,7 +8,7 @@
   min-height: calc(100vh - 160px); /* ปรับ min-height ให้เท่ากับหน้าจอ ลบ Navbar */
   background-color: #f0f2f5;
   padding: 2rem;
-  font-family: 'Sukhumvit Set', sans-serif;
+  font-family: 'Anakotmai', sans-serif;
 }
 
 .sponsor-card {
@@ -52,6 +52,7 @@
 /* Progress Bar */
 .sponsor-progress {
   margin-bottom: 3rem;
+  width: 95%;
 }
 
 .progress-bar {
@@ -164,3 +165,5 @@ background-color: #e0e0e0;
 .next-button:hover {
   background-color: #e67d00;
 }
+
+
