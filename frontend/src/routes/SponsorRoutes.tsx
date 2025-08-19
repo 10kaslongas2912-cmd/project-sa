@@ -11,6 +11,7 @@ const SponsorAmountPage = Loadable(lazy(() => import("../pages/public/sponsor/sp
 const SponsorFormPage = Loadable(lazy(() => import("../pages/public/sponsor/sponsorform")));
 const SponsorPaymentPage = Loadable(lazy(() => import("../pages/public/sponsor/sponsorpayment")));
 const SponsorThankyouPage = Loadable(lazy(() => import("../pages/public/sponsor/sponsorthankyou")));
+const SponsorPaymentCreditCardPage = Loadable(lazy(() => import("../components/Payment/Creditcard")));
 const SponsorRoutes = (): RouteObject => {
   return {
     path: 'sponsor', 
@@ -34,7 +35,19 @@ const SponsorRoutes = (): RouteObject => {
         },
         {
             path: 'payment',
-            element: <SponsorPaymentPage />
+            element: <SponsorPaymentPage />,
+        },
+        {
+            path: 'payment/creditcard',
+            element: <SponsorPaymentCreditCardPage />,
+        },
+        {
+            path: 'payment/banktransfer',
+            element: <SponsorPaymentPage />,
+        },
+        {
+            path: 'payment/promptpay',
+            element: <SponsorPaymentPage />,
         },
         {
             path: 'thankyou',

@@ -18,10 +18,19 @@ const SponsorPaymentPage: React.FC = () => {
         alert('กรุณาเลือกวิธีการชำระเงิน');
         return;
     }
-    // Logic สำหรับการยืนยันการชำระเงิน
-    navigate('../thankyou')
-  };
-
+    if (selectedMethod === 'Bank Transfer') {
+      navigate('banktransfer');
+      return;
+    };
+    if (selectedMethod === 'PromptPay') {
+      navigate('promptpay');
+      return;
+    };
+    if (selectedMethod === 'Credit Card') {
+      navigate('creditcard');
+      return;
+    }
+  }  
   // สมมติว่ามีข้อมูล Payment Summary
   const paymentSummary = {
     sponsorship: 1000000,
@@ -112,5 +121,4 @@ const SponsorPaymentPage: React.FC = () => {
     </div>
   );
 };
-
 export default SponsorPaymentPage;
