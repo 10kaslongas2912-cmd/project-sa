@@ -1,0 +1,428 @@
+.form-page-container {
+  background-image: url('../../../assets/flatten.jpg');
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: 'Anakotmai', sans-serif;
+  z-index: 0;
+  background-size: cover;
+
+}
+
+.form-card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  max-width: 1000px; /* Increased width */
+  min-height: 700px; /* Added min-height */
+  width: 100%;
+  text-align: center;
+  z-index: 2; /* Ensure card is above the overlay */
+  font-family: 'Anakotmai', sans-serif;
+}
+
+.back-link {
+  display: block;
+  text-align: left;
+  margin-bottom: 20px;
+  color: #706D6D;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.form-title {
+  color: #FF6600;
+  font-size: 3em;
+  margin-bottom: 10px;
+  text-align: center;
+  margin-left: 20px;
+  margin-top: -50px;
+}
+
+.form-subtitle {
+  font-size: 3em;
+  color: #FF6600;
+  margin-bottom: 30px;
+  text-align: left;
+  margin-left: 20px;
+}
+
+.form-input1 {
+  width: 80%;
+  height: 90%;
+  padding: 12px;
+  margin-bottom: 25px;
+  border-radius: 8px;
+  font-size: 1em;
+  margin-left: 20px;
+  margin-right: 20px;
+  color: #706D6D;
+  font-family: 'Anakotmai', sans-serif;
+  text-align: center;
+}
+
+.form-input2 {
+  margin-left: 15px;
+  margin-right: 20px;
+  width: 100%;
+  height: 50px; /* ปรับความสูงของช่องวิธีการชำระเงิน */
+  max-width: 750px; /* กำหนดความกว้างสูงสุด */
+  font-family: 'Anakotmai', sans-serif;
+  margin-top: 20px;
+  border-radius: 20px !important;
+  font-size: 1.3rem; /* Added font size */
+  text-align: center; /* Centered text */;
+}
+
+.submit-button {
+  width: 95%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: #253C90;
+  color: white;
+  font-size: 1.2em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 0px;
+  font-family: 'Anakotmai', sans-serif;
+}
+
+.submit-button:hover {
+  background-color: #4566dd;
+}
+.custom-large-segmented {
+  /* ตั้งค่าพื้นฐานสำหรับ container */
+  width: 100%;
+  max-width: 600px; /* เพิ่มความกว้างสูงสุดตามต้องการ */
+  display: block; /* ช่วยให้ margin auto ทำงานได้ถูกต้อง */
+  margin-left: auto;
+  margin-right: auto;
+  font-family: 'Anakotmai', sans-serif;
+  border-radius: 20px !important; /* เพิ่ม border-radius เพื่อให้มุมโค้งมน */
+}
+
+/* 🎯 ปรับขนาดของแต่ละปุ่ม (item) ภายใน */
+.custom-large-segmented .ant-segmented-item {
+  height: 60px; /* เพิ่มความสูงของปุ่ม */
+  padding: 0 20px; /* เพิ่มระยะห่างด้านข้าง */
+  display: flex; /* ใช้ Flexbox */
+  align-items: center; /* จัดกึ่งกลางแนวตั้ง */
+  justify-content: center; /* จัดกึ่งกลางแนวนอน */
+  flex: 1; /* ให้ปุ่มขยายเท่ากัน */
+  font-family: 'Anakotmai', sans-serif;
+  border-radius: 20px !important;
+  
+}
+
+/* 🎯 ปรับขนาดตัวอักษรของ label */
+.custom-large-segmented .ant-segmented-item-label {
+  font-size: 2.0em !important; /* ปรับขนาดฟอนต์ตามต้องการ */
+  font-family: 'Anakotmai', sans-serif; /* ใช้ฟอนต์ Anakotmai */
+}
+
+/* 🎯 ปรับขนาดของไอคอน (ถ้ามี) */
+.custom-large-segmented .ant-segmented-item img {
+  width: 50px !important; /* ปรับขนาดไอคอนให้เหมาะสมกับขนาดใหม่ */
+  height: 50px !important;
+  vertical-align: middle; /* จัดไอคอนให้อยู่กลาง */
+  margin-right: 8px; /* เพิ่มระยะห่างระหว่างไอคอนกับข้อความ */
+  font-family: 'Anakotmai', sans-serif;
+}
+
+.custom-large-segmented .ant-segmented-item:last-child {
+  position: relative;
+}
+
+.once-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%; /* ทำให้ข้อความกินพื้นที่เต็มความกว้างของปุ่ม */
+  text-align: center; /* จัดให้อยู่กลางแนวนอนอีกครั้งเพื่อความแน่นอน */
+  font-family: 'Anakotmai', sans-serif;
+}
+
+.custom-large-segmented .ant-segmented-item-selected {
+  /* สไตล์เดิมของคุณ */
+  background: #fff;
+  border: 1px solid #f56a00 !important;
+  color: #f56a00;
+  /* เพิ่ม border-radius ที่นี่ */
+  border-radius: 50px; /* ลองปรับค่าตามต้องการ */
+  font-family: 'Anakotmai', sans-serif;
+}
+
+.amount-input-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 35px;
+  margin-bottom: 24px;
+  font-family: 'Anakotmai', sans-serif;
+}
+
+.amount-input-row .ant-btn {
+  height: 48px;
+  font-size: 1.5rem;
+  padding: 0 24px;
+  font-family: 'Anakotmai', sans-serif;
+  margin-left: 20px;
+  border-radius: 20px !important;
+  margin-top: 15px;
+  
+}
+
+.amount-input-item {
+  /* flex-grow: 1; */ /* Remove flex-grow to prevent stretching */
+  max-width: 400px;
+  margin-bottom: 0 !important;
+  margin-top: 15px;
+
+}
+
+.amount-input-row .form-input1 {
+  width: 250px; /* Set a fixed width */
+  margin: 0; /* Reset margins */
+  margin-left: 20px;
+}
+
+.form-input1{
+  margin-top: 0px;
+  height: 50px;
+  width: 58%;
+  margin-left: -80px;
+  font-size: 1.5rem;
+  border-radius: 20px !important;
+}
+
+.ant-form-item {
+  position: relative; /* Set position to relative for absolute positioning of error messages */
+}
+
+.ant-form-item-explain {
+  position: absolute; /* Position error messages absolutely */
+  bottom: -28px; /* Adjust as needed to position the error message below the input */
+  left: 0;
+  width: 100%;
+  text-align: center; /* Align error text to the left */
+  font-family: 'Anakotmai', sans-serif;
+  margin-left: 15px;
+}
+
+.amount-input-row .ant-btn-default:hover {
+  color: #FF6600 !important;
+  border-color: #FF6600 !important;
+}
+
+.form-input1:hover,
+.form-input1:focus {
+  border-color: #FF6600 !important;
+  outline: none; /* Remove default browser outline */
+}
+
+.form-input1:hover::placeholder,
+.form-input1:focus::placeholder {
+  color: #FF6600 !important;
+  opacity: 1;
+}
+
+.form-row {
+  display: flex;
+  justify-content: center; /* Center the items */
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.form-row-item {
+  max-width: 1000px !important; /* Set a maximum width for each item */
+  flex: 1;
+  width: 100% !important; /* Increased width */
+  margin-bottom: 0 !important;
+  margin-right: 40px; /* Added margin to separate items */
+  
+}
+
+.form-row-item-full { /* Increased width for full row item */
+  flex: 1;
+  width: 100% !important;
+  max-width: 1000px !important; /* Adjusted for two items + gap */
+  margin-bottom: 0 !important;
+  margin-top: 40px;
+  margin-left: -1000px;
+}
+
+.form-input2 .ant-select-selector:hover,
+.form-input2 .ant-select-selector:focus {
+  border-color: #FF6600 !important;
+}
+
+.form-input2 .ant-select-selector {
+  height: 48px !important; /* Match button height */
+  display: flex;
+  align-items: center;
+  border-radius: 20px !important; /* เพิ่ม border-radius เพื่อให้มุมโค้งมน */
+}
+
+.form-input2 .ant-select-selection-placeholder,
+.form-input2 .ant-select-selection-item {
+  font-size: 1.3rem; /* Match button font size */
+  display: flex;
+  align-items: center;
+  border-radius: 10px !important;
+}
+
+.form-input2:hover,
+.form-input2:focus {
+  border-color: #FF6600 !important;
+  outline: none; /* Remove default browser outline */
+}
+
+.form-input2:hover::placeholder,
+.form-input2:focus::placeholder {
+  color: #FF6600 !important;
+  opacity: 1;
+}
+
+.submit-button {
+  margin-top: 50px;
+}
+
+.form-label {
+  font-size: 1.5rem;
+  color: #706D6D;
+  margin-top: 15px;
+  margin-bottom: -15px;
+  font-family: 'Anakotmai', sans-serif;
+  text-align: center;
+}
+
+
+.form-declaration {
+  font-size: 1.2em;
+  color: #333;
+  font-family: 'Anakotmai';
+  color: #253C90; /* Changed to blue */
+  margin-top: 20px;
+  margin-bottom: 0px;
+  background-color: #E7EEFC;
+  width: 90%;
+  text-align: center;
+  align-items: center;
+  margin-left: 40px;
+}
+
+.account-options-container {
+  display: flex;
+  flex-direction: column; /* จัดเรียงปุ่มในแนวตั้ง */
+  gap: 10px; /* ระยะห่างระหว่างปุ่ม */
+  margin-top: 10px;
+  width: 100%;
+  max-width: 850px; /* ให้กว้างเท่ากับ Select */
+  margin-left: 20px;
+  margin-right: auto;
+}
+
+.account-option-button {
+  height: 250px;
+  height: 100%;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 20px;
+  background-color: #fff;
+  color: #333;
+  font-size: 1.2rem;
+  font-weight: normal;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Anakotmai', sans-serif;
+  text-align: center; /* Center text */ 
+  margin-left: 20px;
+  margin-bottom: 15px;
+}
+
+.account-option-button:hover {
+  border-color: #FF6600;
+  color: #FF6600;
+}
+
+.account-option-button.selected {
+  background-color: #FF6600;
+  color: white;
+  border-color: #FF6600;
+}
+.pk{
+  display: block !important;
+  width: 100%;
+  height: 100%;
+  color: #253C90;
+  font-size: 1.9em;
+  font-weight: bold;
+  font-family: 'Anakotmai', sans-serif;
+  text-align: left; /* Center text */
+  margin-left: 25px;
+  flex: 1;
+}
+.jk{
+  display: block !important;
+  width: 100%;
+  height: 100%;
+  color: #253C90;
+  font-size: 1.9em;
+  font-weight: bold;
+  font-family: 'Anakotmai', sans-serif;
+  text-align: left; /* Center text */
+  margin-left: 20px;
+  flex: 1;
+  margin-bottom: 0px;
+}
+.form-input3 {
+  width: 100%;
+  height: 50px; /* ปรับความสูงของช่องวิธีการชำระเงิน */
+  max-width: 850px; /* กำหนดความกว้างสูงสุด */
+  font-family: 'Anakotmai', sans-serif;
+  margin-top: 20px;
+  border-radius: 20px !important;
+  font-size: 1.5rem !important; /* Added font size */
+  text-align: center; /* Centered text */;
+  margin-left: -15px; /* จัดกึ่งกลาง */
+  margin-right: auto; /* จัดกึ่งกลาง */
+}
+.form-input3 .ant-select-selector:hover,
+.form-input3 .ant-select-selector:focus {
+  border-color: #FF6600 !important;
+}
+
+.form-input3 .ant-select-selector {
+  height: 48px !important; /* Match button height */
+  display: flex;
+  align-items: center;
+  border-radius: 20px !important; /* เพิ่ม border-radius เพื่อให้มุมโค้งมน */
+}
+
+.form-input3 .ant-select-selection-placeholder,
+.form-input3 .ant-select-selection-item {
+  font-size: 1.3rem; /* Match button font size */
+  display: flex;
+  align-items: center;
+  border-radius: 10px !important;
+}
+
+.form-input3:hover,
+.form-input3:focus {
+  border-color: #FF6600 !important;
+  outline: none; /* Remove default browser outline */
+}
+
+.form-input3:hover::placeholder,
+.form-input3:focus::placeholder {
+  color: #FF6600 !important;
+  opacity: 1;
+}

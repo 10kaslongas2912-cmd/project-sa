@@ -1,0 +1,200 @@
+// src/pages/DogHealthRecordPage.tsx
+
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { message } from 'antd';
+import type { DogInfo, HealthRecord } from '../interface/types';
+import SearchPageComponent from '../searchpage/SearchPageComponent';
+import HealthFormComponent from '../component/HealthFormComponent';
+import DogHealthRecordDetailComponent from '../component/DogHealthRecordDetailComponent';
+import { searchDogs, getHealthRecordsByDogId, createHealthRecord, updateHealthRecord, deleteHealthRecord } from '../../../services/https/dogHealthRecordService';
+
+
+const DogHealthRecordPage: React.FC = () => {
+  const navigate = useNavigate();
+  const [currentStep, setCurrentStep] = useState<'search' | 'form' | 'detail' | 'single-detail'>('search');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDog, setSelectedDog] = useState<DogInfo | null>(null);
+  const [dogSearchResults, setDogSearchResults] = useState<DogInfo[]>([]);
+  const [dogHealthRecords, setDogHealthRecords] = useState<HealthRecord[]>([]);
+  const [selectedHealthRecord, setSelectedHealthRecord] = useState<HealthRecord | null>(null); // State for single record detail
+
+  // Helper function to handle date formatting
+  const formatDate = (date: any) => {
+    if (!date) return undefined;
+    if (typeof date === 'string') return date;
+    if (date && typeof date.format === 'function') return date.format('YYYY-MM-DD');
+    return date;
+  };
+
+  useEffect(() => {
+    const fetchDogs = async () => {
+      if (searchQuery) {
+        try {
+          const results = await searchDogs(searchQuery);
+          setDogSearchResults(results);
+        } catch (error) {
+          message.error('Failed to search dogs.');
+          console.error(error);
+        }
+      } else {
+        setDogSearchResults([]);
+      }
+    };
+    fetchDogs();
+  }, [searchQuery]);
+
+  const handleDogSelect = async (dog: DogInfo) => {
+    setSelectedDog(dog);
+    console.log('Selected Dog dog_id:', dog.dog_id);
+    try {
+      const records = await getHealthRecordsByDogId(dog.dog_id.toString());
+      console.log('Health Records received:', records);
+      setDogHealthRecords(records);
+      setCurrentStep('detail');
+      console.log('Current Step after selection:', 'detail');
+    } catch (error) {
+      message.error('Failed to fetch health records.');
+      console.error('Error in handleDogSelect:', error);
+    }
+  };
+
+  const handleViewHealthRecordDetail = (record: HealthRecord) => {
+    setSelectedHealthRecord(record);
+    setCurrentStep('single-detail');
+  };
+
+  const handleBack = () => {
+    if (currentStep === 'form') {
+      setCurrentStep('detail'); // Go back to the detail page for the selected dog
+    } else if (currentStep === 'single-detail') {
+      setCurrentStep('detail'); // Go back to the list of records
+      setSelectedHealthRecord(null);
+    } else if (currentStep === 'detail') {
+      setCurrentStep('search'); // Go back to search page
+      setSelectedDog(null);
+    } else {
+      navigate(-1); // Default: go back to the previous page in history
+    }
+  };
+
+  const handleAddHealthRecord = () => {
+    setCurrentStep('form');
+  };
+
+  const handleDeleteHealthRecord = async (medId: number) => {
+    try {
+      await deleteHealthRecord(medId);
+      message.success('ลบบันทึกสุขภาพเรียบร้อยแล้ว');
+      // Refresh health records after successful deletion
+      if (selectedDog) {
+        const records = await getHealthRecordsByDogId(selectedDog.dog_id.toString());
+        setDogHealthRecords(records);
+      }
+    } catch (error) {
+      message.error('Failed to delete health record.');
+      console.error(error);
+    }
+  };
+
+  const handleUpdateHealthRecord = async (medId: number, values: HealthRecord) => {
+    if (!selectedDog) return;
+
+    const healthRecord: HealthRecord = {
+      ...values,
+      MedID: medId, // Ensure MedID is passed for update
+      dogId: selectedDog.dog_id, // Ensure dogId is correct
+      dogName: selectedDog.Name, // Ensure dogName is correct
+      recordDate: formatDate(values.recordDate),
+      nextAppointment: formatDate(values.nextAppointment),
+    };
+
+    try {
+      await updateHealthRecord(medId, healthRecord);
+      message.success('อัปเดตข้อมูลสุขภาพเรียบร้อยแล้ว');
+      // Refresh health records after successful update
+      if (selectedDog) {
+        const records = await getHealthRecordsByDogId(selectedDog.dog_id.toString());
+        setDogHealthRecords(records);
+      }
+      setCurrentStep('detail'); // Go back to the detail page after update
+    } catch (error) {
+      message.error('Failed to update health record.');
+      console.error(error);
+    }
+  };
+
+  const handleSubmit = async (values: any) => {
+    if (!selectedDog) return;
+
+    const healthRecord: HealthRecord = {
+      MedID: 0, // ID will be generated by the backend
+      dogId: selectedDog.dog_id,
+      dogName: selectedDog.Name,
+      weight: values.weight,
+      temperature: values.temperature,
+      symptoms: values.symptoms,
+      diagnosis: values.diagnosis,
+      treatment: values.treatment,
+      medication: values.medication,
+      vaccination: values.vaccination,
+      notes: values.notes,
+      recordDate: formatDate(values.recordDate),
+      nextAppointment: formatDate(values.nextAppointment),
+    };
+
+    try {
+      await createHealthRecord(healthRecord);
+      message.success('บันทึกข้อมูลสุขภาพเรียบร้อยแล้ว');
+      // Refresh health records after successful submission
+      if (selectedDog) {
+        const records = await getHealthRecordsByDogId(selectedDog.dog_id.toString());
+        setDogHealthRecords(records);
+      }
+      setCurrentStep('detail'); // Go back to the detail page after submission
+    } catch (error) {
+      message.error('Failed to save health record.');
+      console.error(error);
+    }
+  };
+
+  return (
+    <div className="dog-health-record-container">
+      {currentStep === 'search' ? (
+        <SearchPageComponent
+          searchQuery={searchQuery}
+          searchResults={dogSearchResults}
+          onSearchChange={setSearchQuery}
+          onDogSelect={handleDogSelect}
+          onBack={handleBack}
+        />
+      ) : currentStep === 'detail' && selectedDog ? (
+        <DogHealthRecordDetailComponent
+          selectedDog={selectedDog}
+          healthRecords={dogHealthRecords}
+          onBack={handleBack}
+          onViewDetail={handleViewHealthRecordDetail}
+          onAddRecord={handleAddHealthRecord}
+          onDeleteRecord={handleDeleteHealthRecord} // Pass the new function
+        />
+      ) : currentStep === 'single-detail' && selectedDog && selectedHealthRecord ? (
+        <HealthFormComponent // Re-using HealthFormComponent to display single record detail
+          selectedDog={selectedDog}
+          initialValues={selectedHealthRecord} // Pass selected record as initial values
+          onSubmit={() => { }} // No submit for view mode
+          onBack={handleBack}
+          onUpdate={handleUpdateHealthRecord} // Pass update handler
+          onDelete={handleDeleteHealthRecord} // Pass delete handler
+        />
+      ) : selectedDog && (
+        <HealthFormComponent
+          selectedDog={selectedDog}
+          onSubmit={handleSubmit}
+          onBack={handleBack}
+        />
+      )}
+    </div>
+  );
+};
+
+export default DogHealthRecordPage;
