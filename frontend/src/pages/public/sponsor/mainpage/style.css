@@ -126,7 +126,7 @@
   margin-bottom: 40px;
 }
 
-.card button {
+/* .card button {
   color:  wheat;
   padding: 0.7em 1.7em;
   font-size: 18px;
@@ -141,9 +141,47 @@
 .card button:active {
   color: #ffffff;
   box-shadow: inset 4px 4px 12px #ffb773, inset -4px -4px 12px #ffffff;
+} */
+/* ---------------- */
+
+.btn-new {
+  padding: 17px 40px;
+  border-radius: 50px;
+  cursor: pointer;
+  border: 0;
+  background-color: white;
+  border:Gold 2.5px solid;
+  /* box-shadow: rgb(0, 0, 0) 0 0 8px; */
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-size: 15px;
+  transition: all 0.5s ease;
+}
+
+.btn-new:hover {
+  letter-spacing: 3px;
+  background: linear-gradient(135deg, #ff9028, #ffee52);
+  border: white ;
+  color: hsl(0, 0%, 100%);
+  box-shadow: rgb(255, 254, 253) 0 0 8px;
+
+}
+
+.btn-new:active {
+  letter-spacing: 3px;
+  background-color: hsl(261deg 80% 48%);
+  color: hsl(0, 0%, 100%);
+  box-shadow: rgb(93 24 220) 0px 0px 0px 0px;
+  transform: translateY(10px);
+  transition: 100ms;
 }
 
 
+
+
+
+
+/* -------------------- */
 .bottom-title {
   font-size: 2rem;
   margin-bottom: 2rem;

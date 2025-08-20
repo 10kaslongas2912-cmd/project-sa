@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CreditCardOutlined, DollarOutlined, SmileOutlined, SolutionOutlined } from '@ant-design/icons';
 import { Steps } from 'antd';
-import './style.css'; // Import CSS สำหรับหน้านี้
+import './style.css'; 
 
 interface Dog {
   name: string;
-  // คุณสามารถเพิ่ม properties อื่นๆ ของ Dog ได้ที่นี่
 }
 
 const donationAmounts = [100, 300, 500, 1000];
@@ -20,12 +19,12 @@ const SponsorAmountPage: React.FC = () => {
 
   const handleAmountClick = (amount: number) => {
     setSelectedAmount(amount);
-    setCustomAmount(''); // ล้างค่าในช่อง Custom Amount เมื่อเลือกปุ่ม
+    setCustomAmount(''); 
   };
 
   const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCustomAmount(e.target.value);
-    setSelectedAmount(null); // ล้างค่าที่เลือกไว้เมื่อพิมพ์ในช่อง Custom Amount
+    setSelectedAmount(null); 
   };
 
   const handleNextClick = () => {
@@ -41,14 +40,14 @@ const SponsorAmountPage: React.FC = () => {
       return;
     }
 
-    // ส่งข้อมูลไปยังหน้าถัดไป
+
     navigate('../form', { state: { dogName: dog?.name, amount: amountToSponsor } });
   };
 
   return (
     <div className="sponsor-container">
       <div className="sponsor-card">
-        {/* Header */}
+
         <div className="sponsor-header">
           <button className="back-button" onClick={() => navigate('/sponsor')}>
             ← กลับไปหน้าอุปถัมภ์
@@ -83,7 +82,7 @@ const SponsorAmountPage: React.FC = () => {
                 ]}
             />
         </div>
-        {/* Content */}
+
         <div className="sponsor-content">
           <h3 className="section-title">เลือกจำนวนเงิน</h3>
           <div className="donation-options">

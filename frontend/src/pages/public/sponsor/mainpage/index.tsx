@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from "react-router-dom";
-import { Button, ConfigProvider, Space } from 'antd';
+import { ConfigProvider, Space } from 'antd';
 import { createStyles } from 'antd-style';
 import './style.css'; // ไฟล์ CSS เดิมของคุณ
 
@@ -112,9 +112,9 @@ const SponsorPage: React.FC = () => {
                         }}
                       >
                         <Space>
-                          <Button type="primary" size="large" onClick={() => handleClick(dog)}>
-                            อุปถัมภ์น้อง
-                          </Button>
+                          <button className='btn-new'  onClick={() => handleClick(dog)}>
+                              อุปถัมภ์น้อง
+                          </button>
                         </Space>
                       </ConfigProvider>
                     </div>

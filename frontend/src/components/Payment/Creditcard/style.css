@@ -1,6 +1,6 @@
 body {
-    margin: 0;
-    background-color: #f0f2f5;
+  margin: 0;
+  background-color: #f0f2f5;
   font-family: "Anakotmai", sans-serif;
   font-size: 16px;
 }
@@ -103,21 +103,27 @@ body {
 .card-form__button {
   width: 100%;
   height: 55px;
-  background: #2364d2;
-  border: none;
-  border-radius: 5px;
-  font-size: 22px;
-  font-weight: 500;
-  font-family: "Source Sans Pro", sans-serif;
+  border-radius: 8px;
   box-shadow: 3px 10px 20px 0px rgba(35, 100, 210, 0.3);
   color: #fff;
+  background-color: #ff8800;
   margin-top: 20px;
   cursor: pointer;
+  border: none;
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  transition: all 0.2s ease-in-out;
+
 }
 @media screen and (max-width: 480px) {
   .card-form__button {
     margin-top: 10px;
   }
+}
+
+.card-form__button:hover {
+  background-color: #e67d00;
 }
 
 .card-item {
@@ -589,3 +595,5 @@ body {
   transform: translateX(-10px) rotate(45deg);
   pointer-events: none;
 }
+
+
