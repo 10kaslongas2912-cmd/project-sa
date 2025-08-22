@@ -7,7 +7,7 @@ import AnimatedPage from "../components/AnimatedPage";
 const MainPages = Loadable(lazy(() => import("../pages/authentication/Login")));
 
 // นำเข้าคอมโพเนนต์ที่นี่ เพราะ AdminRoutes จะกำหนด element ให้ children
-const Dashboard = Loadable(lazy(() => import("../pages/dashboard")));
+const Dashboard = Loadable(lazy(() => import("../pages/private")));
 const Customer = Loadable(lazy(() => import("../pages/customer")));
 const CreateCustomer = Loadable(lazy(() => import("../pages/customer/create")));
 const EditCustomer = Loadable(lazy(() => import("../pages/customer/edit")));
