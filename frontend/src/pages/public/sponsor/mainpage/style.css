@@ -1,0 +1,218 @@
+/* src/pages/style.css */
+/* Font-face declaration from your code */
+@font-face {
+  font-family: 'Anakotmai';
+  src: url('../../../assets/fonts/anakotmai-bold.BE4ZYan3.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+}
+
+/* Base styles for the entire page */
+.sponsor-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: 'Anakotmai', sans-serif;
+  color: #333;
+}
+
+/* TOP SECTION */
+.top-section {
+  display: flex;
+  height: 70vh; /* กำหนดความสูงให้เป็น 70% ของ viewport height */
+  overflow: hidden; /* ป้องกันเนื้อหา overflow */
+}
+
+.image-box {
+  display: flex;
+  flex: 1; /* ให้ image-box ขยายเต็มพื้นที่ที่เหลือในแนวขวาง */
+  background-color: #FFEDD3;
+}
+
+.image-box img {
+  width: auto;
+  object-fit: cover;
+
+}
+
+.text-box {
+  flex: 1; /* ให้ text-box ขยายเต็มพื้นที่ที่เหลือในแนวขวาง */
+  background-color: #FFEDD3; /* ใช้สีพื้นหลังเดียวกับรูปภาพ */
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 8rem;
+  box-sizing: border-box;
+}
+
+.text-box .content {
+  text-align: center;
+  max-width: 600px;
+}
+
+.text-box h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #5d4a36; /* สีข้อความที่เข้มขึ้นเพื่อให้อ่านง่าย */
+}
+
+.text-box p {
+  font-size: 1.7rem;
+  line-height: 1.6;
+}
+
+.dogname {
+  font-size: 30px ;
+  color: #ff2200;
+}
+
+.dog-info {
+  font-size: 25px;
+}
+/* BOTTOM SECTION */
+.bottom-section {
+  flex: 1; /* ส่วนที่เหลือ 30% */
+  background-color: #f7f7f7;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.wrapper.card {
+  display: flex;
+  justify-content: center;
+}
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  
+  justify-content: center;
+  max-width: 80%;
+}
+  
+
+.card .info{
+  width: 400px;
+  height: 700px;
+  border: 3px solid rgb(185, 185, 185); 
+  border-radius: 44px;
+  box-shadow: 0px 5px 5px 0px ;
+  padding: 20px;
+  margin: 30px 15px;
+}
+
+.card .img {
+  max-width: 100%;
+  max-height: 60%;
+  border-radius: 24px;
+  margin-bottom: 30px;
+  overflow: hidden;
+}
+
+.card .img img {
+  width: 100%;
+  transition: transform 0.5s ease-in-out;
+}
+
+.card .img img:hover {
+  transform: scale(1.1);
+}
+
+.dogname:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.card .text {
+  margin-bottom: 40px;
+}
+
+/* .card button {
+  color:  wheat;
+  padding: 0.7em 1.7em;
+  font-size: 18px;
+  border-radius: 1.5em;
+  background: #ff8800;
+  cursor: pointer;
+  border: 1px solid #e8e8e8;
+  transition: all 0.3s;
+  box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+}
+
+.card button:active {
+  color: #ffffff;
+  box-shadow: inset 4px 4px 12px #ffb773, inset -4px -4px 12px #ffffff;
+} */
+/* ---------------- */
+
+.btn-new {
+  padding: 17px 40px;
+  border-radius: 50px;
+  cursor: pointer;
+  border: 0;
+  background-color: white;
+  border:Gold 2.5px solid;
+  /* box-shadow: rgb(0, 0, 0) 0 0 8px; */
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-size: 15px;
+  transition: all 0.5s ease;
+}
+
+.btn-new:hover {
+  letter-spacing: 3px;
+  background: linear-gradient(135deg, #ff9028, #ffee52);
+  border: white ;
+  color: hsl(0, 0%, 100%);
+  box-shadow: rgb(255, 254, 253) 0 0 8px;
+
+}
+
+.btn-new:active {
+  letter-spacing: 3px;
+  background-color: hsl(261deg 80% 48%);
+  color: hsl(0, 0%, 100%);
+  box-shadow: rgb(93 24 220) 0px 0px 0px 0px;
+  transform: translateY(10px);
+  transition: 100ms;
+}
+
+
+
+
+
+
+/* -------------------- */
+.bottom-title {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #5d4a36;
+}
+
+.dog-cards-container {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.card .dog{
+  width: 300px; /* กำหนดความกว้างของ card */
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  text-align: left;
+  padding: 1rem;
+}
+
+.card .dog img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.dog-card h3 {
+  margin-top: 1rem;
+  font-size: 1.5rem;
+}

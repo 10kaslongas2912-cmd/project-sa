@@ -69,13 +69,6 @@ async function CreateUser(data: UsersInterface) {
     .catch((e) => e.response);
 }
 
-async function GetPaymentMethods() {
-  return await axios
-    .get(`${apiUrl}/payment-methods`, requestOptions)
-    .then((res) => res)
-    .catch((e) => e.response);
-}
-
 export {
   SignIn,
   GetGender,
@@ -84,5 +77,5 @@ export {
   UpdateUsersById,
   DeleteUsersById,
   CreateUser,
-  GetPaymentMethods,
+
 };

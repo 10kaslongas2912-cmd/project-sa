@@ -1,0 +1,96 @@
+
+.confirmation-page-container {
+  background-image: url('../../../assets/donate_background.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  padding: 20px;
+  position: relative;
+  font-family: 'Anakotmai', sans-serif;
+}
+
+.confirmation-page-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #171C2D;
+  opacity: 0.8;
+  z-index: 1;
+}
+
+.confirmation-card {
+  z-index: 2;
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 90%;
+  text-align: center;
+  color: #333;
+}
+
+.confirmation-title {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+  color: #FF6600;
+}
+
+.confirmation-subtitle {
+  font-size: 1.2em;
+  color: #888;
+  margin-bottom: 30px;
+}
+
+.confirmation-details {
+  text-align: left;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.confirmation-details h3 {
+  color: #253C90;
+  margin-bottom: 10px;
+  font-size: 1.5em;
+}
+
+.confirmation-details p {
+  margin-bottom: 5px;
+  font-size: 1.1em;
+}
+
+.confirm-button {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  background-color: #253C90;
+  color: white;
+  font-size: 1.3em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.confirm-button:hover {
+  background-color: #1976d2;
+}
+
+.back-link {
+  display: block;
+  text-align: left;
+  margin-bottom: 20px;
+  color: #1890ff;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1em;
+}

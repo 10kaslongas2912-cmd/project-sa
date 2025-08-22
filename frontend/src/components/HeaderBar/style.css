@@ -1,0 +1,63 @@
+/* โครง header */
+.header {
+  height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-left .logo {
+  width: 256px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ไอคอนกระดิ่ง */
+.icon-btn {
+  font-size: 20px;
+  color: #334155;
+  cursor: pointer;
+}
+.icon-btn:hover { color: #ff8800; }
+
+/* ปุ่มโปรไฟล์ (กลม + เมทาดาต้า) */
+.profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 4px 6px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.profile-btn:hover {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: #eee;
+}
+
+/* ชื่อ/บทบาท แสดงเฉพาะจอกว้าง */
+.profile-meta {
+  display: none;
+  color: #ff8800;
+}
+.profile-meta .name {
+  font-weight: 600;
+  letter-spacing: .2px;
+}
+.profile-meta .role {
+  font-size: 12px;
+  color: #64748b;
+  display: block;
+  margin-top: -2px;
+}
+@media (min-width: 1024px) {
+  .profile-meta { display: block; }
+}
