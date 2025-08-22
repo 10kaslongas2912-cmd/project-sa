@@ -2,8 +2,7 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import logo from '../../assets/logo.png';
 import './style.css';
-import './style.css';
-
+import { Navigate } from 'react-router-dom';
 const NavigationBar: React.FC = () => {
     const [visible, setVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
@@ -32,7 +31,9 @@ const NavigationBar: React.FC = () => {
     return (
         <header className={`header ${visible ? 'header-visible' : 'header-hidden'}`}>
             <div className="header-logo">
-                <img src={logo} alt="logo" />
+                <Link to="/">
+                    <img src={logo} alt="logo" />
+                </Link>
             </div>
             <nav className="header-nav">
                 <ul>
@@ -44,11 +45,11 @@ const NavigationBar: React.FC = () => {
             </nav>
             <div className="header-actions">
                 <a href="#adopt" className="btn btn-action adopt-btn">รับเลี้ยง</a>
-                <a href="#sponsor" className="btn btn-action sponsor-btn">อุปถัมป์</a>
+                <a href="/sponsor" className="btn btn-action sponsor-btn">อุปถัมป์</a>
                 <Link to="/donate" className="btn btn-action donate-btn">
                     <span className="heart-icon">&#x2764;</span> บริจาค
                 </Link>
-                <a href="/login" className="btn btn-action login-btn">เข้าสู่ระบบ</a>
+                <a href="/auth" className="btn btn-action login-btn">เข้าสู่ระบบ</a>
             </div>
         </header>
     );
