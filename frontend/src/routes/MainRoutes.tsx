@@ -24,7 +24,6 @@ const ThankYouPage = Loadable(lazy(() => import("../pages/donation/thankPage")))
 const MobileBankingPage = Loadable(lazy(() => import("../pages/donation/scanBank/mobileBanking"))); // เปลี่ยนตรงนี้
 const DonationItemPage = Loadable(lazy(() => import("../pages/donation/DonationItem")));
 const ItemSummaryPage = Loadable(lazy(() => import("../pages/donation/ItemSumaryPage")));
-const DogHealthRecordPage = Loadable(lazy(() => import("../pages/RecordHealt/DogHealthRecordPage/DogHealthRecordPage")))
 const VolunteerPage = Loadable(lazy(() => import("../pages/Volunteer/index"))); // เปลี่ยนตรงนี้
 const ZoneCageManagementPage = Loadable(lazy(() => import("../pages/ZoneCageManagement/index"))); // เปลี่ยนตรงนี้
 

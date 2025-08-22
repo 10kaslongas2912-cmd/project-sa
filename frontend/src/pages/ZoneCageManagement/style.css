@@ -5,13 +5,14 @@
   background-repeat: no-repeat;
   min-height: 100vh;
   display: flex;
+  justify-content: center; /* Changed from 'left' to 'space-between' */
   align-items: center;
-  justify-content: center;
   color: rgb(0, 0, 0);
   padding: 140px;
-  position: relative; /* Added for pseudo-element positioning */
-  font-family: 'Anakotmai', sans-serif; /* Apply the new font */
-}
+  position: relative;
+  font-family: 'Anakotmai', sans-serif;
+  gap: 400px; /* Add gap between the two sections */
+} 
 
 .zone-cage-management-container::before {
   content: '';
@@ -22,202 +23,123 @@
   height: 100%;
   background-color: #171C2D;
   opacity: 0.8;
-  z-index: 1; /* Ensure it's above the background but below content */
+  z-index: 1;
 }
 
 .zone-cage-management-form {
-  background-color: #f5f5f5;
-  border-radius: 30px;
-  padding: 40px;
-  max-width: 800px;
-  width: 100%;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  z-index: 2; /* Ensure form is above the pseudo-element */
-}
-
-.zone-cage-management-title {
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 30px;
-  margin-top: 0;
-}
-
-.form-container {
-  display: flex;
-  gap: 40px;
-}
-
-.left-panel {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.right-panel {
-  flex: 1.5;
-  background-color: #d0d0d0;
-  border-radius: 20px;
+  position: relative;
+  z-index: 2;
+  max-width: 700px;
+  max-height: 300px;
+  background-color: rgba(255, 255, 255, 0.9);
   padding: 20px;
-  min-height: 400px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center; /* Center all content inside */
 }
 
+.zone-cage-management-form h1 {
+  text-align: center;
+  color: #1e40af;
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+/* Remove the conflicting form-group rule and keep only this one */
 .form-group {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  justify-content: center; /* Center the form group content */
+  gap: 12px;
+  margin-bottom: 20px; /* Add some spacing between form groups */
 }
 
 .form-group label {
-  font-size: 16px;
-  font-weight: 500;
-  color: #333;
+  margin: 0;
+  text-align: right;
+  font-size: 20px;
+  min-width: 80px; /* Give labels consistent width */
 }
 
 .form-group select {
-  background-color: #e0e0e0;
+  width: 240px;
+  padding: 8px; /* Add padding for better appearance */
+  color: #000;
+  background-color: #fff; /* Change to white for better readability */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.zone-cage-management-form button {
+  background-color: #1e40af;
+  color: white;
+  padding: 10px 20px;
   border: none;
-  border-radius: 25px;
-  padding: 12px 20px;
-  font-size: 16px;
-  color: #333;
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 15px center;
-  background-size: 16px;
+  border-radius: 5px;
   cursor: pointer;
-}
-
-.form-group select:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-}
-
-.action-buttons {
-  display: flex;
-  gap: 15px;
-  margin-top: 20px;
-}
-
-.btn {
-  padding: 12px 30px;
-  border: none;
-  border-radius: 25px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-secondary {
-  background-color: #9ca3af;
-  color: white;
-}
-
-.btn-secondary:hover {
-  background-color: #6b7280;
-}
-
-.btn-primary {
-  background-color: #f97316;
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: #ea580c;
-}
-
-.equipment-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
-  margin-top: 20px;
-}
-
-.equipment-item {
-  background-color: #b0b0b0;
-  border-radius: 15px;
-  aspect-ratio: 1;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 120px;
-}
-
-@media (max-width: 768px) {
-  .form-container {
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .zone-cage-management-form {
-    padding: 20px;
-  }
-  
-  .equipment-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.equipment-btn {
-  position: absolute;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 6px 16px;
-  background-color: #f97316;
-  color: white;
-  border: none;
-  border-radius: 15px;
   font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  margin: 5px;
 }
+/* Remove the form-container class as it's causing conflicts */
 
-.equipment-btn:hover {
-  background-color: #ea580c;
-}
 
-.back-button {
-  color: #f97316;
-  font-size: 16px;
-  margin-bottom: 20px;
-  cursor: pointer;
-}
 
-.back-button:hover {
-  color: #ea580c;
-}
-
-.panel-title {
-  text-align: center;
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 20px;
-}
-
-.equipment-image {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
+/* Information Zone */
+.information-zone-container {
+  position: relative;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 12px;
   border-radius: 8px;
-}
-
-.equipment-placeholder {
-  width: 60px;
-  height: 60px;
-  background-color: #9ca3af;
-  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  z-index: 2;
+  width: 500px;
+  height: 500px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
 }
 
-.equipment-icon {
-  font-size: 24px;
+.information-form {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.information-form h2 {
+  text-align: center;
+  color: #1e40af;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  flex-shrink: 0; /* Prevent the title from shrinking */
+}
+
+.loader-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: -40px; /* Offset the title height to true center */
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: 40px;
+  aspect-ratio: 1;
+  outline: 2px solid #fff;
+  background:
+    radial-gradient(farthest-side,#000 90%,#0000) 0 0/8px 8px no-repeat,
+    conic-gradient(from  90deg at 10px 10px,#0000 90deg,#fff 0),
+    conic-gradient(from -90deg at 30px 30px,#0000 90deg,#fff 0);
+  animation: l3 1s infinite;
+}
+@keyframes l3 {
+  0%   {background-position:0    0   ;clip-path:circle(15px at left  4px top    4px)}
+  25%  {background-position:100% 0   ;clip-path:circle(15px at right 4px top    4px)}
+  50%  {background-position:100% 100%;clip-path:circle(15px at right 4px bottom 4px)}
+  75%  {background-position:0    100%;clip-path:circle(15px at left  4px bottom 4px)}
+  100% {background-position:0    0   ;clip-path:circle(15px at left  4px top    4px)}
 }
