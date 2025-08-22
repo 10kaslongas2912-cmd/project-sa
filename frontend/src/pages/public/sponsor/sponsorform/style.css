@@ -1,0 +1,192 @@
+/* SponsorFormPage.css */
+
+/* Main Container and Card */
+.sponsor-container {
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: calc(100vh - 160px); 
+background-color: #f0f2f5;
+padding: 6rem; /* ปรับ padding กลับมาเป็นค่าปกติ */
+font-family: 'Anakotmai', sans-serif;
+}
+
+.sponsor-card {
+  width: 100%;
+  max-width: 800px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Header */
+.sponsor-header {
+  padding: 2.5rem;
+  background: linear-gradient(135deg, #ff9028, #ffee52);
+  color: #ffffff;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #ffffff;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  padding: 0;
+}
+
+.sponsor-title-form {
+  font-size: 2.25rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.sponsor-subtitle-form {
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+/* Progress Bar */
+.sponsor-progress {
+margin: 2.5rem auto;
+width: 95%;
+}
+
+.progress-bar {
+display: flex;
+align-items: center;
+justify-content: space-between;
+position: relative;
+}
+
+/* Style สำหรับวงกลมของแต่ละ Step */
+.progress-step {
+width: 36px;
+height: 36px;
+border-radius: 50%;
+background-color: #e0e0e0; /* สีเทาอ่อนสำหรับ Step ที่ยังไม่ถึง */
+color: #ffffff;
+display: flex;
+justify-content: center;
+align-items: center;
+font-weight: bold;
+font-size: 1rem;
+z-index: 1;
+}
+
+/* Style สำหรับ Step ที่ทำเสร็จแล้ว (สีน้ำเงิน) */
+.progress-step.done {
+background-color: #4a90e2; 
+}
+
+/* Style สำหรับ Step ปัจจุบัน (สีส้ม) */
+.progress-step.active {
+background-color: #ff8800; 
+}
+
+.progress-line {
+position: absolute;
+width: 100%;
+height: 2px;
+background-color: #e0e0e0;
+}
+/* Style สำหรับเส้นเชื่อม */
+.progress-bar > .progress-line.done-line {
+  background-color: #4a90e2; 
+}
+
+/* Form Content */
+.sponsor-form-content {
+  padding: 0 2.5rem;
+  text-align: left; /* เพิ่มส่วนนี้เพื่อให้เนื้อหาทั้งหมดชิดซ้าย */
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #1a1a1a;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 1rem;
+  color: #4a4a4a;
+  margin-bottom: 0.5rem;
+  text-align: left;
+}
+
+.form-input {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.form-checkbox {
+  margin-right: 0.5rem;
+}
+
+.checkbox-label {
+  font-size: 1rem;
+  color: #7a7a7a;
+}
+
+/* Footer */
+.sponsor-form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2.5rem;
+  border-top: 1px solid #e0e0e0;
+  margin-top: 2rem;
+}
+
+.previous-button, .next-button {
+  border: none;
+  border-radius: 8px;
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.previous-button {
+  background-color: #f0f2f5;
+  color: #4a4a4a;
+}
+
+.previous-button:hover {
+  background-color: #e0e0e0;
+}
+
+.next-button {
+  background-color: #ff8800;
+  color: #ffffff;
+}
+
+.next-button:hover {
+  background-color: #d88d1e;
+}
