@@ -1,22 +1,20 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import './style.css';
-import CheckmarkIcon from '../../../components/CheckmarkIcon';
-import NavigationBar from '../../../components/NavigationBar';
-import { useNavigate } from "react-router-dom"; // <-- เพิ่ม useNavigate
+import CheckmarkIcon from '../../../../components/checkmark/CheckmarkIcon';
+import NavigationBar from '../../../../components/NavigationBar';
 
 const DonationPage: React.FC = () => {
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleDonateNowClick = () => {
-    navigate("options");
+    navigate('options');
   };
 
   return (
     <>
       <NavigationBar />
-      <br />
-      <br />
       <div className="page-container">
         <div className="card">
           <h1 className="title">
@@ -39,6 +37,7 @@ const navigate = useNavigate();
           </div>
 
           <p className="or-text">หรือ</p>
+
           <button className="button blue-button" onClick={handleDonateNowClick}>
             บริจาคทันที
           </button>

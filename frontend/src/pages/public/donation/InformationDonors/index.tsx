@@ -42,14 +42,26 @@ const InformationDonors: React.FC<DonationInfoFormProps> = ({ onSubmit }) => {
     if (onSubmit) {
       onSubmit(formData);
     }
-    navigate('../money'); // ย้าย navigate มาที่นี่
+
+    const donationType = sessionStorage.getItem('donationType');
+    if (donationType === 'money') {
+      navigate('/donation/money');
+    } else if (donationType === 'item') {
+      navigate('/donation/item');
+    } else {
+      // Fallback or error handling
+      navigate('/donation/options');
+    }
   };
 
   return (
     <div className="form-page-container">
       <div className="form-card">
         {/* ปุ่มย้อนกลับ */}
-        <button onClick={() => navigate('../options')} className="back-link">
+        <button onClick={() => {
+          sessionStorage.removeItem('donationInfoFormData'); // ล้างข้อมูลเมื่อย้อนกลับ
+          navigate('/donation/options');
+        }} className="back-link">
           &lt; ย้อนกลับ
         </button>
         <h1 className="form-title">ข้อมูลการบริจาค</h1>
