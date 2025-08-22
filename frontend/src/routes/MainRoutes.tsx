@@ -25,6 +25,9 @@ const MobileBankingPage = Loadable(lazy(() => import("../pages/donation/scanBank
 const DonationItemPage = Loadable(lazy(() => import("../pages/donation/DonationItem")));
 const ItemSummaryPage = Loadable(lazy(() => import("../pages/donation/ItemSumaryPage")));
 const DogHealthRecordPage = Loadable(lazy(() => import("../pages/RecordHealt/DogHealthRecordPage/DogHealthRecordPage")))
+const VolunteerPage = Loadable(lazy(() => import("../pages/Volunteer/index"))); // เปลี่ยนตรงนี้
+const ZoneCageManagementPage = Loadable(lazy(() => import("../pages/ZoneCageManagement/index"))); // เปลี่ยนตรงนี้
+
 const MainRoutes = (): RouteObject => { 
 
   return {
@@ -97,6 +100,14 @@ const MainRoutes = (): RouteObject => {
         path: "/item-summary",
         element: <AnimatedPage><ItemSummaryPage /></AnimatedPage>,
       },
+      {
+        path: "/volunteer",
+        element: <AnimatedPage><VolunteerPage /></AnimatedPage>,
+      },
+      {
+        path: "/zone-cage-management",
+        element: <AnimatedPage><ZoneCageManagementPage /></AnimatedPage>,
+      }
 
     ],
 
