@@ -1,6 +1,8 @@
 import React from 'react';
 import './style.css';
 import NavigationBar from '../../components/NavigationBar';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const VolunteerPage: React.FC = () => {
   const [formData, setFormData] = React.useState({
@@ -9,7 +11,7 @@ const VolunteerPage: React.FC = () => {
     gender: '',
     phoneNumber: '',
     emergencyContact: '',
-    birthDate: '',
+    birthDate: null as Date | null,
     province: '',
     experience: '',
     motivation: '',
@@ -109,6 +111,26 @@ const VolunteerPage: React.FC = () => {
             </div>
             
             <div className="form-group">
+              <label htmlFor="birthDate">
+                วันเกิด/ประจำตัว <span className="required">*</span>
+              </label>
+              <DatePicker
+                id="birthDate"
+                selected={formData.birthDate}
+                onChange={(date) => setFormData({...formData, birthDate: date})}
+                dateFormat="dd/MM/yyyy"
+                placeholderText="เลือกวันที่"
+                showYearDropdown
+                showMonthDropdown
+                dropdownMode="select"
+                maxDate={new Date()}
+                required
+                className="date-picker-input"
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
               <label htmlFor="emergencyContact">
                 ช่องทางติดต่อฉุกเฉิน
               </label>
@@ -119,21 +141,6 @@ const VolunteerPage: React.FC = () => {
                 value={formData.emergencyContact}
                 onChange={handleInputChange}
               />
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="birthDate">
-              วันเกิด/ประจำตัว <span className="required">*</span>
-            </label>
-            <input
-              type="date"
-              id="birthDate"
-              name="birthDate"
-              value={formData.birthDate}
-              onChange={handleInputChange}
-              required
-            />
           </div>
 
           <div className="form-row">
