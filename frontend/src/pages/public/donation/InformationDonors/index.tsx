@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import './style.css';
 
 import { useNavigate } from "react-router-dom";
+import type { DonorsInterface } from '../../../../interfaces/Donors'; // Import DonorsInterface
 
 interface DonationInfoFormProps {
-  onSubmit?: (formData: object) => void;
+  onSubmit?: (formData: DonorsInterface) => void; // Use DonorsInterface
 }
 
 // Helper to get initial state from sessionStorage
@@ -50,13 +51,18 @@ const InformationDonors: React.FC<DonationInfoFormProps> = ({ onSubmit }) => {
 
   // Use useEffect to save data to sessionStorage whenever state changes
   useEffect(() => {
-    const formData = { firstName, lastName, phone, email };
+    const formData = { first_name: firstName, last_name: lastName, phone, email };
     sessionStorage.setItem('donationInfoFormData', JSON.stringify(formData));
   }, [firstName, lastName, phone, email]); // Dependencies array
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault(); // ป้องกันการรีเฟรชหน้าเมื่อกดส่งฟอร์ม
-    const formData = { firstName, lastName, phone, email };
+    const formData: DonorsInterface = { // Cast to DonorsInterface
+      first_name: firstName,
+      last_name: lastName,
+      phone: phone,
+      email: email,
+    };
     console.log('Form Data Submitted:', formData);
     // เรียกใช้ฟังก์ชัน onSubmit ที่ส่งมาจาก parent component
     if (onSubmit) {

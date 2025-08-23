@@ -76,6 +76,34 @@ async function GetPaymentMethods() {
     .catch((e) => e.response);
 }
 
+import type { DonorsInterface } from '../../interfaces/Donors';
+import type { MoneyDonationsInterface } from '../../interfaces/MoneyDonations';
+import type { ItemDonationsInterface } from '../../interfaces/ItemDonations';
+
+async function CreateDonation(
+  donorInfo: DonorsInterface,
+  donationType: string,
+  moneyDetails?: MoneyDonationsInterface,
+  itemDetails?: ItemDonationsInterface[]
+) {
+  const payload: any = { // Construct payload dynamically
+    donor_info: donorInfo,
+    donation_type: donationType,
+  };
+
+  if (moneyDetails) {
+    payload.money_donation_details = moneyDetails;
+  }
+  if (itemDetails) {
+    payload.item_donation_details = itemDetails;
+  }
+
+  return await axios
+    .post(`${apiUrl}/donations`, payload, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
 export {
   SignIn,
   GetGender,
@@ -85,4 +113,5 @@ export {
   DeleteUsersById,
   CreateUser,
   GetPaymentMethods,
+  CreateDonation, // Added CreateDonation
 };
