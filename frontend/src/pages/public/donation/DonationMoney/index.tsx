@@ -344,16 +344,15 @@ const DonationMoneyForm: React.FC<DonationMoneyFormProps> = ({ onSubmit }) => {
               </>
             )}
 
-            {/* ปุ่มต่อไป - ใช้ htmlType="submit" เพื่อ trigger onFinish */}
             <Form.Item>
               <button
                 type="submit"
                 className="submit-button"
                 style={{
-                  marginTop: donationType === 'รายเดือน' ? '20px' : '0px',
-                  width: '100%',
+                  marginTop: donationType === 'รายครั้ง' ? '20px' : (donationType === 'รายเดือน' ? '20px' : '0px'),
+                  width: donationType === 'รายครั้ง' ? '90%' : (donationType === 'รายเดือน' ? '100%' : 'auto'),
                   maxWidth: donationType === 'รายครั้ง' ? '1000px' : 'auto',
-                  marginLeft: donationType === 'รายครั้ง' ? '20px' : '0'
+                  marginLeft: donationType === 'รายครั้ง' ? '-15px' : '0'
                 }}
               >
                 ต่อไป

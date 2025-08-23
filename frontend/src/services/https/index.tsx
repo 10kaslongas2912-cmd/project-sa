@@ -71,7 +71,7 @@ async function CreateUser(data: UsersInterface) {
 
 async function GetPaymentMethods() {
   return await axios
-    .get(`${apiUrl}/paymentmethods`, requestOptions)
+    .get(`${apiUrl}/payment-methods`, requestOptions) // Changed /paymentmethods to /payment-methods
     .then((res) => res)
     .catch((e) => e.response);
 }

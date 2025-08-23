@@ -72,7 +72,7 @@
   height: 50px; /* ปรับความสูงของช่องวิธีการชำระเงิน */
   max-width: 750px; /* กำหนดความกว้างสูงสุด */
   font-family: 'Anakotmai', sans-serif;
-  margin-top: 20px;
+  margin-top: 30px;
   border-radius: 20px !important;
   font-size: 1.3rem; /* Added font size */
   text-align: center; /* Centered text */;
