@@ -40,6 +40,12 @@ func SetupDatabase() {
 		&entity.MedicalRecord{},
 		&entity.VaccineRecord{},
 		&entity.Vaccine{},
+		&entity.KennelManagement{},
+		&entity.Roles{},
+		&entity.Skills{},
+		&entity.Staffs{},
+		&entity.Volunteers{},
+		&entity.Zones{},
 	)
 
 	// Clear existing Dog data before seeding to ensure fresh data for testing
@@ -51,7 +57,7 @@ func SetupDatabase() {
 	PaymentBankTransfer := entity.PaymentMethods{Name: "โอนเงินผ่านธนาคาร"}
 
 	db.FirstOrCreate(&PaymentCreditCard, &entity.PaymentMethods{Name: "บัตรเครดิต"})
-	db.FirstOrCreate(&PaymentBankTransfer, &entity.PaymentMethods{Name: "โอนเงินผ่านธนาคาร"})	
+	db.FirstOrCreate(&PaymentBankTransfer, &entity.PaymentMethods{Name: "โอนเงินผ่านธนาคาร"})
 
 	GenderMale := entity.Genders{Gender: "ชาย"}
 	GenderFemale := entity.Genders{Gender: "หญิง"}
@@ -158,14 +164,14 @@ func SetupDatabase() {
 		DoseNumber:  1,
 		LotNumber:   "ABC12345",
 		NextDueDate: time.Date(2024, 2, 1, 0, 0, 0, 0, time.UTC),
-		MedID:       MedRec1.MedID, // Link to MedRec1
+		MedID:       MedRec1.MedID,           // Link to MedRec1
 		VaccineID:   VaccineRabies.VaccineID, // Link to VaccineRabies
 	}
 	VaxRec2 := entity.VaccineRecord{
 		DoseNumber:  1,
 		LotNumber:   "XYZ98765",
 		NextDueDate: time.Date(2024, 3, 10, 0, 0, 0, 0, time.UTC),
-		MedID:       MedRec1.MedID, // Link to MedRec1
+		MedID:       MedRec1.MedID,              // Link to MedRec1
 		VaccineID:   VaccineDistemper.VaccineID, // Link to VaccineDistemper
 	}
 
@@ -176,18 +182,16 @@ func SetupDatabase() {
 
 	// Seed Donors
 	Donor1 := entity.Donors{
-		FirstName:   "John",
-		LastName:    "Doe",
-		Email:       "john.doe@example.com",
-		Phone:       "0812345678",
-		
+		FirstName: "John",
+		LastName:  "Doe",
+		Email:     "john.doe@example.com",
+		Phone:     "0812345678",
 	}
 	Donor2 := entity.Donors{
-		FirstName:   "Jane",
-		LastName:    "Smith",
-		Email:       "jane.smith@example.com",
-		Phone:       "0898765432",
-		
+		FirstName: "Jane",
+		LastName:  "Smith",
+		Email:     "jane.smith@example.com",
+		Phone:     "0898765432",
 	}
 
 	db.FirstOrCreate(&Donor1, &entity.Donors{Email: "john.doe@example.com"})
@@ -195,14 +199,14 @@ func SetupDatabase() {
 
 	// Seed Donations
 	Donation1 := entity.Donations{
-		DonationDate:    time.Date(2023, 7, 1, 0, 0, 0, 0, time.UTC),
-		DonationType:    "Money",
-		DonorID:         Donor1.DonorID,
+		DonationDate: time.Date(2023, 7, 1, 0, 0, 0, 0, time.UTC),
+		DonationType: "Money",
+		DonorID:      Donor1.DonorID,
 	}
 	Donation2 := entity.Donations{
-		DonationDate:    time.Date(2023, 7, 5, 0, 0, 0, 0, time.UTC),
-		DonationType:    "Item",
-		DonorID:         Donor2.DonorID,
+		DonationDate: time.Date(2023, 7, 5, 0, 0, 0, 0, time.UTC),
+		DonationType: "Item",
+		DonorID:      Donor2.DonorID,
 	}
 
 	db.FirstOrCreate(&Donation1, &entity.Donations{DonorID: Donor1.DonorID, DonationDate: time.Date(2023, 7, 1, 0, 0, 0, 0, time.UTC)})
@@ -211,7 +215,7 @@ func SetupDatabase() {
 	// Seed MoneyDonations
 	MoneyDonation1 := entity.MoneyDonations{
 		Amount:     1000.00,
-		DonationID: Donation1.DonationID, // Link to Donation1
+		DonationID: Donation1.DonationID,          // Link to Donation1
 		PaymentID:  PaymentBankTransfer.PaymentID, // Link to PaymentMethods
 	}
 	db.FirstOrCreate(&MoneyDonation1, &entity.MoneyDonations{DonationID: Donation1.DonationID, PaymentID: PaymentBankTransfer.PaymentID})
