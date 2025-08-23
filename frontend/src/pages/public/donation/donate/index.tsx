@@ -12,6 +12,18 @@ const DonationPage: React.FC = () => {
     navigate('options');
   };
 
+  const handleCreateAccountLoginClick = () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      // User is logged in, navigate to DonationOptionsPage
+      navigate('/donation/options');
+    } else {
+      // User is not logged in, navigate to AuthPage and set returnTo
+      sessionStorage.setItem('returnTo', '/donation/options');
+      navigate('/auth');
+    }
+  };
+
   return (
     <>
       <NavigationBar />
@@ -21,7 +33,7 @@ const DonationPage: React.FC = () => {
             ร่วมบริจาคเงินหรือสิ่งของ
           </h1>
           <h2 >เพื่อร่วมเป็นส่วนหนึ่งในการดูแลชีวิตให้เพื่อนสี่ขา</h2>
-          <button className="button orange-button">
+          <button className="button orange-button" onClick={handleCreateAccountLoginClick}>
             สร้างบัญชีบริจาค/เข้าสู่ระบบ
           </button>
 

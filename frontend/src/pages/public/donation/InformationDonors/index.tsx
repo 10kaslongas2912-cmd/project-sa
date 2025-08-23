@@ -28,6 +28,26 @@ const InformationDonors: React.FC<DonationInfoFormProps> = ({ onSubmit }) => {
   const [phone, setPhone] = useState(initialData.phone || '');
   const [email, setEmail] = useState(initialData.email || '');
 
+  // Use useEffect to pre-fill data from prefillUserData in sessionStorage
+  useEffect(() => {
+    const prefillData = sessionStorage.getItem('prefillUserData');
+    console.log("InformationDonors: Retrieved prefillData from sessionStorage:", prefillData); // Log retrieved data
+    if (prefillData) {
+      try {
+        const parsedPrefillData = JSON.parse(prefillData);
+        console.log("InformationDonors: Parsed prefillData:", parsedPrefillData); // Log parsed data
+        setFirstName(parsedPrefillData.first_name || '');
+        setLastName(parsedPrefillData.last_name || '');
+        setPhone(parsedPrefillData.phone_number || '');
+        setEmail(parsedPrefillData.email || '');
+        sessionStorage.removeItem('prefillUserData'); // Clear after use
+        console.log("InformationDonors: Form fields set with prefill data."); // Confirm fields set
+      } catch (error) {
+        console.error("Error parsing prefill user data:", error);
+      }
+    }
+  }, []); // Run only once on mount
+
   // Use useEffect to save data to sessionStorage whenever state changes
   useEffect(() => {
     const formData = { firstName, lastName, phone, email };

@@ -54,10 +54,7 @@ const DonationMoneyForm: React.FC<DonationMoneyFormProps> = ({ onSubmit }) => {
         content: res.data?.error || "ไม่พบข้อมูลวิธีการชำระเงิน",
       });
 
-      setTimeout(() => {
-        navigate("/donation/payment/banktransfer");
-      }, 2000);
-    }
+      }
   };
 
   const handleSubmit = (values: any) => {
