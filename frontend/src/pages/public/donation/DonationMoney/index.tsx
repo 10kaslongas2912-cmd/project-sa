@@ -165,6 +165,13 @@ const DonationMoneyForm: React.FC<DonationMoneyFormProps> = ({ onSubmit }) => {
     return Promise.resolve();
   };
 
+  const validateMinOneTimeAmount = (_: any, value: string) => {
+    if (value && Number(value) < 50) {
+      return Promise.reject(new Error('จำนวนเงินขั้นต่ำคือ 50 บาท'));
+    }
+    return Promise.resolve();
+  };
+
   const donationType = Form.useWatch('donationFrequency', form);
   const monthlyAmount = Form.useWatch('monthlyAmount', form);
   const months = Form.useWatch('months', form);
@@ -248,7 +255,7 @@ const DonationMoneyForm: React.FC<DonationMoneyFormProps> = ({ onSubmit }) => {
                 <Button onClick={() => handlePresetOneTimeAmount(500)}>500 บาท</Button>
                 <Form.Item
                   name="oneTimeAmount"
-                  rules={[{ required: true, message: 'กรุณากรอกจำนวนเงิน!' }]}
+                  rules={[{ required: true, message: 'กรุณากรอกจำนวนเงิน!' }, { validator: validateMinOneTimeAmount }]}
                   className="amount-input-item"
                 >
                   <Input

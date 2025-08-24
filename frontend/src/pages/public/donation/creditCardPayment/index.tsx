@@ -58,18 +58,15 @@ const CreditCardPaymentForm: React.FC = () => {
         status: isMonthly ? 'success' : 'complete',
         transaction_ref: transactionNumber, // Use generated transaction number
         billing_date: isMonthly ? moneyDetailsRaw.billingDate.toString() : "-", // Add billing date
-        // Add next_payment_date for monthly donations
-        ...(isMonthly && { 
-            next_payment_date: (() => {
-                const today = new Date();
-                const billingDay = Number(moneyDetailsRaw.billingDate);
-                let nextDate = new Date(today.getFullYear(), today.getMonth(), billingDay);
-                if (today.getDate() >= billingDay) {
-                    nextDate.setMonth(nextDate.getMonth() + 1);
-                }
-                return nextDate;
-            })()
-        }),
+        next_payment_date: isMonthly ? (() => {
+            const today = new Date();
+            const billingDay = Number(moneyDetailsRaw.billingDate);
+            let nextDate = new Date(today.getFullYear(), today.getMonth(), billingDay);
+            if (today.getDate() >= billingDay) {
+                nextDate.setMonth(nextDate.getMonth() + 1);
+            }
+            return nextDate.toISOString().split('T')[0]; // Format to YYYY-MM-DD
+        })() : "-",
       };
 
       // 4. Call CreateDonation
