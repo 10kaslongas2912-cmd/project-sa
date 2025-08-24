@@ -13,13 +13,14 @@ const DonationOptionsPage: React.FC = () => {
     sessionStorage.removeItem('createAccount');
     console.log("DonationOptionsPage loaded.");
     
-    // รอให้ CSS และ DOM พร้อม
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        setIsReady(true);
-      }, 50); // เพิ่ม delay เล็กน้อยเพื่อให้แน่ใจว่า CSS โหลดเสร็จ
-    });
+    // รอ 1 วินาทีก่อนแสดงผล
+    const timer = setTimeout(() => {
+      setIsReady(true);
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, []);
+
 
   const handleDonationMoneyClick = async () => {
     sessionStorage.setItem('donationType', 'money');
