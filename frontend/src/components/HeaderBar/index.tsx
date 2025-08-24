@@ -7,8 +7,8 @@ import {
   SettingOutlined,
   ProfileOutlined,
 } from "@ant-design/icons";
-import logo from "../../assets/logo.png";
-import profileImg from "../../assets/react.svg";
+import logo from "../../assets/logo.png";       
+import profileImg from "../../assets/react.svg"; 
 import "./style.css";
 
 const HeaderBar: React.FC = () => {
