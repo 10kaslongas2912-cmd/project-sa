@@ -6,6 +6,8 @@ import './style.css';
 import { CreditCard, Building2, QrCode } from 'lucide-react'; // Icon จาก lucide-react
 
 const SponsorPaymentPage: React.FC = () => {
+  const [selectedBank, setSelectedBank] = useState<string | null>(null);
+  const [promptPayNumber, setPromptPayNumber] = useState<string>('');
   const navigate = useNavigate();
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
 
