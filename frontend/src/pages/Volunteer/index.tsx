@@ -12,7 +12,7 @@ const VolunteerPage: React.FC = () => {
     phoneNumber: '',
     emergencyContact: '',
     birthDate: null as Date | null,
-    province: '',
+    dayForWork: '',
     experience: '',
     motivation: '',
     profileImage: null as File | null
@@ -77,39 +77,26 @@ const VolunteerPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="gender">
-              เพศ <span className="required">*</span>
-            </label>
-            <select
-              id="gender"
-              name="gender"
-              value={formData.gender}
-              onChange={handleInputChange}
-              required
-            >
-              <option value="">เลือกเพศ</option>
-              <option value="male">ชาย</option>
-              <option value="female">หญิง</option>
-              <option value="other">อื่นๆ</option>
-            </select>
-          </div>
 
           <div className="form-row">
+            
             <div className="form-group">
-              <label htmlFor="phoneNumber">
-                เบอร์โทรศัพท์ <span className="required">*</span>
+              <label htmlFor="gender">
+                เพศ <span className="required">*</span>
               </label>
-              <input
-                type="tel"
-                id="phoneNumber"
-                name="phoneNumber"
-                value={formData.phoneNumber}
+              <select
+                id="gender"
+                name="gender"
+                value={formData.gender}
                 onChange={handleInputChange}
                 required
-              />
+              >
+                <option value="">เลือกเพศ</option>
+                <option value="male">ชาย</option>
+                <option value="female">หญิง</option>
+                <option value="other">อื่นๆ</option>
+              </select>
             </div>
-            
             <div className="form-group">
               <label htmlFor="birthDate">
                 วันเกิด/ประจำตัว <span className="required">*</span>
@@ -130,7 +117,21 @@ const VolunteerPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="form-group">
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="phoneNumber">
+                เบอร์โทรศัพท์ <span className="required">*</span>
+              </label>
+              <input
+                type="tel"
+                id="phoneNumber"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className="form-group">
               <label htmlFor="emergencyContact">
                 ช่องทางติดต่อฉุกเฉิน
               </label>
@@ -141,27 +142,29 @@ const VolunteerPage: React.FC = () => {
                 value={formData.emergencyContact}
                 onChange={handleInputChange}
               />
+            </div>
           </div>
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="province">
+              <label htmlFor="dayForwork">
                 วันที่สะดวก <span className="required">*</span>
               </label>
               <select
-                id="province"
-                name="province"
-                value={formData.province}
+                id="dayForwork"
+                name="dayForwork"
+                value={formData.dayForWork}
                 onChange={handleInputChange}
                 required
               >
-                <option value="">เลือกจังหวัด</option>
-                <option value="bangkok">กรุงเทพมหานคร</option>
-                <option value="chiangmai">เชียงใหม่</option>
-                <option value="phuket">ภูเก็ต</option>
-                <option value="khonkaen">ขอนแก่น</option>
-                <option value="nakhonratchasima">นครราชสีมา</option>
-                {/* Add more provinces as needed */}
+                <option value="">เลือกวัน</option>
+                <option value="sunday">วันอาทิตย์</option>
+                <option value="monday">วันจันทร์</option>
+                <option value="tuesday">วันอังคาร</option>
+                <option value="wednesday">วันพุธ</option>
+                <option value="thursday">วันพฤหัสบดี</option>
+                <option value="friday">วันศุกร์</option>
+                <option value="saturday">วันเสาร์</option>
               </select>
             </div>
             
