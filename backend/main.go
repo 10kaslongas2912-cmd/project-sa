@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"example.com/project-sa/config"
+	"example.com/project-sa/controllers/donations"
 	"example.com/project-sa/controllers/genders"
 	"example.com/project-sa/controllers/users"
 	"example.com/project-sa/controllers/payment_methods"
@@ -31,6 +32,7 @@ func main() {
 	// Auth Route
 	r.POST("/signup", users.SignUp)
 	r.POST("/signin", users.SignIn)
+	r.POST("/donations", donations.CreateDonation)
 
 	router := r.Group("/")
 	{

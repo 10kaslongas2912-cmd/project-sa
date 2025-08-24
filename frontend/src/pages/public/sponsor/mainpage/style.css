@@ -2,7 +2,7 @@
 /* Font-face declaration from your code */
 @font-face {
   font-family: 'Anakotmai';
-  src: url('../../../assets/fonts/anakotmai-bold.BE4ZYan3.woff2') format('woff2');
+  src: url('../../../assets/fonts/Anakotmai-Bold.woff2') format('woff2');
   font-weight: bold;
   font-style: normal;
 }
