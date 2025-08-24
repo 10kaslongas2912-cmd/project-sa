@@ -3,6 +3,7 @@ import { useRoutes, type RouteObject } from "react-router-dom";
 import PublicRoutes from "./PublicRoutes";
 import AuthRoutes from "./AuthRoutes";
 import DashboardRoutes from "./DashboardRoutes";
+import DonateRoutes from "./DonateRoutes";
 import SponsorRoutes from "./SponsorRoutes";
 
 function ConfigRoutes() {
@@ -12,6 +13,7 @@ function ConfigRoutes() {
     PublicRoutes(),
     AuthRoutes(),
     DashboardRoutes(),
+    DonateRoutes(),
     SponsorRoutes(),
   ];
 

@@ -3,7 +3,7 @@ import { lazy } from "react";
 
 import Loadable from "../components/third-patry/Loadable";
 
-import PublicLayout from "../layout/PublicLayout";
+import MainLayout from "../layout/PublicLayout";
 
 const MainPages = Loadable(lazy(() => import("../pages/public/firstpage")));
 
@@ -13,7 +13,7 @@ const PublicRoutes = (): RouteObject => {
 
         path: "/",
         
-            element: <PublicLayout />,
+            element: <MainLayout />,
         
             children: [
                 {

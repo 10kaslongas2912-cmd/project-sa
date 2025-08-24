@@ -6,6 +6,7 @@ const MainLayout: React.FC = () => (
     <main>
         <NavigationBar /> 
       <Outlet />
+      
     </main>
   </div>
 );
