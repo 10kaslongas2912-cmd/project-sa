@@ -8,10 +8,8 @@ type Donations struct {
 	DonationType string    `json:"donation_type"`
 	Status       string    `json:"status"`
 	Description  string    `json:"description"`
-
 	DonorID      uint      `json:"donor_id"`
-	Donor        Donors    `gorm:"foreignKey:DonorID"`
-
+	Donor        Donor    `gorm:"foreignKey:DonorID"`
 	ItemDonations []ItemDonations `gorm:"foreignKey:DonationID"`
 	MoneyDonations []MoneyDonations `gorm:"foreignKey:DonationID"`
 }

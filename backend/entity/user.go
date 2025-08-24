@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type Users struct {
+type User struct {
 	UserID      uint      `gorm:"primarykey;autoIncrement" json:"user_id"`
 	FirstName   string    `json:"first_name"`
 	LastName    string    `json:"last_name"`
@@ -15,7 +15,7 @@ type Users struct {
 	Password    string    `json:"-"`
 
 	GenderID *uint   `json:"gender_id"`     // Foreign key for Genders
-	Gender   Genders `gorm:"references:ID"` // Association to Genders
+	Gender   Gender `gorm:"references:ID"` // Association to Genders
 
-	Donors []Donors `gorm:"foreignKey:UserID"`
+	Donors []Donor `gorm:"foreignKey:UserID"`
 }

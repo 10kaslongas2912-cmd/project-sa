@@ -27,9 +27,9 @@ func ConnectionDB() {
 
 func SetupDatabase() {
 	db.AutoMigrate(
-		&entity.Users{},
-		&entity.Genders{},
-		&entity.Donors{},
+		&entity.User{},
+		&entity.Gender{},
+		&entity.Donor{},
 		&entity.Donations{},
 		&entity.ItemDonations{},
 		&entity.MoneyDonations{},
@@ -53,11 +53,11 @@ func SetupDatabase() {
 	db.FirstOrCreate(&PaymentCreditCard, &entity.PaymentMethods{Name: "บัตรเครดิต"})
 	db.FirstOrCreate(&PaymentBankTransfer, &entity.PaymentMethods{Name: "โอนเงินผ่านธนาคาร"})	
 
-	GenderMale := entity.Genders{Gender: "ชาย"}
-	GenderFemale := entity.Genders{Gender: "หญิง"}
+	GenderMale := entity.Gender{Gender: "ชาย"}
+	GenderFemale := entity.Gender{Gender: "หญิง"}
 
-	db.FirstOrCreate(&GenderMale, &entity.Genders{Gender: "ชาย"})
-	db.FirstOrCreate(&GenderFemale, &entity.Genders{Gender: "หญิง"})
+	db.FirstOrCreate(&GenderMale, &entity.Gender{Gender: "ชาย"})
+	db.FirstOrCreate(&GenderFemale, &entity.Gender{Gender: "หญิง"})
 
 	// Seed Breed
 	BreedGolden := entity.Breed{BreedName: "Golden Retriever", Description: "Friendly and intelligent."}
@@ -175,14 +175,14 @@ func SetupDatabase() {
 	db.First(&VaxRec2, "med_id = ? AND vaccine_id = ?", MedRec1.MedID, VaccineDistemper.VaccineID)
 
 	// Seed Donors
-	Donor1 := entity.Donors{
+	Donor1 := entity.Donor{
 		FirstName:   "John",
 		LastName:    "Doe",
 		Email:       "john.doe@example.com",
 		Phone:       "0812345678",
 		
 	}
-	Donor2 := entity.Donors{
+	Donor2 := entity.Donor{
 		FirstName:   "Jane",
 		LastName:    "Smith",
 		Email:       "jane.smith@example.com",
@@ -190,8 +190,8 @@ func SetupDatabase() {
 		
 	}
 
-	db.FirstOrCreate(&Donor1, &entity.Donors{Email: "john.doe@example.com"})
-	db.FirstOrCreate(&Donor2, &entity.Donors{Email: "jane.smith@example.com"})
+	db.FirstOrCreate(&Donor1, &entity.Donor{Email: "john.doe@example.com"})
+	db.FirstOrCreate(&Donor2, &entity.Donor{Email: "jane.smith@example.com"})
 
 	// Seed Donations
 	Donation1 := entity.Donations{
@@ -225,7 +225,7 @@ func SetupDatabase() {
 	db.FirstOrCreate(&ItemDonation1, &entity.ItemDonations{DonationID: Donation2.DonationID})
 
 	hashedPassword, _ := services.HashPassword("123456")
-	User := &entity.Users{
+	User := &entity.User{
 		FirstName:   "Software",
 		LastName:    "Analysis",
 		Email:       "sa@gmail.com",
@@ -234,7 +234,7 @@ func SetupDatabase() {
 		UserName:    "sa",
 		DateOfBirth: time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC),
 	}
-	db.FirstOrCreate(User, &entity.Users{
+	db.FirstOrCreate(User, &entity.User{
 		UserName: "sa",
 	})
 }

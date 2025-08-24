@@ -40,7 +40,7 @@ func SignUp(c *gin.Context) {
 	}
 
 	db := config.DB()
-	var userCheck entity.Users
+	var userCheck entity.User
 
 	// Check if the user with the provided email already exists
 	result := db.Where("email = ?", payload.Email).First(&userCheck)
@@ -59,7 +59,7 @@ func SignUp(c *gin.Context) {
 	// Hash the user's password
 	hashedPassword, _ := services.HashPassword(payload.Password)
 	// Create a new user
-	user := entity.Users{
+	user := entity.User{
 		FirstName:   payload.FirstName,
 		LastName:    payload.LastName,
 		Email:       payload.Email,
@@ -79,7 +79,7 @@ func SignUp(c *gin.Context) {
 
 func SignIn(c *gin.Context) {
 	var payload Authen
-	var user entity.Users
+	var user entity.User
 	if err := c.ShouldBindJSON(&payload); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

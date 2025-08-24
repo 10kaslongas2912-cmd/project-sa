@@ -1,6 +1,6 @@
 package entity
 
-type Donors struct {
+type Donor struct {
 	DonorID   uint   `gorm:"primarykey;autoIncrement" json:"donor_id"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
@@ -9,7 +9,7 @@ type Donors struct {
 	DonorType string `json:"donor_type"`
 	
 	UserID    *uint   `json:"user_id"`
-	Users     *Users  `gorm:"foreignKey:UserID"`
+	User     *User  `gorm:"foreignKey:UserID"`
 
 	Donations []Donations `gorm:"foreignKey:DonorID"`
 }

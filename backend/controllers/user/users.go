@@ -9,7 +9,7 @@ import (
 )
 
 func GetAll(c *gin.Context) {
-	var users []entity.Users
+	var users []entity.User
 	db := config.DB()
 
 	results := db.Preload("Gender").Find(&users)
@@ -22,7 +22,7 @@ func GetAll(c *gin.Context) {
 
 func Get(c *gin.Context) {
 	ID := c.Param("id")
-	var user entity.Users
+	var user entity.User
 
 	db := config.DB()
 
@@ -41,7 +41,7 @@ func Get(c *gin.Context) {
 }
 
 func Update(c *gin.Context) {
-	var user entity.Users
+	var user entity.User
 	UserID := c.Param("id")
 
 	db := config.DB()
