@@ -1,6 +1,6 @@
 import React from 'react';
 import './style.css';
-import NavigationBar from '../../components/NavigationBar';
+import NavigationBar from '../../../../components/NavigationBar';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -151,8 +151,8 @@ const VolunteerPage: React.FC = () => {
                 วันที่สะดวก <span className="required">*</span>
               </label>
               <select
-                id="dayForwork"
-                name="dayForwork"
+                id="dayForWork"
+                name="dayForWork"
                 value={formData.dayForWork}
                 onChange={handleInputChange}
                 required
