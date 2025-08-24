@@ -7,7 +7,7 @@ justify-content: center;
 align-items: center;
 min-height: calc(100vh - 160px); 
 background-color: #f0f2f5;
-padding: 6rem; /* ปรับ padding กลับมาเป็นค่าปกติ */
+padding: 7rem; 
 font-family: 'Anakotmai', sans-serif;
 }
 
@@ -49,10 +49,14 @@ font-family: 'Anakotmai', sans-serif;
   margin-top: 0.5rem;
 }
 
+.sponsor-body-warpper {
+  padding: 0rem 1rem;
+}
+
 /* Progress Bar */
 .sponsor-progress {
 margin: 2.5rem auto;
-width: 95%;
+width: 90%;
 }
 
 .progress-bar {
@@ -77,15 +81,6 @@ font-size: 1rem;
 z-index: 1;
 }
 
-/* Style สำหรับ Step ที่ทำเสร็จแล้ว (สีน้ำเงิน) */
-.progress-step.done {
-background-color: #4a90e2; 
-}
-
-/* Style สำหรับ Step ปัจจุบัน (สีส้ม) */
-.progress-step.active {
-background-color: #ff8800; 
-}
 
 .progress-line {
 position: absolute;

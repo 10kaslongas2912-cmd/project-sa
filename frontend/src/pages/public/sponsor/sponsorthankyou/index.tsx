@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Steps } from 'antd';
 import { CreditCardOutlined, DollarOutlined, SmileOutlined, SolutionOutlined } from '@ant-design/icons';
 import './style.css';
@@ -61,9 +61,11 @@ const SponsorThankYouPage: React.FC = () => {
         </div>
 
         <div className="thankyou-footer">
-          <button className="done-button" onClick={() => navigate('/')}>
-            Back to Home
-          </button>
+          <Link to="/">
+            <button className="done-button">
+              Back to Home
+            </button>
+          </Link>
         </div>
       </div>
     </div>
