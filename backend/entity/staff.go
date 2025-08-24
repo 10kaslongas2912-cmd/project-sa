@@ -10,7 +10,7 @@ type Staffs struct {
 	DateOfBirth time.Time `json:"date_of_birth"`
 	Age         int       `json:"age"`
 	GenderID    *uint
-	Genders     Genders `gorm:"foreignKey:GenderID"`
-	RoleID      *uint   `json:"role_id"`
-	Role        Roles   `gorm:"foreignKey:RoleID"`
+	Genders     Gender `gorm:"foreignKey:GenderID"`
+	RoleID      *uint  `json:"role_id"`
+	Role        Roles  `gorm:"foreignKey:RoleID"`
 }
