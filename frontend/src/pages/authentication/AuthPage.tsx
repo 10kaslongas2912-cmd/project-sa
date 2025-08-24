@@ -88,7 +88,7 @@ function AuthPage() {
             <div className="name">
               <div className="fn">
                 <Form.Item 
-                  label="ชื่อจริง" // <--- ใช้ label prop
+                  label="ชื่อจริง"
                   name="first_name" 
                   rules={[{ required: true, message: "กรุณากรอกชื่อ !" }]}
                 >
@@ -97,7 +97,7 @@ function AuthPage() {
               </div>
               <div className="ln">
                 <Form.Item 
-                  label="นามสกุล" // <--- ใช้ label prop
+                  label="นามสกุล" 
                   name="last_name" 
                   rules={[{ required: true, message: "กรุณากรอกนามสกุล !" }]}
                 >
@@ -108,7 +108,7 @@ function AuthPage() {
             <div className="tel-birth-gender">
               <div className="gender">
                 <Form.Item 
-                  label="เพศ" // <--- ใช้ label prop
+                  label="เพศ" 
                   className='gen' 
                   name="gender_id" 
                   rules={[{ required: true, message: "กรุณาเลือกเพศ !" }]}

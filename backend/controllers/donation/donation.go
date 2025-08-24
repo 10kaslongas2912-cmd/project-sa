@@ -11,7 +11,7 @@ import (
 
 // CombinedDonationPayload is a struct to capture the entire JSON payload from the frontend
 type CombinedDonationPayload struct {
-	DonorInfo            entity.Donors         `json:"donor_info"`
+	DonorInfo            entity.Donor         `json:"donor_info"`
 	DonationType         string                `json:"donation_type"`
 	MoneyDonationDetails *entity.MoneyDonations `json:"money_donation_details,omitempty"`
 	ItemDonationDetails  []entity.ItemDonations  `json:"item_donation_details,omitempty"`
@@ -31,7 +31,7 @@ func CreateDonation(c *gin.Context) {
 
 	// Validate UserID if it exists
 	if payload.DonorInfo.UserID != nil {
-		var user entity.Users
+		var user entity.User
 		if err := tx.First(&user, payload.DonorInfo.UserID).Error; err != nil {
 			tx.Rollback()
 			c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})

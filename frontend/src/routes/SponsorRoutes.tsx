@@ -35,24 +35,29 @@ const SponsorRoutes = (): RouteObject => {
         },
         {
             path: 'payment',
-            element: <SponsorPaymentPage />,
+            children: [
+                {
+                    index: true,
+                    element: <SponsorPaymentPage />
+                },
+                {
+                    path: 'creditcard',
+                    element: <SponsorPaymentCreditCardPage />,
+                },
+                {
+                    path: 'banktransfer',
+                    element: <SponsorPaymentPage />,
+                },
+                {
+                    path: 'promptpay',
+                    element: <SponsorPaymentPage />,
+                },
+                {
+                    path: 'thankyou',
+                    element: <SponsorThankyouPage />
+                },  
+            ]
         },
-        {
-            path: 'payment/creditcard',
-            element: <SponsorPaymentCreditCardPage />,
-        },
-        {
-            path: 'payment/banktransfer',
-            element: <SponsorPaymentPage />,
-        },
-        {
-            path: 'payment/promptpay',
-            element: <SponsorPaymentPage />,
-        },
-        {
-            path: 'thankyou',
-            element: <SponsorThankyouPage />
-        },  
     ]
   };
 };

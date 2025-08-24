@@ -4,12 +4,12 @@ import (
 	"net/http"
 
 	"example.com/project-sa/config"
-	"example.com/project-sa/controllers/donations"
-	"example.com/project-sa/controllers/genders"
-	"example.com/project-sa/controllers/users"
-	"example.com/project-sa/controllers/payment_methods"
-	"example.com/project-sa/controllers/dogs"
-	"example.com/project-sa/controllers/health_records"
+	"example.com/project-sa/controllers/donation"
+	"example.com/project-sa/controllers/gender"
+	"example.com/project-sa/controllers/user"
+	"example.com/project-sa/controllers/payment_method"
+	"example.com/project-sa/controllers/dog"
+	"example.com/project-sa/controllers/health_record"
 	"example.com/project-sa/middlewares"
 	"github.com/gin-gonic/gin"
 )

@@ -15,7 +15,7 @@ type Volunteers struct {
 	PhotoAdr       string    `json:"photo_adr"`
 
 	UserID uint
-	Users  *Users `gorm:"references:UserID"` // Association to Users
+	Users  *User `gorm:"references:UserID"` // Association to Users
 
 	SkillID uint
 	Skills  *Skills `gorm:"foreignKey:SkillID"` // Association to Skills
