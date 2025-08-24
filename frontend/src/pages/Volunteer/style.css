@@ -308,5 +308,16 @@
   box-shadow: none;
 }
 
-
+.date-picker-input,
+.date-picker-input input {
+  width: 450px!important;
+  height: 48px;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: #f9fafb;
+  box-sizing: border-box;
+  font-family: inherit;
+}
 /* End of VolunteerPage Styles */
