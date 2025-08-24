@@ -214,11 +214,11 @@ func SetupDatabase() {
 
 	// Seed MoneyDonations
 	MoneyDonation1 := entity.MoneyDonations{
-		Amount:     1000.00,
-		DonationID: Donation1.DonationID,          // Link to Donation1
-		PaymentID:  PaymentBankTransfer.PaymentID, // Link to PaymentMethods
+		Amount:          1000.00,
+		DonationID:      Donation1.DonationID,          // Link to Donation1
+		PaymentMethodID: PaymentBankTransfer.PaymentID, // Link to PaymentMethods
 	}
-	db.FirstOrCreate(&MoneyDonation1, &entity.MoneyDonations{DonationID: Donation1.DonationID, PaymentID: PaymentBankTransfer.PaymentID})
+	db.FirstOrCreate(&MoneyDonation1, &entity.MoneyDonations{DonationID: Donation1.DonationID, PaymentMethodID: PaymentBankTransfer.PaymentID})
 
 	// Seed ItemDonations
 	ItemDonation1 := entity.ItemDonations{

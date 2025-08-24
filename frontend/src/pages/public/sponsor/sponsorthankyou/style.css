@@ -1,0 +1,92 @@
+/* SponsorThankYouPage.css */
+
+/* Main Container and Card */
+.thankyou-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f0f2f5;
+  padding: 6rem;
+  font-family: 'Anakotmai', sans-serif;
+}
+
+.thankyou-card {
+  width: 100%;
+  max-width: 800px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  overflow: hidden;
+  text-align: center;
+}
+/* Header */
+.thankyou-header {
+  padding: 2.5rem;
+  background: linear-gradient(135deg, #ff9028, #ffee52);
+  color: #ffffff;
+}
+.sponsor-progress {
+  margin: 2.5rem auto;
+  width: 80%;
+}
+.thankyou-title {
+  font-size: 2.25rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.thankyou-subtitle {
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+/* Content */
+.thankyou-content {
+  padding: 0rem 2.5rem 3rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.thankyou-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+}
+
+.thankyou-message {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1a1a1a;
+  margin: 0 0 1rem;
+}
+
+.thankyou-description {
+  font-size: 1rem;
+  color: #7a7a7a;
+  line-height: 1.5;
+}
+
+/* Footer */
+.thankyou-footer {
+  padding: 2.5rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.done-button {
+  background-color: #ff9028;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.done-button:hover {
+  background-color: #ffde23;
+}

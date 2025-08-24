@@ -1,22 +1,19 @@
 import { useRoutes, type RouteObject } from "react-router-dom";
 
-import AdminRoutes from "./AdminRoutes";
-import MainRoutes from "./MainRoutes";
+import PublicRoutes from "./PublicRoutes";
+import AuthRoutes from "./AuthRoutes";
+import DashboardRoutes from "./DashboardRoutes";
+import SponsorRoutes from "./SponsorRoutes";
+import DonationRoutes from "./DonationRoutes";
 
+// ==============================|| ROUTING RENDER ||============================== //
 
-function ConfigRoutes() {
-  const isLoggedIn = localStorage.getItem("isLogin") === "true";
-
-  let routes: RouteObject[] = [];
-
-  if (isLoggedIn) {
-    routes = [AdminRoutes(isLoggedIn), MainRoutes()];
-  } else {
-    routes = [MainRoutes()];
-  }
-
-  return useRoutes(routes);
+export default function ThemeRoutes() {
+  return useRoutes([
+    AuthRoutes(),
+    PublicRoutes(),
+    DashboardRoutes(),
+    SponsorRoutes(),
+    DonationRoutes(),
+  ]);
 }
-
-
-export default ConfigRoutes;
