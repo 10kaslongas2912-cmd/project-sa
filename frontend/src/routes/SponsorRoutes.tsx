@@ -52,12 +52,12 @@ const SponsorRoutes = (): RouteObject => {
                     path: 'promptpay',
                     element: <SponsorPaymentPage />,
                 },
+                {
+                    path: 'thankyou',
+                    element: <SponsorThankyouPage />
+                },  
             ]
         },
-        {
-            path: 'thankyou',
-            element: <SponsorThankyouPage />
-        },  
     ]
   };
 };

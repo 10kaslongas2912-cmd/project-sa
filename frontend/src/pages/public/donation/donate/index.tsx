@@ -1,29 +1,39 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import './style.css';
-import CheckmarkIcon from '../../../components/CheckmarkIcon';
-import NavigationBar from '../../../components/NavigationBar';
-import { useNavigate } from "react-router-dom"; // <-- เพิ่ม useNavigate
+import CheckmarkIcon from '../../../../components/checkmark/CheckmarkIcon';
+import NavigationBar from '../../../../components/NavigationBar';
 
 const DonationPage: React.FC = () => {
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleDonateNowClick = () => {
-    navigate("options");
+    navigate('options');
+  };
+
+  const handleCreateAccountLoginClick = () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      // User is logged in, navigate to DonationOptionsPage
+      navigate('/donation/options');
+    } else {
+      // User is not logged in, navigate to AuthPage and set returnTo
+      sessionStorage.setItem('returnTo', '/donation/options');
+      navigate('/auth');
+    }
   };
 
   return (
     <>
       <NavigationBar />
-      <br />
-      <br />
       <div className="page-container">
         <div className="card">
           <h1 className="title">
             ร่วมบริจาคเงินหรือสิ่งของ
           </h1>
           <h2 >เพื่อร่วมเป็นส่วนหนึ่งในการดูแลชีวิตให้เพื่อนสี่ขา</h2>
-          <button className="button orange-button">
+          <button className="button orange-button" onClick={handleCreateAccountLoginClick}>
             สร้างบัญชีบริจาค/เข้าสู่ระบบ
           </button>
 
@@ -39,6 +49,7 @@ const navigate = useNavigate();
           </div>
 
           <p className="or-text">หรือ</p>
+
           <button className="button blue-button" onClick={handleDonateNowClick}>
             บริจาคทันที
           </button>

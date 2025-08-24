@@ -391,13 +391,6 @@ export default function CreditCardForm() {
               </div>
             </div>
           </div>
-
-          <button
-            className="card-form__button"
-            onClick={(e) => { e.preventDefault(); clearFocus(); alert("Submit clicked"); }}
-          >
-            Submit
-          </button>
         </div>
       </div>
     </div>

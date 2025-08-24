@@ -46,7 +46,7 @@
                 <div className="header-actions">
                     <a href="#adopt" className="btn btn-action adopt-btn">รับเลี้ยง</a>
                     <a href="/sponsor" className="btn btn-action sponsor-btn">อุปถัมป์</a>
-                    <Link to="/donate" className="btn btn-action donate-btn">
+                    <Link to="/donation" className="btn btn-action donate-btn">
                         <span className="heart-icon">&#x2764;</span> บริจาค
                     </Link>
                     <Link to="/auth" className="btn btn-action login-btn">

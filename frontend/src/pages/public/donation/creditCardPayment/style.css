@@ -1,0 +1,123 @@
+.form-page-container {
+    background-image: url('../../../../assets/flatten.jpg');
+    background-color: white;
+    /* เพิ่มบรรทัดนี้ */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Anakotmai', sans-serif;
+    z-index: 0;
+    background-size: cover;
+
+}
+
+.form-card {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    max-width: 1000px;
+    /* Increased width */
+    min-height: 700px;
+    /* Added min-height */
+    width: 100%;
+    text-align: center;
+    z-index: 2;
+    /* Ensure card is above the overlay */
+}
+
+.back-link {
+    display: block;
+    text-align: left;
+    margin-bottom: 20px;
+    color: #706D6D;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.form-title {
+    color: #FF6600;
+    font-size: 4em;
+    margin-bottom: 10px;
+    text-align: center;
+    /* จัดกึ่งกลาง */
+    margin-left: auto;
+    /* จัดกึ่งกลาง */
+    margin-right: auto;
+    /* จัดกึ่งกลาง */
+}
+
+.form-subtitle {
+    font-size: 2em;
+    color: #253C90;
+    margin-bottom: 30px;
+    text-align: left;
+    /* จัดกึ่งกลาง */
+    margin-left: 20px;
+    /* จัดกึ่งกลาง */
+    margin-right: auto;
+    /* จัดกึ่งกลาง */
+    font-weight: medium;
+    /* เปลี่ยนเป็น medium */
+
+}
+
+.form-input {
+    width: 95%;
+    /* ลดความกว้างเล็กน้อย */
+    max-width: 1000px;
+    /* กำหนด max-width */
+    padding: 12px;
+    margin-bottom: 25px;
+    border-radius: 8px;
+    border: 1px solid #d9d9d9;
+    font-size: 1em;
+    color: #706D6D;
+    margin: 0 auto 25px auto;
+    /* จัดกึ่งกลางและกำหนด margin-bottom */
+}
+
+.submit-button {
+    width: 95%;
+    /* ลดความกว้างเล็กน้อย */
+    max-width: 1000px;
+    /* กำหนด max-width */
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background-color: #253C90;
+    color: white;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    /* จัดกึ่งกลางและกำหนด margin-top */
+}
+
+.submit-button:hover {
+    background-color: #4566dd;
+}
+
+.supported-cards {
+    width: 100%;
+    max-width: 300px;
+    /* กำหนด max-width */
+    margin-left: 20px;
+    margin-top: -30px;
+    /* ปรับตำแหน่งให้เหมาะสม */
+    margin-bottom: 30px;
+    display: block;
+    /* ทำให้เป็น block-level element */
+    height: auto;
+    /* รักษาสัดส่วน */
+    border-color: #253C90;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 8px;
+    /* เพิ่มมุมโค้ง */
+    cursor: pointer;
+
+}

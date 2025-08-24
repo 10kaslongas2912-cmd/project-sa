@@ -4,18 +4,16 @@ import PublicRoutes from "./PublicRoutes";
 import AuthRoutes from "./AuthRoutes";
 import DashboardRoutes from "./DashboardRoutes";
 import SponsorRoutes from "./SponsorRoutes";
+import DonationRoutes from "./DonationRoutes";
 
-function ConfigRoutes() {
+// ==============================|| ROUTING RENDER ||============================== //
 
-  const allRoutes: RouteObject[] = [
-
-    PublicRoutes(),
+export default function ThemeRoutes() {
+  return useRoutes([
     AuthRoutes(),
+    PublicRoutes(),
     DashboardRoutes(),
     SponsorRoutes(),
-  ];
-
-  return useRoutes(allRoutes);
+    DonationRoutes(),
+  ]);
 }
-
-export default ConfigRoutes;

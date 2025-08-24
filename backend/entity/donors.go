@@ -8,8 +8,8 @@ type Donors struct {
 	Email     string `json:"email"`
 	DonorType string `json:"donor_type"`
 	
-	UserID    uint   `json:"user_id"`
-	Users      Users  `gorm:"foreignKey:UserID"`
+	UserID    *uint   `json:"user_id"`
+	Users     *Users  `gorm:"foreignKey:UserID"`
 
 	Donations []Donations `gorm:"foreignKey:DonorID"`
 }

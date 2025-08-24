@@ -35,7 +35,13 @@ function AuthPage() {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("id", res.data.id);
       setTimeout(() => {
-        navigate("/");
+        const returnTo = sessionStorage.getItem('returnTo');
+        if (returnTo) {
+          sessionStorage.removeItem('returnTo');
+          navigate(returnTo);
+        } else {
+          navigate("/");
+        }
       }, 2000);
     } else {
       messageApi.error(res.data.error);

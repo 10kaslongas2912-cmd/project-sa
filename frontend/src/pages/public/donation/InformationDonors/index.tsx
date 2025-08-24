@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import './style.css';
 
 import { useNavigate } from "react-router-dom";
+import type { DonorsInterface } from '../../../../interfaces/Donors'; // Import DonorsInterface
 
 interface DonationInfoFormProps {
-  onSubmit?: (formData: object) => void;
+  onSubmit?: (formData: DonorsInterface) => void; // Use DonorsInterface
 }
 
 // Helper to get initial state from sessionStorage
@@ -28,28 +29,65 @@ const InformationDonors: React.FC<DonationInfoFormProps> = ({ onSubmit }) => {
   const [phone, setPhone] = useState(initialData.phone || '');
   const [email, setEmail] = useState(initialData.email || '');
 
+  // Use useEffect to pre-fill data from prefillUserData in sessionStorage
+  useEffect(() => {
+    const prefillData = sessionStorage.getItem('prefillUserData');
+    console.log("InformationDonors: Retrieved prefillData from sessionStorage:", prefillData); // Log retrieved data
+    if (prefillData) {
+      try {
+        const parsedPrefillData = JSON.parse(prefillData);
+        console.log("InformationDonors: Parsed prefillData:", parsedPrefillData); // Log parsed data
+        setFirstName(parsedPrefillData.first_name || '');
+        setLastName(parsedPrefillData.last_name || '');
+        setPhone(parsedPrefillData.phone_number || '');
+        setEmail(parsedPrefillData.email || '');
+        sessionStorage.removeItem('prefillUserData'); // Clear after use
+        console.log("InformationDonors: Form fields set with prefill data."); // Confirm fields set
+      } catch (error) {
+        console.error("Error parsing prefill user data:", error);
+      }
+    }
+  }, []); // Run only once on mount
+
   // Use useEffect to save data to sessionStorage whenever state changes
   useEffect(() => {
-    const formData = { firstName, lastName, phone, email };
+    const formData = { first_name: firstName, last_name: lastName, phone, email };
     sessionStorage.setItem('donationInfoFormData', JSON.stringify(formData));
   }, [firstName, lastName, phone, email]); // Dependencies array
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault(); // ป้องกันการรีเฟรชหน้าเมื่อกดส่งฟอร์ม
-    const formData = { firstName, lastName, phone, email };
+    const formData: DonorsInterface = { // Cast to DonorsInterface
+      first_name: firstName,
+      last_name: lastName,
+      phone: phone,
+      email: email,
+    };
     console.log('Form Data Submitted:', formData);
     // เรียกใช้ฟังก์ชัน onSubmit ที่ส่งมาจาก parent component
     if (onSubmit) {
       onSubmit(formData);
     }
-    navigate('../money'); // ย้าย navigate มาที่นี่
+
+    const donationType = sessionStorage.getItem('donationType');
+    if (donationType === 'money') {
+      navigate('/donation/money');
+    } else if (donationType === 'item') {
+      navigate('/donation/item');
+    } else {
+      // Fallback or error handling
+      navigate('/donation/options');
+    }
   };
 
   return (
     <div className="form-page-container">
       <div className="form-card">
         {/* ปุ่มย้อนกลับ */}
-        <button onClick={() => navigate('../options')} className="back-link">
+        <button onClick={() => {
+          sessionStorage.removeItem('donationInfoFormData'); // ล้างข้อมูลเมื่อย้อนกลับ
+          navigate('/donation/options');
+        }} className="back-link">
           &lt; ย้อนกลับ
         </button>
         <h1 className="form-title">ข้อมูลการบริจาค</h1>
