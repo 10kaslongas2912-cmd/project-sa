@@ -2,13 +2,13 @@
 
 /* Main Container and Card */
 .sponsor-container {
-display: flex;
-justify-content: center;
-align-items: center;
-min-height: calc(100vh - 160px); 
-background-color: #f0f2f5;
-padding: 7rem; 
-font-family: 'Anakotmai', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 160px);
+  background-color: #f0f2f5;
+  padding: 7rem;
+  font-family: 'Anakotmai', sans-serif;
 }
 
 .sponsor-card {
@@ -55,48 +55,46 @@ font-family: 'Anakotmai', sans-serif;
 
 /* Progress Bar */
 .sponsor-progress {
-margin: 2.5rem auto;
-width: 90%;
+  margin: 2.5rem auto;
+  width: 90%;
 }
 
 .progress-bar {
-display: flex;
-align-items: center;
-justify-content: space-between;
-position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
 }
 
-/* Style สำหรับวงกลมของแต่ละ Step */
 .progress-step {
-width: 36px;
-height: 36px;
-border-radius: 50%;
-background-color: #e0e0e0; /* สีเทาอ่อนสำหรับ Step ที่ยังไม่ถึง */
-color: #ffffff;
-display: flex;
-justify-content: center;
-align-items: center;
-font-weight: bold;
-font-size: 1rem;
-z-index: 1;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1rem;
+  z-index: 1;
 }
-
 
 .progress-line {
-position: absolute;
-width: 100%;
-height: 2px;
-background-color: #e0e0e0;
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: #e0e0e0;
 }
-/* Style สำหรับเส้นเชื่อม */
+
 .progress-bar > .progress-line.done-line {
-  background-color: #4a90e2; 
+  background-color: #4a90e2;
 }
 
 /* Form Content */
 .sponsor-form-content {
   padding: 0 2.5rem;
-  text-align: left; /* เพิ่มส่วนนี้เพื่อให้เนื้อหาทั้งหมดชิดซ้าย */
+  text-align: left;
 }
 
 .section-title {
@@ -133,21 +131,6 @@ background-color: #e0e0e0;
   box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
 }
 
-.checkbox-group {
-  display: flex;
-  align-items: center;
-  margin-top: 2rem;
-}
-
-.form-checkbox {
-  margin-right: 0.5rem;
-}
-
-.checkbox-label {
-  font-size: 1rem;
-  color: #7a7a7a;
-}
-
 /* Footer */
 .sponsor-form-footer {
   display: flex;
@@ -158,7 +141,8 @@ background-color: #e0e0e0;
   margin-top: 2rem;
 }
 
-.previous-button, .next-button {
+.previous-button,
+.next-button {
   border: none;
   border-radius: 8px;
   padding: 1rem 2.5rem;
@@ -184,4 +168,65 @@ background-color: #e0e0e0;
 
 .next-button:hover {
   background-color: #d88d1e;
+}
+
+/* ========== NEW: Updates Card (ข่าวสาร) ========== */
+.updates-card {
+  border: 1px solid #e7e7e7;
+  border-radius: 12px;
+  padding: 16px;
+  background: #fff;
+  margin-top: 12px;
+}
+
+.updates-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.updates-title {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.updates-subtitle {
+  font-size: 12px;
+  color: #7a7a7a;
+  margin-top: 2px;
+}
+
+.updates-row {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.updates-collapse {
+  border-top: 1px dashed #eaeaea;
+  margin-top: 12px;
+  padding-top: 12px;
+  animation: updates-slide 0.18s ease-out;
+}
+
+.updates-hint {
+  font-size: 12px;
+  color: #7a7a7a;
+  margin-top: 4px;
+}
+
+/* Animation for expand */
+@keyframes updates-slide {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .updates-row {
+    grid-template-columns: 1fr;
+  }
 }
