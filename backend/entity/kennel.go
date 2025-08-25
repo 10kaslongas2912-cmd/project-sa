@@ -9,4 +9,6 @@ type Kennel struct {
 	Notes    string `json:"notes"`
 
 	Dogs []Dog `gorm:"foreignKey:KennelID"`
+	Staffs []Staff `gorm:"foreignKey:KennelID"`
+	
 }
