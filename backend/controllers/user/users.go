@@ -33,7 +33,7 @@ func Get(c *gin.Context) {
 		return
 	}
 
-	   if user.UserID == 0 {
+	   if user.ID == 0 {
 		c.JSON(http.StatusNoContent, gin.H{})
 		return
 	}

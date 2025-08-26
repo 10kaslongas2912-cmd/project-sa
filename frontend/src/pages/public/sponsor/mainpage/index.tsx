@@ -1,65 +1,83 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { ConfigProvider, Space } from 'antd';
 import { createStyles } from 'antd-style';
-import './style.css'; // ไฟล์ CSS เดิมของคุณ
-
+import './style.css';
 
 import sponsorImage from '../../../../assets/sponsor/ChatGPT Image Jul 31, 2025, 08_14_47 PM.png';
-import frameImage1 from '../../../../assets/sponsor/HD-wallpaper-1-month-year-old-pup-dog-german-shepherd-thumbnail.jpg';
-import frameImage2 from '../../../../assets/sponsor/images (1).jpg';
-import frameImage3 from '../../../../assets/sponsor/images.jpg';
+
+const API_BASE = 'http://localhost:8000'; // เปลี่ยนตาม env ของคุณ
 
 const useStyle = createStyles(({ prefixCls, css }) => ({
   linearGradientButton: css`
     &.${prefixCls}-btn-primary:not([disabled]):not(.${prefixCls}-btn-dangerous) {
-      > span {
-        position: relative;
-      }
-
+      > span { position: relative; }
       &::before {
         content: '';
         background: linear-gradient(135deg, #ff8800, #ff6f43ff);
-        position: absolute;
-        inset: -1px;
-        opacity: 1;
-        transition: all 0.3s;
-        border-radius: inherit;
+        position: absolute; inset: -1px; opacity: 1; transition: all 0.3s; border-radius: inherit;
       }
-
-      &:hover::before {
-        opacity: 0;
-      }
+      &:hover::before { opacity: 0; }
     }
   `,
 }));
-interface Dog {
+
+/** ชนิดข้อมูลที่รับมาจาก API (ยืดหยุ่นหน่อย) */
+type Dog = {
   id: number;
   name: string;
-  age: string;
-  size: string;
-  image: string;
-}
+  photo_url?: string;
+  date_of_birth?: string; // "YYYY-MM-DD" (ตามที่ backend ส่ง)
+  breed?: { breed_name?: string } | any; // เผื่อกรณี preload แล้วชื่อ field ต่างกัน
+};
 
-// ข้อมูลที่นำมาแสดงผล
-const dogData: Dog[] = [
-  { id: 1, name: 'น้อง H2K', age: '7 ปี 3 เดือน', size: 'ขนาดกลาง', image: frameImage1 },
-  { id: 2, name: 'น้อง H2K', age: '7 ปี 3 เดือน', size: 'ขนาดกลาง', image: frameImage2 },
-  { id: 3, name: 'น้อง H2K', age: '7 ปี 3 เดือน', size: 'ขนาดกลาง', image: frameImage3 },
-  { id: 4, name: 'น้อง H2K', age: '7 ปี 3 เดือน', size: 'ขนาดกลาง', image: frameImage1 },
-  { id: 5, name: 'น้อง H2K', age: '7 ปี 3 เดือน', size: 'ขนาดกลาง', image: frameImage2 },
-  { id: 6, name: 'น้อง H2K', age: '7 ปี 3 เดือน', size: 'ขนาดกลาง', image: frameImage3 },
-];
+/** แปลงวันเกิดเป็นอายุแบบไทย "X ปี Y เดือน" (ถ้าไม่ครบก็ข้าม) */
+function ageText(dob?: string) {
+  if (!dob) return '';
+  const birth = new Date(dob);
+  if (isNaN(birth.getTime())) return '';
+  const now = new Date();
+  let years = now.getFullYear() - birth.getFullYear();
+  let months = now.getMonth() - birth.getMonth();
+  if (months < 0) { years -= 1; months += 12; }
+  const y = years > 0 ? `${years} ปี` : '';
+  const m = months > 0 ? `${months} เดือน` : (years === 0 ? 'น้อยกว่า 1 เดือน' : '');
+  return [y, m].filter(Boolean).join(' ');
+}
 
 const SponsorPage: React.FC = () => {
   const { styles } = useStyle();
   const navigate = useNavigate();
-  const handleClick = (data:Dog) => {
-    navigate('dog-info', {
-      state: data,
-    });
+
+  const [dogs, setDogs] = useState<Dog[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    const ac = new AbortController();
+    (async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`${API_BASE}/dogs`, { signal: ac.signal });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        // backend ของคุณตอบ { data: [...] }
+        setDogs(Array.isArray(json?.data) ? json.data : []);
+        setErr(null);
+      } catch (e: any) {
+        if (e.name !== 'AbortError') setErr(e?.message || 'fetch failed');
+      } finally {
+        setLoading(false);
+      }
+    })();
+    return () => ac.abort();
+  }, []);
+
+  const handleClick = (dogId: number) => {
+    // ส่งไปแบบใช้ path param เพื่อให้หน้า dog-info ไปโหลดจาก API เอง
+    navigate(`dog-info/${dogId}`);
   };
-  
+
   return (
     <>
       <div className="sponsor-page-wrapper">
@@ -82,46 +100,52 @@ const SponsorPage: React.FC = () => {
           </div>
         </div>
 
-        {/* ส่วนนี้คือ bottom-section ที่ถูกแก้ไข */}
         <div className="bottom-section">
           <h2 className="bottom-title text-4xl font-bold mb-10 text-center">น้องหมาที่รอคุณอุปถัมภ์</h2>
-          <div className="card wrapper">
-            <div className="card container ">
-                {dogData.map((dog) => (
+
+          {loading && <p className="text-center">กำลังโหลดข้อมูล...</p>}
+          {err && !loading && <p className="text-center text-red-600">โหลดข้อมูลไม่สำเร็จ: {err}</p>}
+          {!loading && !err && dogs.length === 0 && <p className="text-center">ยังไม่มีข้อมูลน้องหมา</p>}
+
+          {!loading && !err && dogs.length > 0 && (
+            <div className="card wrapper">
+              <div className="card container">
+                {dogs.map((dog) => (
                   <div key={dog.id} className="card info">
                     <div className="card img">
-                      <Link to = 'dog-info'>
-                        <img src={dog.image} alt={`รูปภาพของ ${dog.name}`} className="w-full h-full object-cover" /> 
+                      <Link to={`dog-info/${dog.id}`}>
+                        {dog.photo_url ? (
+                          <img src={dog.photo_url} alt={`รูปภาพของ ${dog.name}`} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                            <span className="text-gray-400">ไม่มีรูป</span>
+                          </div>
+                        )}
                       </Link>
                     </div>
-                  
+
                     <div className="card text">
                       <h3 className="dogname">{dog.name}</h3>
-                        <p className="dog-info">
-                          อายุ {dog.age}<br />
-                          {dog.size}
-                        </p>
-                        <p className="dog-info">
-                          
-                        </p>
+                      <p className="dog-info">
+                        {dog.date_of_birth && <>อายุ {ageText(dog.date_of_birth)}<br /></>}
+                        {dog?.breed?.breed_name && <>{dog.breed.breed_name}</>}
+                      </p>
                     </div>
+
                     <div className="card-button">
-                      <ConfigProvider
-                        button={{
-                          className: styles.linearGradientButton,
-                        }}
-                      >
+                      <ConfigProvider button={{ className: styles.linearGradientButton }}>
                         <Space>
-                          <button className='btn-new'  onClick={() => handleClick(dog)}>
-                              อุปถัมภ์น้อง
+                          <button className="btn-new" onClick={() => handleClick(dog.id)}>
+                            อุปถัมภ์น้อง
                           </button>
                         </Space>
                       </ConfigProvider>
                     </div>
                   </div>
                 ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </>

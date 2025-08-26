@@ -178,13 +178,15 @@ background-color: #e0e0e0;
    ========================= */
 /* แถวซ้าย-ขวา: ตัวเลือกแผน + ความถี่ */
 .plan-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 420px; /* ขวาคงที่: ปรับ 380–520 ได้ตามชอบ */
   align-items: center;
   gap: 12px;
   margin-bottom: 12px;
   flex-wrap: wrap; /* กันล้นบนจอเล็ก */
+  column-gap: 12px;
+  min-height: 56px; /* ถ้าตัว select สูงกว่านี้ เพิ่มเป็น 60–64px */
 }
-
 /* ปุ่มเลือกแผนแบบชิป */
 .plan-toggle {
   display: inline-flex;
@@ -192,6 +194,7 @@ background-color: #e0e0e0;
   background: #f6f7fb;
   padding: 6px;
   border-radius: 999px;
+  white-space: nowrap;
 }
 
 .plan-chip {
@@ -203,6 +206,7 @@ background-color: #e0e0e0;
   cursor: pointer;
   transition: all .15s ease;
   color: #4a4a4a;
+  line-height: 1; height: 49px;
 }
 
 .plan-chip:hover {
@@ -220,33 +224,23 @@ background-color: #e0e0e0;
 
 /* แผงความถี่ด้านขวา — ใช้ width+opacity transition เพื่อให้ลื่น */
 .freq-panel {
+  width: 100%;
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: center;
   gap: 8px;
-  overflow: hidden;
 
-  /* ซ่อนไว้ */
-  width: 0;
+  /* ซ่อนแบบมีแอนิเมชัน: ไม่แตะ width/height เพื่อไม่ให้ดัน layout */
   opacity: 0;
-  padding: 0;
+  transform: translateX(6px);
   pointer-events: none;
-
-  /* แอนิเมชัน */
-  transition:
-    width .25s ease,
-    opacity .25s ease,
-    padding .25s ease,
-    transform .25s ease;
-  transform: translateX(4px);
+  transition: opacity .22s ease, transform .22s ease;
 }
 
 .freq-panel.open {
-  width: 300px;          /* พื้นที่รวม label + select (ปรับได้) */
   opacity: 1;
-  padding: 6px 0 6px 6px;
-  pointer-events: auto;
   transform: translateX(0);
+  pointer-events: auto;
 }
 
 .freq-label {
@@ -255,14 +249,12 @@ background-color: #e0e0e0;
 }
 
 .freq-select {
-  min-width: 200px;
-  width: 100%;
+  min-width: 260px;
   padding: 0.9rem 1rem;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   font-size: 1rem;
   background: #fff;
-  box-sizing: border-box;
   transition: box-shadow .15s ease, border-color .15s ease;
   appearance: none;
 }

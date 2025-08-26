@@ -5,4 +5,7 @@ import "gorm.io/gorm"
 type Gender struct {
    gorm.Model
    Gender string `json:"gender"`
+
+   Users []User `gorm:"foreignKey:GenderID"`
+   
 }

@@ -9,7 +9,7 @@ import (
 )
 
 func GetAll(c *gin.Context) {
-	var paymentMethods []entity.PaymentMethods
+	var paymentMethods []entity.PaymentMethod
 	db := config.DB()
 
 	if err := db.Find(&paymentMethods).Error; err != nil {

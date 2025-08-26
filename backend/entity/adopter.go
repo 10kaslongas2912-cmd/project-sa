@@ -10,7 +10,7 @@ type Adopter struct {
 	Job   string `json:"job"`
 	AnnulIncome uint `json:"annual_income"`
 	UserID uint `json:"user_id"`
-	User  Users `gorm:"foreignKey:UserID"`
+	User  *User `gorm:"foreignKey:UserID"`
 
 	Adoptions []Adoption `gorm:"foreignKey:AdopterID"`
 }

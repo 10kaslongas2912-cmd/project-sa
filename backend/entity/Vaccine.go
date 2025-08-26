@@ -1,8 +1,10 @@
 package entity
 
+import "gorm.io/gorm"
+
 type Vaccine struct {
-	VaccineID   uint   `gorm:"primarykey;autoIncrement" json:"vaccine_id"`
-	Name        string `json:"name"`
+	gorm.Model
+	Name         string `json:"name"`
 	Manufacturer string `json:"manufacturer"`
 
 	VaccineRecord []VaccineRecord `gorm:"foreignKey:VaccineID"`

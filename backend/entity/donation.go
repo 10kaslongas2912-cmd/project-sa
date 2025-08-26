@@ -1,15 +1,19 @@
 package entity
 
-import "time"
+import (
+	"time"
 
-type Donations struct {
-	DonationID   uint      `gorm:"primarykey;autoIncrement" json:"donation_id"`
+	"gorm.io/gorm"
+)
+
+type Donation struct {
+	gorm.Model
 	DonationDate time.Time `json:"donation_date"`
 	DonationType string    `json:"donation_type"`
 	Status       string    `json:"status"`
 	Description  string    `json:"description"`
 	DonorID      uint      `json:"donor_id"`
-	Donor        Donor    `gorm:"foreignKey:DonorID"`
-	ItemDonations []ItemDonations `gorm:"foreignKey:DonationID"`
-	MoneyDonations []MoneyDonations `gorm:"foreignKey:DonationID"`
+	Donor        *Donor    `gorm:"foreignKey:DonorID"`
+	ItemDonations []ItemDonation `gorm:"foreignKey:DonationID"`
+	MoneyDonations []MoneyDonation `gorm:"foreignKey:DonationID"`
 }

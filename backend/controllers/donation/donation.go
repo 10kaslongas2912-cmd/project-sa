@@ -13,8 +13,8 @@ import (
 type CombinedDonationPayload struct {
 	DonorInfo            entity.Donor         `json:"donor_info"`
 	DonationType         string                `json:"donation_type"`
-	MoneyDonationDetails *entity.MoneyDonations `json:"money_donation_details,omitempty"`
-	ItemDonationDetails  []entity.ItemDonations  `json:"item_donation_details,omitempty"`
+	MoneyDonationDetails *entity.MoneyDonation `json:"money_donation_details,omitempty"`
+	ItemDonationDetails  []entity.ItemDonation  `json:"item_donation_details,omitempty"`
 }
 
 func CreateDonation(c *gin.Context) {
@@ -48,8 +48,8 @@ func CreateDonation(c *gin.Context) {
 	}
 
 	// 2. Create Donation record
-	donation := entity.Donations{
-		DonorID:      donor.DonorID,
+	donation := entity.Donation{
+		DonorID:      donor.ID,
 		DonationType: payload.DonationType,
 		DonationDate: time.Now(), // Set donation date
 		Status:       "success",  // Always set status to success
@@ -63,7 +63,7 @@ func CreateDonation(c *gin.Context) {
 	// 3. Handle Money or Item Donations
 	if payload.DonationType == "money" && payload.MoneyDonationDetails != nil {
 		moneyDonation := payload.MoneyDonationDetails
-		moneyDonation.DonationID = donation.DonationID // Link to the donation
+		moneyDonation.DonationID = donation.ID // Link to the donation
 
 		if err := tx.Create(&moneyDonation).Error; err != nil {
 			tx.Rollback()
@@ -72,7 +72,7 @@ func CreateDonation(c *gin.Context) {
 		}
 	} else if payload.DonationType == "item" && payload.ItemDonationDetails != nil {
 		for _, item := range payload.ItemDonationDetails {
-			item.DonationID = donation.DonationID // Link each item to the donation
+			item.DonationID = donation.ID // Link each item to the donation
 			if err := tx.Create(&item).Error; err != nil {
 				tx.Rollback()
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create item donation: " + err.Error()})

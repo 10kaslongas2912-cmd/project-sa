@@ -7,8 +7,10 @@ import (
 
 type Building struct {
 	gorm.Model
-	BuildingName string `gorm:"size:50;not null;unique"`
-	Staffs       []Staff `gorm:"foreignKey:BuildingID"`
-	Sizes      string `gorm:"size:20;not null"` // small, medium, large
-	KennelManagements []KenelManagement `gorm:"foreignKey:BuildingID"`
+	BuildingName string 
+	Sizes      string  // small, medium, large
+
+	// StaffID uint `json:"staff_id`
+	// Staff *Staff `gorm:"foreignKey:StaffID`
+	// KennelManagements []KenelManagement `gorm:"foreignKey:BuildingID"`
 }

@@ -50,7 +50,7 @@ func SignUp(c *gin.Context) {
 		return
 	}
 
-	if userCheck.UserID != 0 {
+	if userCheck.ID != 0 {
 		// If the user with the provided email already exists
 		c.JSON(http.StatusConflict, gin.H{"error": "Email is already registered"})
 		return
@@ -109,5 +109,5 @@ func SignIn(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "error signing token"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"token_type": "Bearer", "token": signedToken, "id": user.UserID})
+	c.JSON(http.StatusOK, gin.H{"token_type": "Bearer", "token": signedToken, "id": user.ID})
 }
