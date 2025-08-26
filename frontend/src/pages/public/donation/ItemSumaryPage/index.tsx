@@ -28,7 +28,7 @@ const DonationSummaryPage: React.FC = () => {
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
   const [createAccount, setCreateAccount] = useState<boolean | null>(null);
-  const [summaryData, setSummaryData] = useState(getDonationData());
+  const [summaryData] = useState(getDonationData());
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {

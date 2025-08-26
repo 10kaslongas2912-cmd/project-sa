@@ -1,4 +1,4 @@
-import { useRoutes, type RouteObject } from "react-router-dom";
+import { useRoutes } from "react-router-dom";
 
 import PublicRoutes from "./PublicRoutes";
 import AuthRoutes from "./AuthRoutes";

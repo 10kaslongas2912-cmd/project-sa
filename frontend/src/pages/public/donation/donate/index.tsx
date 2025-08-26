@@ -15,10 +15,8 @@ const DonationPage: React.FC = () => {
   const handleCreateAccountLoginClick = () => {
     const token = localStorage.getItem('token');
     if (token) {
-      // User is logged in, navigate to DonationOptionsPage
       navigate('/donation/options');
     } else {
-      // User is not logged in, navigate to AuthPage and set returnTo
       sessionStorage.setItem('returnTo', '/donation/options');
       navigate('/auth');
     }

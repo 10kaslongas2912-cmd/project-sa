@@ -77,8 +77,6 @@ function AuthPage() {
     <>
       {contextHolder}
       <div className={`container ${!isLoginActive ? 'active' : ''}`}>
-        
-        {/* ส่วนฟอร์มลงทะเบียน */}
         <div className="form-container sign-up">
           <Form form={registerForm} onFinish={onFinishRegister} layout="vertical">
             <div className="logo-box">

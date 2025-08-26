@@ -24,12 +24,11 @@ const InformationDonors: React.FC<DonationInfoFormProps> = ({ onSubmit }) => {
   const initialData = getInitialFormData();
 
   // สร้าง State สำหรับเก็บค่าของแต่ละ Input
-  const [firstName, setFirstName] = useState(initialData.firstName || '');
-  const [lastName, setLastName] = useState(initialData.lastName || '');
+  const [firstName, setFirstName] = useState(initialData.first_name || '');
+  const [lastName, setLastName] = useState(initialData.last_name || '');
   const [phone, setPhone] = useState(initialData.phone || '');
   const [email, setEmail] = useState(initialData.email || '');
 
-  // Use useEffect to pre-fill data from prefillUserData in sessionStorage
   useEffect(() => {
     const prefillData = sessionStorage.getItem('prefillUserData');
     console.log("InformationDonors: Retrieved prefillData from sessionStorage:", prefillData); // Log retrieved data
@@ -85,7 +84,6 @@ const InformationDonors: React.FC<DonationInfoFormProps> = ({ onSubmit }) => {
       <div className="form-card">
         {/* ปุ่มย้อนกลับ */}
         <button onClick={() => {
-          sessionStorage.removeItem('donationInfoFormData'); // ล้างข้อมูลเมื่อย้อนกลับ
           navigate('/donation/options');
         }} className="back-link">
           &lt; ย้อนกลับ
