@@ -9,10 +9,6 @@ import { GetPaymentMethods } from "../../../../services/https";
 import type { PaymentMethodInterface } from "../../../../interfaces/PaymentMethod";
 import type { MoneyDonationsInterface } from '../../../../interfaces/MoneyDonations';
 
-interface DonationMoneyFormProps {
-  onSubmit?: (formData: MoneyDonationsInterface) => void;
-}
-
 const getInitialDonationMoneyData = () => {
   try {
     const storedData = sessionStorage.getItem('donationMoneyFormData');
@@ -26,7 +22,7 @@ const getInitialDonationMoneyData = () => {
   }
 };
 
-const DonationMoneyForm: React.FC<DonationMoneyFormProps> = ({ onSubmit }) => {
+const DonationMoneyForm: React.FC = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const initialData = getInitialDonationMoneyData();
@@ -98,8 +94,6 @@ const DonationMoneyForm: React.FC<DonationMoneyFormProps> = ({ onSubmit }) => {
     console.log('Final data before navigation:', finalData);
 
     sessionStorage.setItem('moneyDonationData', JSON.stringify(finalData));
-
-    if (onSubmit) onSubmit(finalData);
 
     if (!isLoggedIn && createAccount === 3) {
       sessionStorage.setItem('returnTo', '/donation/money');
