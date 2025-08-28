@@ -2,13 +2,10 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./style.css";
-
 import sponsorImage from "../../../../assets/sponsor/ChatGPT Image Jul 31, 2025, 08_14_47 PM.png";
 import type { DogInterface } from "../../../../interfaces/Dog";
-import type { ApiList } from "../../../../interfaces/api";
 import { ageText } from "../../../../utils/date";
-
-const API_BASE = "http://localhost:8000";
+import { dogAPI } from "../../../../services/api"
 
 /* ----- DogCard Component ที่แก้ไขแล้ว ----- */
 type DogCardProps = {
@@ -62,25 +59,22 @@ const SponsorPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
 
-  useEffect(() => {
-    const ac = new AbortController();
-    (async () => {
-      try {
-        setLoading(true);
-        const res = await fetch(`${API_BASE}/dogs`, { signal: ac.signal });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        const json = (await res.json()) as ApiList<DogInterface>;
-        setDogs(Array.isArray(json?.data) ? json.data : []);
-        setErr(null);
-      } catch (e: any) {
-        if (e.name !== "AbortError") setErr(e?.message || "fetch failed");
-      } finally {
-        setLoading(false);
-      }
-    })();
-    return () => ac.abort();
-  }, []);
+useEffect(() => {
+  (async () => {
+    try {
+      setLoading(true);
+      const res = await dogAPI.getAll(); // => รูปแบบ { data: DogInterface[] }
+      setDogs(Array.isArray(res.data) ? res.data : []);
+      setErr(null);
+    } catch (e: any) {
+      setErr(e?.message || "fetch failed");
+    } finally {
+      setLoading(false);
+    }
+  })();
+}, []);
+
 
   return (
     <>

@@ -1,6 +1,8 @@
 // src/interfaces/Dog.ts
 import type { AnimalSexInterface } from "./AnimalSex";
 import type { AnimalSizeInterface } from "./AnimalSize";
+import type { BreedInterface } from "./Breed";
+
 export interface DogInterface {
   id: number;
   name: string;
@@ -14,6 +16,40 @@ export interface DogInterface {
   sterilized_at?: string;
   character?: string;
   is_adopted?: boolean;
-  breed_name?: string;
+  breed_id?: number;
+  breed?: BreedInterface
+}
 
+export interface CreateDogRequest {
+  name: string;
+  animal_sex_id: number;
+  animal_size_id: number
+  breed_id: number;
+  photo_url?: string;
+  date_of_birth: string;
+  date_of_arrived: string;
+  sterilized_at?: string;
+  character?: string;
+  is_adopted?: boolean;
+}
+
+export interface UpdateDogRequest {
+  name?: string;
+  animal_sex_id?: number;
+  animal_size_id?: number
+  breed_id?: number;
+  photo_url?: string;
+  date_of_birth?: string;
+  date_of_arrived?: string;
+  sterilized_at?: string;
+  character?: string;
+  is_adopted?: boolean;
+}
+
+export interface DogFilters{
+  name?: string;
+  animal_sex_id?: number;
+  animal_size_id?: number;
+  breed_id?: number;
+  kennel_id?: number;
 }

@@ -1,6 +1,21 @@
-import type { User } from './User'
+import type { RoleInterface } from "./Role";
 
 export interface StaffInterface {
-    ID: number;
-    
+    id: number;
+    username: string;
+    password?: string;
+    firstname: string;
+    lastname: string;
+    date_of_birth: string;
+    phone: string;
+    email: string;
+    role_id: number;
+    role: RoleInterface;
+        
+}
+
+
+export interface LoginStaffRequest {
+  username: string;
+  password: string;
 }

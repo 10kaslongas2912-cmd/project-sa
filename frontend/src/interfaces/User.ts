@@ -1,17 +1,42 @@
+import type { GenderInterface } from "./Gender";
+
 export interface UserInterface {
-  ID?: number;
-  FirstName?: string;
-  LastName?: string;
-  DateOfBirth?: string;
-  Email?: string;
-  PhoneNumber?: string;
-  Username?: string;
-  Password?: string;
-  GenderID?: number;
+  ID: number;
+  username: string;
+  password: string;
+  firstname: string;
+  lastname: string;
+  date_of_birth: string;
+  email: string;
+  phone: string;
+  gender_id: number;
+  gender?: GenderInterface;
+  
 }
 
 export interface LoginUserRequest {
-  Email?: string;
-  UserName?: string;
-  Password?: string;
+  username: string;
+  password: string;
+}
+
+export interface CreateUserRequest {
+  username: string;
+  password: string;
+  firstname: string;
+  lastname: string;
+  date_of_birth: string;
+  email: string;
+  phone: string;
+  gender_id: number;
+}
+
+export interface UpdateUserRequest {
+  username?: string;
+  password?: string; 
+  firstname?: string;
+  lastname?: string;
+  date_of_birth?: string;
+  email?: string;
+  phone?: string;
+  gender_id?: number | null;
 }

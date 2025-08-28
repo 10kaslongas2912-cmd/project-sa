@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import './style.css';
 
 import { useNavigate } from "react-router-dom";
-import type { DonorsInterface } from '../../../../interfaces/Donors'; // Import DonorsInterface
+import type { DonorInterface } from '../../../../interfaces/Donor'; // Import DonorsInterface
 
 interface DonationInfoFormProps {
-  onSubmit?: (formData: DonorsInterface) => void; // Use DonorsInterface
+  onSubmit?: (formData: DonorInterface) => void; // Use DonorsInterface
 }
 
 // Helper to get initial state from sessionStorage
@@ -57,7 +57,7 @@ const InformationDonors: React.FC<DonationInfoFormProps> = ({ onSubmit }) => {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault(); // ป้องกันการรีเฟรชหน้าเมื่อกดส่งฟอร์ม
-    const formData: DonorsInterface = { // Cast to DonorsInterface
+    const formData: DonorInterface = { // Cast to DonorsInterface
       first_name: firstName,
       last_name: lastName,
       phone: phone,

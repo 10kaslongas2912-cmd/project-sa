@@ -55,6 +55,7 @@ func seedLookupsBase(db *gorm.DB) error {
 	if err := bulkCreate(db, []entity.PaymentMethod{
 		{Name: "บัตรเครดิต"},
 		{Name: "โอนเงินผ่านธนาคาร"},
+		{Name: "พร้อมเพย์"},
 	}); err != nil {
 		return err
 	}
@@ -108,14 +109,46 @@ func seedLookupsBase(db *gorm.DB) error {
 }
 
 func seedUsers(db *gorm.DB) error {
-	if err := bulkCreate(db, []entity.PaymentMethod{
-		{Name: "บัตรเครดิต"},
-		{Name: "โอนเงินผ่านธนาคาร"},
-		{Name: "พร้อมเพย์"},
-	}); err != nil {
+	var male, female entity.Gender
+	if err := mustFindBy(db, "gender", "ชาย", &male); err != nil {
 		return err
 	}
-	return nil
+	if err := mustFindBy(db, "gender", "หญิง", &female); err != nil {
+		return err
+	}
+	users := []entity.User{
+		{
+			Firstname:   "Admin",
+			Lastname:    "Root",
+			DateOfBirth: "1990-01-01",
+			Email:       "admin@example.com",
+			Phone:       "0800000000",
+			Username:    "Nam",
+			Password:    pw,
+			GenderID:    male.ID,
+		},
+		{
+			Firstname:   "สมชาย",
+			Lastname:    "ใจดี",
+			DateOfBirth: "1992-05-10",
+			Email:       "volunteer@example.com",
+			Phone:       "0812345678",
+			Username:    "Ta",
+			Password:    pw,
+			GenderID:    male.ID,
+		},
+		{
+			Firstname:   "สมหญิง",
+			Lastname:    "มีใจ",
+			DateOfBirth: "1995-09-20",
+			Email:       "adopter@example.com",
+			Phone:       "0898765432",
+			Username:    "tor",
+			Password:    pw,
+			GenderID:    female.ID,
+		},
+	};
+	return bulkCreate(db, users)
 }
 
 func seedStaffs(db *gorm.DB) error {

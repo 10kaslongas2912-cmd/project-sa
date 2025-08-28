@@ -11,6 +11,7 @@ import (
 	health_record "example.com/project-sa/controllers/health_record"
 	payment_method "example.com/project-sa/controllers/payment_method"
 	user "example.com/project-sa/controllers/user"
+	auth "example.com/project-sa/controllers/auth"
 	"example.com/project-sa/middlewares"
 	"example.com/project-sa/migrations"
 	"example.com/project-sa/seeds"
@@ -39,8 +40,8 @@ func main() {
 	r.Static("/static", "./static")
 
 	//  Routes (public)
-	r.POST("/signup", user.SignUp)
-	r.POST("/signin", user.SignIn)
+	r.POST("/user/auth", auth.SignIn)
+	r.POST("/user/signup", auth.SignUp)
 
 	r.GET("/dogs", dog.GetAllDogs)
 	r.GET("/dogs/:id", dog.GetDogByID)
@@ -72,7 +73,7 @@ func main() {
 	})
 
 	// 8) Run (แนะนำ bind ทุก iface)
-	if err := r.Run(":" + PORT); err != nil {
+	if err := r.Run("localhost:" + PORT); err != nil {
 		log.Fatal(err)
 	}
 }
