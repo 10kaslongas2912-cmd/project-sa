@@ -1,4 +1,4 @@
-export interface ItemDonationsInterface {
+export interface ItemDonationInterface {
     item_id?: number;
     item_name?: string;
     quantity?: number;

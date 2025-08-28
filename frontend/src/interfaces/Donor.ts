@@ -1,4 +1,4 @@
-export interface DonorsInterface {
+export interface DonorInterface {
     donor_id?: number;
     first_name?: string;
     last_name?: string;

@@ -1,4 +1,4 @@
-import type { UsersInterface } from "../../interfaces/IUser";
+import type { UserInterface } from "../../interfaces/User";
 import type { SignInInterface } from "../../interfaces/SignIn";
 import axios from "axios";
 const apiUrl = "http://localhost:8000";
@@ -19,7 +19,6 @@ async function SignIn(data: SignInInterface) {
     .then((res) => res)
     .catch((e) => e.response);
 }
-
 
 async function GetGender() {
   return await axios
@@ -46,7 +45,7 @@ async function GetUsersById(id: string) {
 }
 
 
-async function UpdateUsersById(id: string, data: UsersInterface) {
+async function UpdateUsersById(id: string, data: UserInterface) {
   return await axios
     .put(`${apiUrl}/user/${id}`, data, requestOptions)
     .then((res) => res)
@@ -62,7 +61,7 @@ async function DeleteUsersById(id: string) {
 }
 
 
-async function CreateUser(data: UsersInterface) {
+async function CreateUser(data: UserInterface) {
   return await axios
     .post(`${apiUrl}/signup`, data, requestOptions)
     .then((res) => res)
@@ -76,15 +75,15 @@ async function GetPaymentMethods() {
     .catch((e) => e.response);
 }
 
-import type { DonorsInterface } from '../../interfaces/Donors';
-import type { MoneyDonationsInterface } from '../../interfaces/MoneyDonations';
-import type { ItemDonationsInterface } from '../../interfaces/ItemDonations';
+import type { DonorInterface } from '../../interfaces/Donor';
+import type { MoneyDonationInterface } from '../../interfaces/MoneyDonation';
+import type { ItemDonationInterface } from '../../interfaces/ItemDonation';
 
 async function CreateDonation(
-  donorInfo: DonorsInterface,
+  donorInfo: DonorInterface,
   donationType: string,
-  moneyDetails?: MoneyDonationsInterface,
-  itemDetails?: ItemDonationsInterface[]
+  moneyDetails?: MoneyDonationInterface,
+  itemDetails?: ItemDonationInterface[]
 ) {
   const payload: any = { // Construct payload dynamically
     donor_info: donorInfo,

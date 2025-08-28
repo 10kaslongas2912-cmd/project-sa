@@ -6,7 +6,7 @@ import (
 
 type Zone struct {
 	gorm.Model
-	ZoneName string `gorm:"size:50;not null;unique"`
+	ZoneName string `json:"zone_name"`
 	Staffs   []Staff `gorm:"foreignKey:ZoneID"`
 	Kennels  []Kennel `gorm:"foreignKey:ZoneID"`
 }

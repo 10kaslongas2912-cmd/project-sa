@@ -1,20 +1,19 @@
-package donations
+package donation
 
 import (
 	"net/http"
 	"time"
-
-	"example.com/project-sa/config"
+	"example.com/project-sa/configs"
 	"example.com/project-sa/entity"
 	"github.com/gin-gonic/gin"
 )
 
 // CombinedDonationPayload is a struct to capture the entire JSON payload from the frontend
 type CombinedDonationPayload struct {
-	DonorInfo            entity.Donor         `json:"donor_info"`
+	DonorInfo            entity.Donor          `json:"donor_info"`
 	DonationType         string                `json:"donation_type"`
 	MoneyDonationDetails *entity.MoneyDonation `json:"money_donation_details,omitempty"`
-	ItemDonationDetails  []entity.ItemDonation  `json:"item_donation_details,omitempty"`
+	ItemDonationDetails  []entity.ItemDonation `json:"item_donation_details,omitempty"`
 }
 
 func CreateDonation(c *gin.Context) {
@@ -27,7 +26,7 @@ func CreateDonation(c *gin.Context) {
 	}
 
 	// Start a database transaction
-	tx := config.DB().Begin()
+	tx := configs.DB().Begin()
 
 	// Validate UserID if it exists
 	if payload.DonorInfo.UserID != nil {

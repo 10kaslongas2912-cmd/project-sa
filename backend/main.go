@@ -3,17 +3,18 @@ package main
 import (
 	"log"
 	"net/http"
-	"example.com/project-sa/config"
-	donations "example.com/project-sa/controllers/donation"
-	dogs "example.com/project-sa/controllers/dog"
-	genders "example.com/project-sa/controllers/gender"
-	health_records "example.com/project-sa/controllers/health_record"
-	payment_methods "example.com/project-sa/controllers/payment_method"
-	users "example.com/project-sa/controllers/user"
+
+	"example.com/project-sa/configs"
+	dog "example.com/project-sa/controllers/dog"
+	donation "example.com/project-sa/controllers/donation"
+	gender "example.com/project-sa/controllers/gender"
+	health_record "example.com/project-sa/controllers/health_record"
+	payment_method "example.com/project-sa/controllers/payment_method"
+	user "example.com/project-sa/controllers/user"
 	"example.com/project-sa/middlewares"
 	"example.com/project-sa/migrations"
-	"github.com/gin-gonic/gin"
 	"example.com/project-sa/seeds"
+	"github.com/gin-gonic/gin"
 )
 
 const (
@@ -21,11 +22,16 @@ const (
 )
 
 func main() {
-	db := config.MustOpenDB()
 
-	if err := config.ResetDatabase(db); err != nil { log.Fatal(err) }
-	if err := migrations.AutoMigrate(db); err != nil { log.Fatal(err) }
-	if err := seeds.SeedAll(db); err != nil { log.Fatal(err) }
+	configs.RemoveDBFile()
+	db := configs.MustOpenDB()
+
+	if err := migrations.AutoMigrate(db); err != nil {
+		log.Fatal(err)
+	}
+	if err := seeds.SeedAll(db); err != nil {
+		log.Fatal(err)
+	}
 
 	//  Setup Gin
 	r := gin.Default()
@@ -33,31 +39,31 @@ func main() {
 	r.Static("/static", "./static")
 
 	//  Routes (public)
-	r.POST("/signup", users.SignUp)
-	r.POST("/signin", users.SignIn)
+	r.POST("/signup", user.SignUp)
+	r.POST("/signin", user.SignIn)
 
-	r.GET("/dogs", dogs.GetAllDogs)
-	r.GET("/dogs/:id", dogs.GetDogByID)
+	r.GET("/dogs", dog.GetAllDogs)
+	r.GET("/dogs/:id", dog.GetDogByID)
 	// r.POST("/dogs", dogs.CreateDog)
 	// r.PUT("/dogs/:id", dogs.UpdateDog)
 	// r.DELETE("/dogs/:id", dogs.DeleteDog)
 
-	r.POST("/donations", donations.CreateDonation)
-	r.GET("/genders", genders.GetAll)
-	r.GET("/payment-methods", payment_methods.GetAll)
-	r.GET("/health-records/dog/:id", health_records.GetHealthRecordsByDogId)
-	r.POST("/health-records", health_records.CreateHealthRecord)
-	r.PUT("/health-records/:id", health_records.UpdateHealthRecord)
-	r.DELETE("/health-records/:id", health_records.DeleteHealthRecord)
+	r.POST("/donations", donation.CreateDonation)
+	r.GET("/genders", gender.GetAll)
+	r.GET("/payment-methods", payment_method.GetAll)
+	r.GET("/health-records/dog/:id", health_record.GetHealthRecordsByDogId)
+	r.POST("/health-records", health_record.CreateHealthRecord)
+	r.PUT("/health-records/:id", health_record.UpdateHealthRecord)
+	r.DELETE("/health-records/:id", health_record.DeleteHealthRecord)
 
 	// 7) Routes (protected)
 	protected := r.Group("/")
 	protected.Use(middlewares.Authorizes())
 	{
-		protected.PUT("/user/:id", users.Update)
-		protected.GET("/users", users.GetAll)
-		protected.GET("/user/:id", users.Get)
-		protected.DELETE("/user/:id", users.Delete)
+		protected.PUT("/user/:id", user.Update)
+		protected.GET("/users", user.GetAll)
+		protected.GET("/user/:id", user.Get)
+		protected.DELETE("/user/:id", user.Delete)
 	}
 
 	// health
@@ -70,7 +76,6 @@ func main() {
 		log.Fatal(err)
 	}
 }
-
 
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {

@@ -13,5 +13,5 @@ type Attendee struct {
 	Phone   *string   `gorm:"size:20" json:"phone"`
 	RegisteredAt *time.Time `gorm:"not null;default:current_timestamp" json:"registered_at"`
 	CheckedInAt  *time.Time `json:"checked_in_at"`
-	Notes        *string    `gorm:"type:text" json:"notes"`
+	Note        *string    `gorm:"type:text" json:"note"`
 }

@@ -4,8 +4,8 @@ import "gorm.io/gorm"
 
 type Donor struct {
 	gorm.Model
-	FirstName *string `json:"first_name"`
-	LastName  *string `json:"last_name"`
+	Firstname *string `json:"firstname"`
+	Lastname  *string `json:"lastname"`
 	Phone     *string `json:"phone"`
 	Email     *string `json:"email"`
 	DonorType *string `json:"donor_type"`

@@ -6,6 +6,6 @@ import (
 
 type Role struct {
 	gorm.Model
-	Name string `gorm:"size:50;not null;unique" json:"name"` 
+	Name string `json:"name"` 
 	Staffs   []Staff `gorm:"foreignKey:RoleID"`
 }

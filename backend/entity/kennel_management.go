@@ -10,6 +10,4 @@ type KenelManagement struct {
 	Staff      *Staff    `gorm:"foreignKey:StaffID"`
 	KennelID   uint      `json:"kennel_id"`
 	Kennel     *Kennel   `gorm:"foreignKey:KennelID"`
-	// BuildingID uint      `json:"building_id`
-	// Building   *Building `gorm:"foreignKey:BuildingID`
 }

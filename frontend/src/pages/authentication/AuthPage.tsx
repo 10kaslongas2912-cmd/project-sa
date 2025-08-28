@@ -6,7 +6,7 @@ import { Button, Form, Input, message, DatePicker, Select } from "antd";
 import { useNavigate } from 'react-router-dom';
 import { SignIn, CreateUser, GetGender } from "../../services/https";
 import type { SignInInterface } from "../../interfaces/SignIn";
-import type { UsersInterface } from "../../interfaces/IUser";
+import type { UserInterface } from "../../interfaces/User";
 import type { GenderInterface } from "../../interfaces/Gender";
 import './LoginPage.css';
 import logo from "../../assets/logo.png";
@@ -57,7 +57,7 @@ function AuthPage() {
     }
   };
 
-  const onFinishRegister = async (values: UsersInterface) => {
+  const onFinishRegister = async (values: UserInterface) => {
     const res = await CreateUser(values);
     if (res.status === 201) {
       messageApi.success(res.data.message);

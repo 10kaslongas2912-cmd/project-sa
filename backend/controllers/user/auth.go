@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"example.com/project-sa/config"
+	"example.com/project-sa/configs"
 	"example.com/project-sa/entity"
 	"example.com/project-sa/services"
 	"github.com/gin-gonic/gin"
@@ -20,14 +20,14 @@ type (
 	}
 
 	signUp struct {
-		FirstName   string    `json:"first_name"`
-		LastName    string    `json:"last_name"`
+		Firstname   string    `json:"firstname"`
+		Lastname    string    `json:"lastname"`
 		Email       string    `json:"email"`
-		PhoneNumber string    `json:"phone_number"`
-		Password    string    `json:"password"`
+		Phone       string    `json:"phone"`
 		DateOfBirth time.Time `json:"date_of_birth"`
 		GenderID    *uint     `json:"gender_id"`
-		UserName    string    `json:"username"`
+		Username    string    `json:"username"`
+		Password    string    `json:"password"`
 	}
 )
 
@@ -39,7 +39,7 @@ func SignUp(c *gin.Context) {
 		return
 	}
 
-	db := config.DB()
+	db := configs.DB()
 	var userCheck entity.User
 
 	// Check if the user with the provided email already exists
@@ -60,11 +60,11 @@ func SignUp(c *gin.Context) {
 	hashedPassword, _ := services.HashPassword(payload.Password)
 	// Create a new user
 	user := entity.User{
-		FirstName:   payload.FirstName,
-		LastName:    payload.LastName,
+		Firstname:   payload.Firstname,
+		Lastname:    payload.Lastname,
 		Email:       payload.Email,
-		PhoneNumber: payload.PhoneNumber,
-		UserName:    payload.UserName,
+		Phone:       payload.Phone,
+		Username:    payload.Username,
 		Password:    hashedPassword,
 		DateOfBirth: payload.DateOfBirth,
 		GenderID:    payload.GenderID,
@@ -85,7 +85,7 @@ func SignIn(c *gin.Context) {
 		return
 	}
 	// ค้นหา user ด้วย Username ที่ผู้ใช้กรอกเข้ามา
-	if err := config.DB().Raw("SELECT * FROM users WHERE user_name = ?", payload.UserName).Scan(&user).Error; err != nil {
+	if err := configs.DB().Raw("SELECT * FROM users WHERE user_name = ?", payload.UserName).Scan(&user).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -103,7 +103,7 @@ func SignIn(c *gin.Context) {
 		ExpirationHours: 24,
 	}
 
-	signedToken, err := jwtWrapper.GenerateToken(user.UserName)
+	signedToken, err := jwtWrapper.GenerateToken(user.Username)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "error signing token"})

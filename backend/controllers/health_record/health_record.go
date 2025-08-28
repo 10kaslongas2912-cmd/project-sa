@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"example.com/project-sa/config"
+	"example.com/project-sa/configs"
 	"example.com/project-sa/entity"
 )
 
@@ -14,7 +14,7 @@ func GetHealthRecordsByDogId(c *gin.Context) {
 	dogID := c.Param("id")
 	var healthRecords []entity.MedicalRecord
 
-	if err := config.DB().Where("dog_id = ?", dogID).Find(&healthRecords).Error; err != nil {
+	if err := configs.DB().Where("dog_id = ?", dogID).Find(&healthRecords).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "health records not found for this dog"})
 		return
 	}
@@ -38,7 +38,7 @@ func CreateHealthRecord(c *gin.Context) {
 	}
 
 	// Save the health record to the database
-	if err := config.DB().Create(&healthRecord).Error; err != nil {
+	if err := configs.DB().Create(&healthRecord).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -52,13 +52,13 @@ func DeleteHealthRecord(c *gin.Context) {
 
 	// Find the health record
 	var healthRecord entity.MedicalRecord
-	if err := config.DB().First(&healthRecord, id).Error; err != nil {
+	if err := configs.DB().First(&healthRecord, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "health record not found"})
 		return
 	}
 
 	// Delete the health record
-	if err := config.DB().Delete(&healthRecord).Error; err != nil {
+	if err := configs.DB().Delete(&healthRecord).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -79,7 +79,7 @@ func UpdateHealthRecord(c *gin.Context) {
 
 	// Find the existing health record
 	var existingRecord entity.MedicalRecord
-	if err := config.DB().First(&existingRecord, id).Error; err != nil {
+	if err := configs.DB().First(&existingRecord, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "health record not found"})
 		return
 	}
@@ -96,7 +96,7 @@ func UpdateHealthRecord(c *gin.Context) {
 	existingRecord.Notes = updatedRecord.Notes
 
 	// Save the updated health record to the database
-	if err := config.DB().Save(&existingRecord).Error; err != nil {
+	if err := configs.DB().Save(&existingRecord).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

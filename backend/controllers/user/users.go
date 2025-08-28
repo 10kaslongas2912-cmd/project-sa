@@ -3,14 +3,14 @@ package users
 import (
 	"net/http"
 
-	"example.com/project-sa/config"
+	"example.com/project-sa/configs"
 	"example.com/project-sa/entity"
 	"github.com/gin-gonic/gin"
 )
 
 func GetAll(c *gin.Context) {
 	var users []entity.User
-	db := config.DB()
+	db := configs.DB()
 
 	results := db.Preload("Gender").Find(&users)
 	if results.Error != nil {
@@ -24,7 +24,7 @@ func Get(c *gin.Context) {
 	ID := c.Param("id")
 	var user entity.User
 
-	db := config.DB()
+	db := configs.DB()
 
 	results := db.Preload("Gender").First(&user, ID)
 
@@ -44,7 +44,7 @@ func Update(c *gin.Context) {
 	var user entity.User
 	UserID := c.Param("id")
 
-	db := config.DB()
+	db := configs.DB()
 
 	result := db.First(&user, UserID)
 
@@ -71,7 +71,7 @@ func Update(c *gin.Context) {
 func Delete(c *gin.Context) {
 	id := c.Param("id")
 
-	db := config.DB()
+	db := configs.DB()
 
 	if tx := db.Exec("DELETE FROM users WHERE id = ?", id); tx.RowsAffected == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id not found"})

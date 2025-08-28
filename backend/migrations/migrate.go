@@ -34,5 +34,6 @@ func AutoMigrate(db *gorm.DB) error {
 		&entity.Vaccine{},
 		&entity.VaccineRecord{},
 		&entity.Volunteer{},
+		&entity.Zone{},
 	)
 }

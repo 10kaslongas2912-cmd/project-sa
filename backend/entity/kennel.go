@@ -4,12 +4,13 @@ import "gorm.io/gorm"
 
 type Kennel struct {
 	gorm.Model
-	Location string `json:"location"`
 	Capacity uint   `json:"capacity"`
 	Color    string `json:"color"`
-	Notes    string `json:"notes"`
-	StaffID  uint   `json:"staff_id"`
-	Staff    *Staff `gorm:"foreignKey:StaffID"`
+	Note    *string `json:"note"`
 
-	Dogs   []Dog   `gorm:"foreignKey:KennelID"`
+	ZoneID uint  `json:"zone_id"`
+	Zone   *Zone `gorm:"foreignKey:ZoneID"`
+
+	KenelManagements []KenelManagement `gorm:"foreignKey:KennelID"`
+	Dogs []Dog `gorm:"foreignKey:KennelID"`
 }

@@ -1,4 +1,4 @@
-export interface MoneyDonationsInterface {
+export interface MoneyDonationInterface {
     money_id?: number;
     amount?: number;
     payment_type?: "one-time" | "monthly";
