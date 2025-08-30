@@ -39,7 +39,7 @@ function DogCard({ dog }: DogCardProps) {
       <div className="card text">
             <h3 className="dogname">{dog.name}</h3>
               <p className="dog-info">
-                {dog.animal_sex?.animal_sex}・ขนาด {dog.animal_size?.animal_size}
+                {dog.animal_sex?.name}・ขนาด {dog.animal_size?.name}
                 {dog.date_of_birth && <><br/>อายุ {ageText(dog.date_of_birth)}</>}
               </p>
         </div>

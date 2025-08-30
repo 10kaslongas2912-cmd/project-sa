@@ -1,91 +1,36 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { useAuth } from '../../hooks/useAuth'; // ✅ ใช้ hook แทน
 import logo from '../../assets/logo.png';
 import './style.css';
-
-type AppUser = {
-  name: string;
-  avatar: string | null;
-  role: 'admin' | 'volunteer' | 'adopter';
-};
 
 const NavigationBar: React.FC = () => {
   const [visible, setVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [user, setUser] = useState<AppUser>({
-    name: 'สมชาย ใจดี',
-    avatar: null,
-    role: 'volunteer',
-  });
 
+  const { user, isLoggedIn, logout } = useAuth(); // ✅ ดึงจาก hook
   const location = useLocation();
 
-  // อ่านสถานะ login จาก localStorage ให้สอดคล้องกับหน้า Auth
-  const readAuth = () => {
-    const token = localStorage.getItem('token');
-    const type = localStorage.getItem('token_type');
-    const name =
-      localStorage.getItem('user_name') || // แนะนำให้เซฟชื่อหลัง login
-      localStorage.getItem('username') ||  // หรือ username
-      user.name;
-
-    const avatar = localStorage.getItem('avatar') || null;
-    return {
-      isLoggedIn: Boolean(token && type),
-      name,
-      avatar,
-    };
-  };
-
-  // ซ่อน/แสดง navbar ตามการเลื่อน
   const controlNavbar = () => {
     if (typeof window !== 'undefined') {
-      if (window.scrollY > lastScrollY) setVisible(false);
-      else setVisible(true);
+      setVisible(window.scrollY <= lastScrollY);
       setLastScrollY(window.scrollY);
     }
   };
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      window.addEventListener('scroll', controlNavbar);
-      return () => window.removeEventListener('scroll', controlNavbar);
-    }
+    window.addEventListener('scroll', controlNavbar);
+    return () => window.removeEventListener('scroll', controlNavbar);
   }, [lastScrollY]);
 
-  // เช็คสถานะ login ตอน mount และทุกครั้งที่เส้นทางเปลี่ยน
+  // ถ้าต้องการปิด dropdown เมื่อเปลี่ยนหน้า
   useEffect(() => {
-    const a = readAuth();
-    setIsLoggedIn(a.isLoggedIn);
-    setUser((u) => ({ ...u, name: a.name, avatar: a.avatar }));
+    setShowDropdown(false);
   }, [location.pathname]);
 
-  // รองรับกรณี login ในอีกแท็บ (storage event)
-  useEffect(() => {
-    const onStorage = (e: StorageEvent) => {
-      if (!e.key) return;
-      if (['token', 'token_type', 'user_name', 'username', 'avatar', 'isLogin'].includes(e.key)) {
-        const a = readAuth();
-        setIsLoggedIn(a.isLoggedIn);
-        setUser((u) => ({ ...u, name: a.name, avatar: a.avatar }));
-      }
-    };
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
-  }, []);
-
-  const handleLogout = () => {
-    ['token', 'token_type', 'isLogin', 'id', 'user_name', 'username', 'avatar'].forEach((k) =>
-      localStorage.removeItem(k)
-    );
-    setIsLoggedIn(false);
-    setShowDropdown(false);
-  };
-
   const getUserInitials = (name: string) =>
-    name
+    (name || 'ผู้ใช้')
       .split(' ')
       .filter(Boolean)
       .map((n) => n[0])
@@ -124,13 +69,13 @@ const NavigationBar: React.FC = () => {
               onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
             >
               <div className="user-avatar">
-                {user.avatar ? (
+                {user?.avatar ? (
                   <img src={user.avatar} alt="Profile" />
                 ) : (
-                  <span className="user-initials">{getUserInitials(user.name)}</span>
+                  <span className="user-initials">{getUserInitials(user?.name ?? 'ผู้ใช้')}</span>
                 )}
               </div>
-              <span className="user-name">{user.name.split(' ')[0] || 'ผู้ใช้'}</span>
+              <span className="user-name">{(user?.name || 'ผู้ใช้').split(' ')[0]}</span>
               <svg className="dropdown-arrow" viewBox="0 0 20 20" fill="currentColor">
                 <path
                   fillRule="evenodd"
@@ -145,18 +90,18 @@ const NavigationBar: React.FC = () => {
                 <div className="dropdown-header">
                   <div className="user-info">
                     <div className="user-avatar-large">
-                      {user.avatar ? (
+                      {user?.avatar ? (
                         <img src={user.avatar} alt="Profile" />
                       ) : (
-                        <span className="user-initials">{getUserInitials(user.name)}</span>
+                        <span className="user-initials">{getUserInitials(user?.name ?? 'ผู้ใช้')}</span>
                       )}
                     </div>
                     <div className="user-details">
-                      <div className="user-name-full">{user.name}</div>
+                      <div className="user-name-full">{user?.name ?? 'ผู้ใช้'}</div>
                       <div className="user-role">
-                        {user.role === 'admin' && 'ผู้ดูแลระบบ'}
-                        {user.role === 'volunteer' && 'อาสาสมัคร'}
-                        {user.role === 'adopter' && 'ผู้รับเลี้ยง'}
+                        {user?.role === 'admin' && 'ผู้ดูแลระบบ'}
+                        {user?.role === 'volunteer' && 'อาสาสมัคร'}
+                        {user?.role === 'adopter' && 'ผู้รับเลี้ยง'}
                       </div>
                     </div>
                   </div>
@@ -175,14 +120,14 @@ const NavigationBar: React.FC = () => {
                     <span className="item-icon">💖</span>
                     ประวัติการบริจาค
                   </Link>
-                  {user.role === 'admin' && (
+                  {user?.role === 'admin' && (
                     <Link to="/admin" className="dropdown-item">
                       <span className="item-icon">⚙️</span>
                       จัดการระบบ
                     </Link>
                   )}
                   <hr className="dropdown-divider" />
-                  <button onClick={handleLogout} className="dropdown-item logout-btn">
+                  <button onClick={logout} className="dropdown-item logout-btn">
                     <span className="item-icon">🚪</span>
                     ออกจากระบบ
                   </button>

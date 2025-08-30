@@ -9,6 +9,7 @@ export interface UserInterface {
   date_of_birth: string;
   email: string;
   phone: string;
+  photo_url: string;
   gender_id: number;
   gender?: GenderInterface;
   
