@@ -4,11 +4,14 @@ import NavigationBar from '../../../../components/NavigationBar';
 
 const VolunteerWaitForApprove = () => {
   return (
+    <>  
+    <NavigationBar />
     <div className="volunteer-wait-for-approve-container">
-      <NavigationBar />
       <h1>Waiting for Approval</h1>
       <p>Your volunteer application is currently under review.</p>
     </div>
+    </>
+    
   );
 };
 
