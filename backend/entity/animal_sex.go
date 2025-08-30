@@ -6,7 +6,7 @@ import (
 
 type AnimalSex struct {
 	gorm.Model
-	AnimalSex string `json:"animal_sex"`
+	Name string `json:"name"`
 
 	Dogs []Dog `gorm:"foreignKey:AnimalSexID"`
 }

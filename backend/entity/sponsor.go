@@ -22,8 +22,8 @@ type Sponsor struct {
 	Lastname  *string `json:"lastname"`
 	Email     *string `gorm:"index;uniqueIndex:uniq_kind_email" json:"email"`
 	Phone     *string `json:"phone"`
-	GenderId  *uint   `json:"gender_id"`
-	Gender *Gender `gorm:"foreignKey:GenderId" json:"gender"`
+	GenderID  *uint   `json:"gender_id"`
+	Gender *Gender `gorm:"foreignKey:GenderID" json:"gender"`
 
 	// ใช้ทำกรอง/รายงาน
 	Note   *string `gorm:"type:text" json:"note"`

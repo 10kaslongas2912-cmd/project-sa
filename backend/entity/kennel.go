@@ -4,6 +4,7 @@ import "gorm.io/gorm"
 
 type Kennel struct {
 	gorm.Model
+	Name	string `json:"name"`
 	Capacity uint   `json:"capacity"`
 	Color    string `json:"color"`
 	Note    *string `json:"note"`

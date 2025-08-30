@@ -4,6 +4,6 @@ import "gorm.io/gorm"
 
 type AnimalSize struct {
 	gorm.Model
-	AnimalSize string `json:"animal_size"`
+	Name string `json:"name"`
 	Dogs []Dog `gorm:"foreignKey:AnimalSizeID"`
 }
