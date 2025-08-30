@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import logo from '../../assets/logo.png';
 import './style.css';
@@ -21,7 +21,6 @@ const NavigationBar: React.FC = () => {
   });
 
   const location = useLocation();
-  const navigate = useNavigate();
 
   // อ่านสถานะ login จาก localStorage ให้สอดคล้องกับหน้า Auth
   const readAuth = () => {
@@ -83,7 +82,6 @@ const NavigationBar: React.FC = () => {
     );
     setIsLoggedIn(false);
     setShowDropdown(false);
-    navigate('/auth');
   };
 
   const getUserInitials = (name: string) =>

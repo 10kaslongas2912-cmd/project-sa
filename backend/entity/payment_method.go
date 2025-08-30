@@ -7,5 +7,5 @@ type PaymentMethod struct {
 	Name string `json:"name"`
 
 	MoneyDonations []MoneyDonation `gorm:"foreignKey:PaymentMethodID"`
-	Sponsorships   []Sponsorship   `gorm:"foreignKey:PaymentMethodID"`
+	SponsorshipPayments   []SponsorshipPayment   `gorm:"foreignKey:PaymentMethodID"`
 }

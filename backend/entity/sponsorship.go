@@ -1,7 +1,6 @@
 package entity
 
 import (
-	"time"
 
 	"gorm.io/gorm"
 )
@@ -24,27 +23,14 @@ const (
 
 type Sponsorship struct {
 	gorm.Model
+	SponsorID uint             `json:"sponsor_id"`
+	Sponsor   *Sponsor  `gorm:"foreignKey:SponsorID" json:"sponsor"`
+	DogID            uint             `json:"dog_id"`
+	Kind             string           `json:"kind"`   // ONE_TIME / SUBSCRIPTION
+	Status           string           `json:"status"` // PENDING, ACTIVE, COMPLETED, CANCELED
+	Note             *string          `json:"note"`
 
-	SponsorID uint     `gorm:"not null;index"`
-	Sponsor   *Sponsor `gorm:"foreignKey:SponsorID"`
-	DogID     uint     `gorm:"not null;index"`
-	Dog       *Dog     `gorm:"foreignKey:DogID"`
-
-	PaymentMode     PaymentMode     `gorm:"type:text;not null"`
-	BillingInterval BillingInterval `gorm:"type:text;not null"`
-
-	AmountPerCycle *int64 `json:"amount_per_cycle"`
-	AmountTotal    *int64 `json:"amount_total_satang"`
-
-	PaymentMethodID uint           `json:"payment_method_id"`
-	PaymentMethod   *PaymentMethod `gorm:"foreignKey:PaymentMethodID"`
-
-	BilledCycles int `json:"billed_cycles"`
-
-	Status        string     `gorm:"type:text;not null;default:'active';index"`
-	StartAt       time.Time  `json:"start_at"`
-	NextBillingAt *time.Time `json:"next_billing_at"`
-
-	PausedAt   *time.Time `json:"paused_at"`
-	CanceledAt *time.Time `json:"canceled_at"`
+	Subscription *Subscription `json:"subscription"`
+	SponsorshipPayments     []SponsorshipPayment     `gorm:"foreignKey:SponsorshipID" json:"sponsorship_payments"`
 }
+

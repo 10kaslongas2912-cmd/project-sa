@@ -18,16 +18,15 @@ type Sponsor struct {
 	UserID *uint `gorm:"uniqueIndex" json:"user_id"`
 	User   *User `gorm:"foreignKey:UserID" json:"user"`
 	// ข้อมูลติดต่อ (กรณี guest)
-	FirstName *string `json:"first_name"`
-	LastName  *string `json:"last_name"`
+	Firstname *string `json:"firstname"`
+	Lastname  *string `json:"lastname"`
 	Email     *string `gorm:"index;uniqueIndex:uniq_kind_email" json:"email"`
 	Phone     *string `json:"phone"`
-	OrgName   *string `json:"org_name"`
 	GenderId  *uint   `json:"gender_id"`
 	Gender *Gender `gorm:"foreignKey:GenderId" json:"gender"`
 
 	// ใช้ทำกรอง/รายงาน
-	Status string  `gorm:"type:text;not null;default:'active';index" json:"status"` // active/blocked
 	Note   *string `gorm:"type:text" json:"note"`
 
+	Sponsorships []Sponsorship `gorm:"foreignKey:SponsorID"`
 }
