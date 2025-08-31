@@ -54,7 +54,7 @@ const MobileBankingPage: React.FC = () => {
   const handleFinish = async () => {
     // 1. Retrieve data from sessionStorage
     const donorInfoString = sessionStorage.getItem('donationInfoFormData');
-    const moneyDetailsString = sessionStorage.getItem('donationMoneyFormData');
+    const moneyDetailsString = sessionStorage.getItem('moneyDonationData'); // CORRECT KEY
     const donationType = sessionStorage.getItem('donationType');
     const transactionNumber = sessionStorage.getItem('transactionNumber');
 
@@ -69,7 +69,7 @@ const MobileBankingPage: React.FC = () => {
 
     try {
       const donorInfo: DonorsInterface = JSON.parse(donorInfoString);
-      const moneyDetailsRaw = JSON.parse(moneyDetailsString);
+      let moneyDetails: MoneyDonationsInterface = JSON.parse(moneyDetailsString); // PARSE CORRECT DATA
 
       // 2. Determine donor_type
       const token = localStorage.getItem('token');
@@ -79,15 +79,11 @@ const MobileBankingPage: React.FC = () => {
         donorInfo.user_id = parseInt(userId, 10);
       }
 
-      // 3. Construct MoneyDonations object
-      const moneyDetails: MoneyDonationsInterface = {
-        amount: Number(moneyDetailsRaw.oneTimeAmount),
-        payment_method_id: moneyDetailsRaw.paymentMethod,
-        payment_type: 'one-time',
+      // 3. Add final properties to MoneyDonations object
+      moneyDetails = {
+        ...moneyDetails,
         status: 'complete',
         transaction_ref: transactionNumber || generatePaymentNumber(),
-        billing_date: "-",
-        next_payment_date: "-",
       };
 
       // 4. Call CreateDonation
@@ -100,7 +96,8 @@ const MobileBankingPage: React.FC = () => {
         });
         // Clear session storage after successful donation
         sessionStorage.removeItem('donationInfoFormData');
-        sessionStorage.removeItem('donationMoneyFormData');
+        sessionStorage.removeItem('moneyDonationData');
+        sessionStorage.removeItem('donationMoneyFormData'); // Also remove the old raw data
         sessionStorage.removeItem('donationType');
         sessionStorage.removeItem('transactionNumber');
         navigate('/donation/thankyou');

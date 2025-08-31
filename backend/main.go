@@ -5,13 +5,13 @@ import (
 	"net/http"
 
 	"example.com/project-sa/configs"
+	auth "example.com/project-sa/controllers/auth"
 	dog "example.com/project-sa/controllers/dog"
 	donation "example.com/project-sa/controllers/donation"
 	gender "example.com/project-sa/controllers/gender"
 	health_record "example.com/project-sa/controllers/health_record"
 	payment_method "example.com/project-sa/controllers/payment_method"
 	user "example.com/project-sa/controllers/user"
-	auth "example.com/project-sa/controllers/auth"
 	"example.com/project-sa/middlewares"
 	"example.com/project-sa/migrations"
 	"example.com/project-sa/seeds"
@@ -61,7 +61,7 @@ func main() {
 	protected := r.Group("/")
 	protected.Use(middlewares.Authorizes())
 	{
-		protected.GET("/user/me", user.Me) 
+		protected.GET("/user/me", user.Me)
 		protected.PUT("/user/:id", user.UpdateUser)
 		protected.GET("/users", user.GetAllUsers)
 		protected.GET("/user/:id", user.GetUserById)

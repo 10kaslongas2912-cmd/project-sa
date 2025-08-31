@@ -19,17 +19,16 @@ const getInitialFormData = () => {
   }
 };
 
-const InformationDonors: React.FC<DonationInfoFormProps> = ({ onSubmit }) => {
+const InformationDonors: React.FC = () => {
   const navigate = useNavigate();
   const initialData = getInitialFormData();
 
   // สร้าง State สำหรับเก็บค่าของแต่ละ Input
-  const [firstName, setFirstName] = useState(initialData.firstName || '');
-  const [lastName, setLastName] = useState(initialData.lastName || '');
+  const [firstName, setFirstName] = useState(initialData.first_name || '');
+  const [lastName, setLastName] = useState(initialData.last_name || '');
   const [phone, setPhone] = useState(initialData.phone || '');
   const [email, setEmail] = useState(initialData.email || '');
 
-  // Use useEffect to pre-fill data from prefillUserData in sessionStorage
   useEffect(() => {
     const prefillData = sessionStorage.getItem('prefillUserData');
     console.log("InformationDonors: Retrieved prefillData from sessionStorage:", prefillData); // Log retrieved data
@@ -49,7 +48,6 @@ const InformationDonors: React.FC<DonationInfoFormProps> = ({ onSubmit }) => {
     }
   }, []); // Run only once on mount
 
-  // Use useEffect to save data to sessionStorage whenever state changes
   useEffect(() => {
     const formData = { first_name: firstName, last_name: lastName, phone, email };
     sessionStorage.setItem('donationInfoFormData', JSON.stringify(formData));
@@ -64,10 +62,6 @@ const InformationDonors: React.FC<DonationInfoFormProps> = ({ onSubmit }) => {
       email: email,
     };
     console.log('Form Data Submitted:', formData);
-    // เรียกใช้ฟังก์ชัน onSubmit ที่ส่งมาจาก parent component
-    if (onSubmit) {
-      onSubmit(formData);
-    }
 
     const donationType = sessionStorage.getItem('donationType');
     if (donationType === 'money') {
@@ -85,7 +79,6 @@ const InformationDonors: React.FC<DonationInfoFormProps> = ({ onSubmit }) => {
       <div className="form-card">
         {/* ปุ่มย้อนกลับ */}
         <button onClick={() => {
-          sessionStorage.removeItem('donationInfoFormData'); // ล้างข้อมูลเมื่อย้อนกลับ
           navigate('/donation/options');
         }} className="back-link">
           &lt; ย้อนกลับ
