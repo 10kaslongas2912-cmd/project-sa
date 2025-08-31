@@ -1,48 +1,29 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { useAuth } from '../../hooks/useAuth'; // ✅ ใช้ hook แทน
 import logo from '../../assets/logo.png';
 import './style.css';
+import { useAuthUser } from '../../hooks/useAuth';
 
 const NavigationBar: React.FC = () => {
   const [visible, setVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const { user, isLoggedIn, logout } = useAuth(); // ✅ ดึงจาก hook
-  const location = useLocation();
-
-  const controlNavbar = () => {
-    if (typeof window !== 'undefined') {
-      setVisible(window.scrollY <= lastScrollY);
-      setLastScrollY(window.scrollY);
-    }
-  };
+  const { user, isLoggedIn, loading, logout } = useAuthUser();
 
   useEffect(() => {
+    const controlNavbar = () => {
+      setVisible(window.scrollY <= lastScrollY);
+      setLastScrollY(window.scrollY);
+    };
     window.addEventListener('scroll', controlNavbar);
     return () => window.removeEventListener('scroll', controlNavbar);
   }, [lastScrollY]);
 
-  // ถ้าต้องการปิด dropdown เมื่อเปลี่ยนหน้า
-  useEffect(() => {
-    setShowDropdown(false);
-  }, [location.pathname]);
-
-  const getUserInitials = (name: string) =>
-    (name || 'ผู้ใช้')
-      .split(' ')
-      .filter(Boolean)
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase();
-
   return (
     <header className={`header ${visible ? 'header-visible' : 'header-hidden'}`}>
       <div className="header-logo">
-        <Link to="/">
-          <img src={logo} alt="logo" />
-        </Link>
+        <Link to="/"><img src={logo} alt="logo" /></Link>
       </div>
 
       <nav className="header-nav">
@@ -61,85 +42,58 @@ const NavigationBar: React.FC = () => {
           <span className="heart-icon">&#x2764;</span> บริจาค
         </Link>
 
+        {/* ตรงนี้แสดงสถานะโหลดเฉพาะส่วน user */}
         {isLoggedIn ? (
-          <div className="user-profile-container">
-            <button
-              className="user-profile-btn"
-              onClick={() => setShowDropdown(!showDropdown)}
-              onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
-            >
-              <div className="user-avatar">
-                {user?.avatar ? (
-                  <img src={user.avatar} alt="Profile" />
-                ) : (
-                  <span className="user-initials">{getUserInitials(user?.name ?? 'ผู้ใช้')}</span>
-                )}
-              </div>
-              <span className="user-name">{(user?.name || 'ผู้ใช้').split(' ')[0]}</span>
-              <svg className="dropdown-arrow" viewBox="0 0 20 20" fill="currentColor">
-                <path
-                  fillRule="evenodd"
-                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-
-            {showDropdown && (
-              <div className="user-dropdown">
-                <div className="dropdown-header">
-                  <div className="user-info">
-                    <div className="user-avatar-large">
-                      {user?.avatar ? (
-                        <img src={user.avatar} alt="Profile" />
-                      ) : (
-                        <span className="user-initials">{getUserInitials(user?.name ?? 'ผู้ใช้')}</span>
-                      )}
-                    </div>
-                    <div className="user-details">
-                      <div className="user-name-full">{user?.name ?? 'ผู้ใช้'}</div>
-                      <div className="user-role">
-                        {user?.role === 'admin' && 'ผู้ดูแลระบบ'}
-                        {user?.role === 'volunteer' && 'อาสาสมัคร'}
-                        {user?.role === 'adopter' && 'ผู้รับเลี้ยง'}
+          loading ? (
+            <div className="user-skeleton" aria-label="กำลังโหลดผู้ใช้">...</div>
+          ) : (
+            <div className="user-profile-container">
+              <button
+                className="user-profile-btn"
+                onClick={() => setShowDropdown(!showDropdown)}
+                onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
+              >
+                <div className="user-avatar">
+                  <img src={user?.photo_url ?? undefined} alt="Profile" />
+                </div>
+                <span className="user-name">{user?.name ?? ''}</span>
+                <svg className="dropdown-arrow" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+  
+              {showDropdown && (
+                <div className="user-dropdown">
+                  <div className="dropdown-header">
+                    <div className="user-info">
+                      <div className="user-avatar-large">
+                        <img src={user?.photo_url ?? undefined} alt="Profile" />
+                      </div>
+                      <div className="user-details">
+                        <div className="user-name-full">
+                          {user?.name ?? ''}
+                        </div>
+                        <div className="user-role">user</div>
                       </div>
                     </div>
                   </div>
+  
+                  <div className="dropdown-menu">
+                    <Link to="/profile" className="dropdown-item"><span className="item-icon">👤</span>โปรไฟล์ของฉัน</Link>
+                    <Link to="/my-adoptions" className="dropdown-item"><span className="item-icon">🐕</span>สุนัขที่รับเลี้ยง</Link>
+                    <Link to="/my-donations" className="dropdown-item"><span className="item-icon">💖</span>ประวัติการบริจาค</Link>
+                    <hr className="dropdown-divider" />
+                    <button onClick={logout} className="dropdown-item logout-btn">
+                      <span className="item-icon">🚪</span>ออกจากระบบ
+                    </button>
+                  </div>
                 </div>
-
-                <div className="dropdown-menu">
-                  <Link to="/profile" className="dropdown-item">
-                    <span className="item-icon">👤</span>
-                    โปรไฟล์ของฉัน
-                  </Link>
-                  <Link to="/my-adoptions" className="dropdown-item">
-                    <span className="item-icon">🐕</span>
-                    สุนัขที่รับเลี้ยง
-                  </Link>
-                  <Link to="/my-donations" className="dropdown-item">
-                    <span className="item-icon">💖</span>
-                    ประวัติการบริจาค
-                  </Link>
-                  {user?.role === 'admin' && (
-                    <Link to="/admin" className="dropdown-item">
-                      <span className="item-icon">⚙️</span>
-                      จัดการระบบ
-                    </Link>
-                  )}
-                  <hr className="dropdown-divider" />
-                  <button onClick={logout} className="dropdown-item logout-btn">
-                    <span className="item-icon">🚪</span>
-                    ออกจากระบบ
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        ) : (
-          <Link to="/auth" className="btn btn-action login-btn">
-            <span>เข้าสู่ระบบ</span>
-          </Link>
-        )}
+              )}
+            </div>
+          )
+          ) : (
+            <Link to="/auth" className="btn btn-action login-btn"><span>เข้าสู่ระบบ</span></Link>
+          )}
       </div>
     </header>
   );

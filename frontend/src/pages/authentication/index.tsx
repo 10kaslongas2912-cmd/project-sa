@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import type { CreateUserRequest,LoginUserRequest, UpdateUserRequest } from "../../interfaces/User"; // แยกเป็น Request ชัดเจน
 import type { GenderInterface } from "../../interfaces/Gender";
 
-import { api } from "../../services/api"; // <- ใช้รวม API ที่ไฟล์เดียว
+import { api } from "../../services/apis"; // <- ใช้รวม API ที่ไฟล์เดียว
 import "./style.css";
 import logo from "../../assets/logo.png";
 
@@ -26,9 +26,9 @@ function AuthPage() {
   // ---- LOGIN ----
   const onFinishLogin = async (values: LoginUserRequest) => {
     try {
-      const data = await api.authAPI.logIn(values);
+      const res = await api.authAPI.logIn(values);
       // data รูปแบบ { data: { token, token_type, user } }
-      const payload = data?.data;
+      const payload = res.data.data
       messageApi.success("เข้าสู่ระบบสำเร็จ");
       localStorage.setItem("isLogin", "true");
       localStorage.setItem("token_type", payload.token_type);
@@ -51,12 +51,12 @@ function AuthPage() {
   // ---- LOAD GENDERS ----
   const onGetGender = async () => {
     try {
-      const res = await api.genderAPI.getAll(); // { data: [...] }
-      const list = Array.isArray(res?.data) ? res.data : [];
-      // รองรับคีย์หลายแบบ: {id,name} หรือ {ID,gender}
+      const res = await api.genderAPI.getAll(); 
+      const list = Array.isArray(res) ? res : [];
+
       const normalized: GenderInterface[] = list.map((g: any) => ({
         id: g.id ?? g.ID,
-        name: g.name ?? g.gender,
+        name: g.name
       }));
       setGenders(normalized);
     } catch (e: any) {
@@ -142,9 +142,9 @@ function AuthPage() {
                   rules={[{ required: true, message: "กรุณาเลือกเพศ !" }]}
                 >
                   <Select placeholder="เพศ">
-                    {genders.map((item) => (
-                      <Select.Option value={item.id} key={item.id}>
-                        {item.gender}
+                    {genders.map((gender) => (
+                      <Select.Option value={gender.id} key={gender.id}>
+                        {gender.name}
                       </Select.Option>
                     ))}
                   </Select>

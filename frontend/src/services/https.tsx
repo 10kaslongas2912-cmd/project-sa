@@ -1,5 +1,5 @@
 // src/services/https
-import  axios  from "axios";    
+import axios from "axios";
 import type { AxiosResponse, AxiosError } from "axios";
 
 const API_URL = import.meta.env.VITE_API_KEY || "http://localhost:8000";
@@ -16,13 +16,27 @@ const getCookie = (name: string): string | null => {
   return null;
 };
 
-const getConfig = () => ({
-  headers: {
-    Authorization: `Bearer ${getCookie("0195f494-feaa-734a-92a6-05739101ede9")}`,
-    "Content-Type": "application/json",
-  },
-});
+const getToken = (): string | null => {
+  return (
+    localStorage.getItem("token") ||
+    getCookie("0195f494-feaa-734a-92a6-05739101ede9") ||
+    null
+  );
+};
 
+//------ไม่เหมือน จารย์---------//
+const getTokenType = (): string =>
+  localStorage.getItem("token_type") || "Bearer";
+
+const getConfig = () => {
+  const token = getToken();
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (token) headers.Authorization = `${getTokenType()} ${token}`; // ✅ มีค่อยใส่
+  return { headers };
+};
+//------------------------------//
 const getConfigWithoutAuth = () => ({
   headers: {
     "Content-Type": "application/json",
@@ -101,5 +115,3 @@ export const Delete = async (
       return error.response;
     });
 };
-
-

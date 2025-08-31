@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import './style.css';
 import { useNavigate } from 'react-router-dom';
-import { GetUsersById } from '../../../../services/https';
+import { userAPI } from '../../../../services/apis';
 
 const DonationOptionsPage: React.FC = () => {
   const navigate = useNavigate();
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    // ลบข้อมูลเก่าใน sessionStorage
     sessionStorage.removeItem('donationItemsFormData');
     sessionStorage.removeItem('createAccount');
     console.log("DonationOptionsPage loaded.");
     
-    // รอให้ CSS และ DOM พร้อม
     requestAnimationFrame(() => {
       setTimeout(() => {
         setIsReady(true);
@@ -24,15 +22,15 @@ const DonationOptionsPage: React.FC = () => {
   const handleDonationMoneyClick = async () => {
     sessionStorage.setItem('donationType', 'money');
     const token = localStorage.getItem('token');
-    const userId = localStorage.getItem('id'); // Get user ID
-    console.log("DonationOptionsPage: Token:", token ? "Present" : "Missing", "UserId:", userId); // Log token and userId
-    if (token && userId) { // Check for token and userId
+    const userId = localStorage.getItem('id');
+    console.log("DonationOptionsPage: Token:", token ? "Present" : "Missing", "UserId:", userId);
+    if (token && userId) {
       try {
-        const userData = await GetUsersById(userId); // Use GetUsersById
-        console.log("DonationOptionsPage: GetUsersById response:", userData); // Log API response
+        const userData = await userAPI.getById(userId);
+        console.log("DonationOptionsPage: GetUsersById response:", userData);
         if (userData.status === 200) {
           sessionStorage.setItem('prefillUserData', JSON.stringify(userData.data));
-          console.log("DonationOptionsPage: Stored prefillUserData:", userData.data); // Log stored data
+          console.log("DonationOptionsPage: Stored prefillUserData:", userData.data);
         } else {
           console.error("Failed to fetch user data:", userData.data?.error);
         }
@@ -46,15 +44,15 @@ const DonationOptionsPage: React.FC = () => {
   const handleDonationItemClick = async () => {
     sessionStorage.setItem('donationType', 'item');
     const token = localStorage.getItem('token');
-    const userId = localStorage.getItem('id'); // Get user ID
-    console.log("DonationOptionsPage: Token:", token ? "Present" : "Missing", "UserId:", userId); // Log token and userId
-    if (token && userId) { // Check for token and userId
+    const userId = localStorage.getItem('id');
+    console.log("DonationOptionsPage: Token:", token ? "Present" : "Missing", "UserId:", userId);
+    if (token && userId) { 
       try {
-        const userData = await GetUsersById(userId); // Use GetUsersById
-        console.log("DonationOptionsPage: GetUsersById response:", userData); // Log API response
+        const userData = await userAPI.getById(userId);
+        console.log("DonationOptionsPage: GetUsersById response:", userData);
         if (userData.status === 200) {
           sessionStorage.setItem('prefillUserData', JSON.stringify(userData.data));
-          console.log("DonationOptionsPage: Stored prefillUserData:", userData.data); // Log stored data
+          console.log("DonationOptionsPage: Stored prefillUserData:", userData.data);
         } else {
           console.error("Failed to fetch user data:", userData.data?.error);
         }

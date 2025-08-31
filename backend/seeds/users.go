@@ -1,7 +1,10 @@
 package seeds
 
 import (
+	"fmt"
+
 	"example.com/project-sa/entity"
+	"example.com/project-sa/utils/pointer"
 	"gorm.io/gorm"
 )
 
@@ -17,24 +20,26 @@ func seedUsers(db *gorm.DB) error {
 
 	users := []entity.User{
 		{
-			Firstname:   "Admin",
-			Lastname:    "Root",
+			Firstname:   "ศิริเดช",
+			Lastname:    "สุภาพ",
 			DateOfBirth: "1990-01-01",
-			Email:       "admin@example.com",
+			Email:       "nam@example.com",
 			Phone:       "0800000000",
 			Username:    "Nam",
 			Password:    pw,
 			GenderID:    male.ID,
+			PhotoURL:    pointer.P(fmt.Sprintf("%s/static/images/user_profile/profile1.jpg", PublicBaseURL)),
 		},
 		{
-			Firstname:   "สมหญิง",
-			Lastname:    "มีใจ",
+			Firstname:   "รับเช็ค",
+			Lastname:    "อึ่งชัยภูมิ",
 			DateOfBirth: "1995-09-20",
-			Email:       "adopter@example.com",
+			Email:       "ta@example.com",
 			Phone:       "0898765432",
-			Username:    "tor",
+			Username:    "Ta",
 			Password:    pw,
-			GenderID:    female.ID,
+			GenderID:    male.ID,
+			PhotoURL:    pointer.P(fmt.Sprintf("%s/static/images/user_profile/profile2.jpg", PublicBaseURL)),
 		},
 	}
 

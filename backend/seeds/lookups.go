@@ -51,7 +51,7 @@ func seedLookupsBase(db *gorm.DB) error {
 	}
 	if err := db.Where("name = ?", "ใหญ่").
 		FirstOrCreate(&entity.AnimalSize{Name: "ใหญ่"}).Error; err != nil {
-		return err
+	return err
 	}
 
 	if err := db.Where("name = ?", "บัตรเครดิต").

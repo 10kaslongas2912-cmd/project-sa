@@ -17,24 +17,25 @@ import (
 /* ===== DTOs ===== */
 
 type LoginRequest struct {
-	Username string `json:"username" binding:"required"`
+	Email    string `json:"email"    binding:"omitempty,email"`
+	Username string `json:"username" binding:"omitempty"` // ใช้ username เป็นหลัก แต่ให้เว้นว่างได้ ถ้าจะล็อกอินด้วย email
 	Password string `json:"password" binding:"required"`
 }
 
 type SignUpRequest struct {
-	Firstname   string `json:"firstname" binding:"required"`
-	Lastname    string `json:"lastname"  binding:"required"`
-	Email       string `json:"email"     binding:"required,email"`
+	Firstname   string `json:"firstname"    binding:"required"`
+	Lastname    string `json:"lastname"     binding:"required"`
+	Email       string `json:"email"        binding:"required,email"`
 	Phone       string `json:"phone"`
 	DateOfBirth string `json:"date_of_birth" binding:"required"` // "YYYY-MM-DD"
-	GenderID    uint  `json:"gender_id" binding:"required"`
-	Username    string `json:"username"  binding:"required"`
-	Password    string `json:"password"  binding:"required"`
+	GenderID    uint   `json:"gender_id"    binding:"required"`
+	Username    string `json:"username"     binding:"required"`
+	Password    string `json:"password"     binding:"required"`
 }
 
 /* ===== Helpers ===== */
 
-// parse "YYYY-MM-DD" -> time.Time (UTC, เวลา 00:00)
+// parse "YYYY-MM-DD"
 func isYMD(s string) bool {
 	_, err := time.Parse("2006-01-02", s)
 	return err == nil
@@ -58,14 +59,13 @@ func SignUp(c *gin.Context) {
 	var exists entity.User
 
 	if err := db.Where("username = ?", req.Username).First(&exists).Error; err == nil {
-		// พบเรคคอร์ด -> ซ้ำ
 		c.JSON(http.StatusConflict, gin.H{"error": "username is already taken"})
 		return
 	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
-		// เกิด error อื่น
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
 	if err := db.Where("email = ?", req.Email).First(&exists).Error; err == nil {
 		c.JSON(http.StatusConflict, gin.H{"error": "email is already registered"})
 		return
@@ -94,8 +94,8 @@ func SignUp(c *gin.Context) {
 		Phone:       req.Phone,
 		Username:    req.Username,
 		Password:    hashed,
-		DateOfBirth: req.DateOfBirth, // entity.User ควรเป็น time.Time
-		GenderID:    req.GenderID,    // *uint ใน entity จะดีถ้าต้อง null ได้
+		DateOfBirth: req.DateOfBirth, // หาก entity.User ใช้ time.Time ให้แปลงก่อน
+		GenderID:    req.GenderID,
 	}
 	if err := db.Create(&user).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "create failed: " + err.Error()})
@@ -105,7 +105,6 @@ func SignUp(c *gin.Context) {
 	// preload ความสัมพันธ์ตอบกลับ
 	var out entity.User
 	if err := db.Preload("Gender").First(&out, user.ID).Error; err != nil {
-		// fallback ถ้า preload ไม่ได้
 		c.JSON(http.StatusCreated, gin.H{"data": user})
 		return
 	}
@@ -119,11 +118,26 @@ func SignIn(c *gin.Context) {
 		return
 	}
 
+	req.Username = strings.TrimSpace(req.Username)
+	req.Email = strings.TrimSpace(strings.ToLower(req.Email))
+
 	var user entity.User
-	// ใช้ GORM ปกติ ชื่่อคอลัมน์ดีฟอลต์คือ "username"
-	if err := configs.DB().Where("username = ?", req.Username).First(&user).Error; err != nil {
+	db := configs.DB()
+
+	// ล็อกอินด้วย username เป็นหลัก; ถ้าไม่ส่ง username มาแต่ส่ง email ก็ใช้ email
+	var err error
+	if req.Username != "" {
+		err = db.Where("username = ?", req.Username).First(&user).Error
+	} else if req.Email != "" {
+		err = db.Where("email = ?", req.Email).First(&user).Error
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "username or email is required"})
+		return
+	}
+
+	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid username or password"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid username/email or password"})
 			return
 		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -131,26 +145,37 @@ func SignIn(c *gin.Context) {
 	}
 
 	// ตรวจสอบรหัสผ่าน
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid username or password"})
+	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)) != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid username/email or password"})
 		return
 	}
 
 	// ออก token
 	jwtWrapper := services.JwtWrapper{
-		SecretKey:       "SvNQpBN8y3qlVrsGAYYWoJJk56LtzFHx", // ควรย้ายไป ENV
+		SecretKey:       "SvNQpBN8y3qlVrsGAYYWoJJk56LtzFHx", // TODO: ย้ายไป ENV
 		Issuer:          "AuthService",
 		ExpirationHours: 24,
 	}
-	signedToken, err := jwtWrapper.GenerateToken(user.Username)
+
+	var signedToken string
+	// ถ้าคุณเพิ่มเมธอดใหม่ใน service แล้ว (แนะนำ): ใส่ทั้ง id + username + email
+	//   func (j *JwtWrapper) GenerateTokenForUser(userID uint, username, email string) (string, error)
+	if generateForUser, ok := any(&jwtWrapper).(interface {
+		GenerateTokenForUser(uint, string, string) (string, error)
+	}); ok {
+		signedToken, err = generateForUser.GenerateTokenForUser(user.ID, user.Username, user.Email)
+	} else {
+		// Fallback: ใช้ของเดิมที่รับ string เดียว (เดิมคุณรับ email; ถ้าของเดิมยังรับ email ให้เปลี่ยนเป็น user.Email)
+		signedToken, err = jwtWrapper.GenerateToken(user.ID,user.Username,user.Email)
+	}
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "error signing token"})
 		return
 	}
 
-	// preload user สำหรับตอบกลับ (ให้ FE เก็บชื่อ/รูป)
+	// preload user สำหรับตอบกลับ
 	var out entity.User
-	if err := configs.DB().Preload("Gender").First(&out, user.ID).Error; err != nil {
+	if err := db.Preload("Gender").First(&out, user.ID).Error; err != nil {
 		out = user
 	}
 
@@ -159,13 +184,13 @@ func SignIn(c *gin.Context) {
 			"token_type": "Bearer",
 			"token":      signedToken,
 			"user": gin.H{
-				"id":        out.ID,
+				"ID":        out.ID,        // ใช้ gorm.Model => ฟิลด์ ID ใหญ่
 				"username":  out.Username,
 				"firstname": out.Firstname,
 				"lastname":  out.Lastname,
 				"email":     out.Email,
 				"phone":     out.Phone,
-				"gender":    out.Gender, // {id,name} ถ้า entity.Gender มี json tag ถูก
+				"gender":    out.Gender, // ถ้า entity.Gender มี json tag ถูก จะ serialize เป็น object
 			},
 		},
 	})

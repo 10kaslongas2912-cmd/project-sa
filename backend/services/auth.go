@@ -1,3 +1,5 @@
+//service\auth.go
+
 package services
 
 import (
@@ -27,13 +29,17 @@ type JwtWrapper struct {
 
 // JwtClaim adds email as a claim to the token
 type JwtClaim struct {
-	Email string
+	ID uint `json:"id"`
+	Username string `json:"username"`
+	Email string `json:"email"`
 	jwt.StandardClaims
 }
 
 // Generate Token generates a jwt token
-func (j *JwtWrapper) GenerateToken(email string) (signedToken string, err error) {
+func (j *JwtWrapper) GenerateToken(userID uint, username string, email string) (signedToken string, err error) {
 	claims := &JwtClaim{
+		ID: userID,
+		Username: username,
 		Email: email,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(j.ExpirationHours)).Unix(),

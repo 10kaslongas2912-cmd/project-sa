@@ -21,8 +21,8 @@ func SeedAll(db *gorm.DB) error {
 		if err := seedMedicalRecords(tx); err != nil { return err }
 		if err := seedVaccineRecords(tx); err != nil { return err }
 		if err := seedDonors(tx); err != nil { return err}
-		// if err := seedDonations(tx); err != nil { return err}
-		// if err := seedMoneyDonations(tx); err != nil { return err} 
+		if err := seedDonations(tx); err != nil { return err}
+		if err := seedMoneyDonations(tx); err != nil { return err} 
 		return nil
 	})
 }

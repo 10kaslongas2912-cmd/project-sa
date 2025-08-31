@@ -44,7 +44,7 @@ func main() {
 	r.POST("/user/signup", auth.SignUp)
 
 	r.GET("/dogs", dog.GetAllDogs)
-	r.GET("/dogs/:id", dog.GetDogByID)
+	r.GET("/dogs/:id", dog.GetDogById)
 	// r.POST("/dogs", dogs.CreateDog)
 	// r.PUT("/dogs/:id", dogs.UpdateDog)
 	// r.DELETE("/dogs/:id", dogs.DeleteDog)
@@ -61,10 +61,11 @@ func main() {
 	protected := r.Group("/")
 	protected.Use(middlewares.Authorizes())
 	{
-		protected.PUT("/user/:id", user.Update)
-		protected.GET("/users", user.GetAll)
-		protected.GET("/user/:id", user.Get)
-		protected.DELETE("/user/:id", user.Delete)
+		protected.GET("/user/me", user.Me) 
+		protected.PUT("/user/:id", user.UpdateUser)
+		protected.GET("/users", user.GetAllUsers)
+		protected.GET("/user/:id", user.GetUserById)
+		protected.DELETE("/user/:id", user.DeleteUser)
 	}
 
 	// health

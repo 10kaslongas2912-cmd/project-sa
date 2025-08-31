@@ -98,7 +98,7 @@ func CreateDog(c *gin.Context) {
 }
 
 // GetDogByID (R - by ID)
-func GetDogByID(c *gin.Context) {
+func GetDogById(c *gin.Context) {
 	id := c.Param("id")
 	var dog entity.Dog
 	if err := preloadDog(configs.DB()).First(&dog, id).Error; err != nil {
@@ -243,26 +243,4 @@ func DeleteDog(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "deleted", "id": dog.ID})
-}
-
-/* ========== (ออปชัน) Search เดิมของคุณ ========== */
-
-// SearchDogs: ถ้าอยากคงไว้ด้วยก็ใช้ตัวนี้ (หรือให้ GetAllDogs รองรับ name ก็ได้)
-func SearchDogs(c *gin.Context) {
-	var dogs []entity.Dog
-	name := c.Query("name")
-	db := preloadDog(configs.DB())
-
-	if name != "" {
-		db = db.Where("name LIKE ?", "%"+name+"%")
-	}
-	if err := db.Find(&dogs).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "query failed: " + err.Error()})
-		return
-	}
-	if len(dogs) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "dogs not found"})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"data": dogs})
 }

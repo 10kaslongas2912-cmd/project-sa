@@ -5,7 +5,7 @@ import "./style.css";
 import sponsorImage from "../../../../assets/sponsor/ChatGPT Image Jul 31, 2025, 08_14_47 PM.png";
 import type { DogInterface } from "../../../../interfaces/Dog";
 import { ageText } from "../../../../utils/date";
-import { dogAPI } from "../../../../services/api"
+import { dogAPI } from "../../../../services/apis"
 
 /* ----- DogCard Component ที่แก้ไขแล้ว ----- */
 type DogCardProps = {
@@ -60,21 +60,20 @@ const SponsorPage: React.FC = () => {
   const [err, setErr] = useState<string | null>(null);
 
 
-useEffect(() => {
-  (async () => {
-    try {
-      setLoading(true);
-      const res = await dogAPI.getAll(); // => รูปแบบ { data: DogInterface[] }
-      setDogs(Array.isArray(res.data) ? res.data : []);
-      setErr(null);
-    } catch (e: any) {
-      setErr(e?.message || "fetch failed");
-    } finally {
-      setLoading(false);
-    }
-  })();
-}, []);
-
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        const res = await dogAPI.getAll();
+        setDogs(res.data);
+        setErr(null);
+      } catch (e: any) {
+        setErr(e?.message || "fetch failed");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
   return (
     <>
