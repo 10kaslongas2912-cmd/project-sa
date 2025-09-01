@@ -5,9 +5,9 @@ import { Select, Form, Input, message, Button } from "antd";
 import { Segmented } from 'antd';
 import paw_heart from '../../../../assets/paw-heart.png';
 
-import { GetPaymentMethods } from "../../../../services/https";
+import { paymentMethodAPI } from "../../../../services/apis";
 import type { PaymentMethodInterface } from "../../../../interfaces/PaymentMethod";
-import type { MoneyDonationsInterface } from '../../../../interfaces/MoneyDonations';
+import type { MoneyDonationInterface } from '../../../../interfaces/Donation';
 
 const getInitialDonationMoneyData = () => {
   try {
@@ -37,19 +37,35 @@ const DonationMoneyForm: React.FC = () => {
       setIsLoggedIn(true);
     }
     fetchPaymentMethods();
-  }, []);
+  }, []); 
 
-  const fetchPaymentMethods = async () => {
-    const res = await GetPaymentMethods();
-    if (res.status === 200) {
-      setPaymentMethods(res.data);
-    } else {
-      messageApi.open({
-        type: "error",
-        content: res.data?.error || "ไม่พบข้อมูลวิธีการชำระเงิน",
-      });
+const fetchPaymentMethods = async () => {
+  try {
+    const res = await paymentMethodAPI.getAll();
+
+    // รองรับทั้งกรณีที่ wrapper คืน data ตรง ๆ หรือคืน AxiosResponse
+    const raw = Array.isArray((res as any)?.data) ? (res as any).data : res;
+
+    if (!Array.isArray(raw)) {
+      throw new Error('Invalid payment methods response shape');
     }
-  };
+
+    // Normalize ชื่อฟิลด์ให้เป็น id/name เสมอ (กันเคส ID/Name)
+    const normalized: PaymentMethodInterface[] = raw.map((m: any) => ({
+      id: m.id ?? m.ID ?? m.Id,
+      name: m.name ?? m.Name,
+      // เก็บฟิลด์อื่น ๆ เพิ่มได้ถ้ามี
+    }));
+
+    setPaymentMethods(normalized);
+  } catch (err) {
+    console.error('fetchPaymentMethods error:', err);
+    messageApi.open({
+      type: 'error',
+      content: 'ไม่พบข้อมูลวิธีการชำระเงิน',
+    });
+  }
+};
 
   const handleSubmit = async (values: any) => {
     console.log('Form values on submit:', values);
@@ -72,7 +88,7 @@ const DonationMoneyForm: React.FC = () => {
       return;
     }
 
-    let finalData: MoneyDonationsInterface = {
+    let finalData: MoneyDonationInterface = {
       amount: type === 'รายเดือน' ? Number(values.monthlyAmount) : Number(values.oneTimeAmount),
       payment_method_id: values.paymentMethod,
       payment_type: type === 'รายเดือน' ? 'monthly' : 'one-time',
@@ -282,7 +298,7 @@ const DonationMoneyForm: React.FC = () => {
                       }}
                     >
                       {paymentMethods.map((method) => (
-                        <Select.Option key={method.payment_id} value={method.payment_id}>
+                        <Select.Option key={method.id} value={method.id}>
                           {method.name}
                         </Select.Option>
                       ))}

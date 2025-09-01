@@ -3,9 +3,8 @@ import './style.css';
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";
 
-import { CreateDonation } from "../../../../services/https";
-import type { DonorsInterface } from "../../../../interfaces/Donors";
-import type { ItemDonationsInterface } from "../../../../interfaces/ItemDonations";
+import { donationAPI } from "../../../../services/apis";
+import type { DonorInterface, ItemDonationInterface, CreateDonationRequest } from "../../../../interfaces/Donation";
 
 interface DonationItem { 
   itemName: string;
@@ -62,7 +61,7 @@ const DonationSummaryPage: React.FC = () => {
     }
 
     try {
-      const donorInfo: DonorsInterface = JSON.parse(donorInfoString);
+      const donorInfo: DonorInterface = JSON.parse(donorInfoString);
       const itemDetailsRaw = JSON.parse(itemDetailsString);
 
       const token = localStorage.getItem('token');
@@ -73,14 +72,36 @@ const DonationSummaryPage: React.FC = () => {
       }
 
       const transactionNumber = `SA-ITEM-${Date.now()}`;
-      const itemDetails: ItemDonationsInterface[] = itemDetailsRaw.donationItems.map((item: DonationItem) => ({
+      const itemDetails: ItemDonationInterface[] = itemDetailsRaw.donationItems.map((item: DonationItem) => ({
         item_name: item.itemName,
         quantity: Number(item.quantity),
         unit: item.unit,
         item_ref: `${transactionNumber}-${item.itemName}`
       }));
 
-      const result = await CreateDonation(donorInfo, donationType, undefined, itemDetails);
+      const donorIdCandidate =
+        (donorInfo as any).donor_id ??
+        (donorInfo as any).id ??
+        (donorInfo as any).DonorID;
+      const donorId = Number(donorIdCandidate);
+
+      if (!Number.isFinite(donorId)) {
+        messageApi.open({
+          type: "error",
+          content:
+            "ไม่พบหมายเลขผู้บริจาค (donorId) กรุณากรอกข้อมูลผู้บริจาคให้ครบถ้วน",
+        });
+        return;
+      }
+
+      // 5) รวม payload ตามสเปค CreateDonationRequest
+      const payload: CreateDonationRequest = {
+        id: donorId,
+        donationType: donationType,         // 'money'
+        itemDetails: itemDetails     // ถ้ามีของ (กรณี item) ใส่ภายหลัง
+      };
+      
+      const result = await donationAPI.create(payload);
 
       if (result.status === 200) {
         messageApi.open({ type: "success", content: "การบริจาคสำเร็จ ขอบคุณ!" });

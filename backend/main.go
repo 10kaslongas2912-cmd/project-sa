@@ -51,7 +51,7 @@ func main() {
 
 	r.POST("/donations", donation.CreateDonation)
 	r.GET("/genders", gender.GetAll)
-	r.GET("/payment-methods", payment_method.GetAll)
+	r.GET("/paymentMethods", payment_method.GetAll)
 	r.GET("/health-records/dog/:id", health_record.GetHealthRecordsByDogId)
 	r.POST("/health-records", health_record.CreateHealthRecord)
 	r.PUT("/health-records/:id", health_record.UpdateHealthRecord)

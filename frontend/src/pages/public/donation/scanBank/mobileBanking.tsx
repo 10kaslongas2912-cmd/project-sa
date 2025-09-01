@@ -3,9 +3,8 @@ import './style.css';
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";
 
-import { CreateDonation } from "../../../../services/https";
-import type { DonorsInterface } from "../../../../interfaces/Donors";
-import type { MoneyDonationsInterface } from "../../../../interfaces/MoneyDonations";
+import { donationAPI } from "../../../../services/apis";
+import type { DonorInterface, MoneyDonationInterface, CreateDonationRequest } from "../../../../interfaces/Donation";
 
 // ใช้ Base64 placeholder แทนการ import ไฟล์
 const qr_code = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y5ZjlmOSIgc3Ryb2tlPSIjZGRkIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8dGV4dCB4PSIxNTAiIHk9IjE1MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNjY2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iMC4zZW0iPkdSIENvZGU8L3RleHQ+Cjwvc3ZnPgo=";
@@ -68,8 +67,8 @@ const MobileBankingPage: React.FC = () => {
     }
 
     try {
-      const donorInfo: DonorsInterface = JSON.parse(donorInfoString);
-      let moneyDetails: MoneyDonationsInterface = JSON.parse(moneyDetailsString); // PARSE CORRECT DATA
+      const donorInfo: DonorInterface = JSON.parse(donorInfoString);
+      let moneyDetails: MoneyDonationInterface = JSON.parse(moneyDetailsString); // PARSE CORRECT DATA
 
       // 2. Determine donor_type
       const token = localStorage.getItem('token');
@@ -86,8 +85,14 @@ const MobileBankingPage: React.FC = () => {
         transaction_ref: transactionNumber || generatePaymentNumber(),
       };
 
+      // 5) รวม payload ตามสเปค CreateDonationRequest
+      const payload: CreateDonationRequest = {
+        donationType: donationType,         // 'money'
+        moneyDetails: moneyDetails,         // << รวมไว้ในก้อนเดียว
+        // itemDetails: []     // ถ้ามีของ (กรณี item) ใส่ภายหลัง
+      };
       // 4. Call CreateDonation
-      const result = await CreateDonation(donorInfo, donationType, moneyDetails);
+      const result = await donationAPI.create(payload);
 
       if (result.status === 200) {
         messageApi.open({

@@ -74,7 +74,7 @@ export const Get = async (
         return error.response;
       }
       if (error?.response?.status === 401) {
-        localStorage.clear();
+        localStorage.clear(); 
         window.location.reload();
       }
       return error.response;

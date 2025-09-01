@@ -2,11 +2,7 @@ import React, { useState, useEffect } from "react";
 import './style.css';
 
 import { useNavigate } from "react-router-dom";
-import type { DonorInterface } from '../../../../interfaces/Donor'; // Import DonorsInterface
-
-interface DonationInfoFormProps {
-  onSubmit?: (formData: DonorInterface) => void; // Use DonorsInterface
-}
+import type { DonorInterface } from '../../../../interfaces/Donation'; // Import DonorsInterface
 
 // Helper to get initial state from sessionStorage
 const getInitialFormData = () => {

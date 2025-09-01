@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import './style.css';
 import { useNavigate } from "react-router-dom";
-import type { ItemDonationsInterface } from '../../../../interfaces/ItemDonations'; // Import ItemDonationsInterface
+import type { ItemDonationInterface } from '../../../../interfaces/Donation'; // Import ItemDonationsInterface
 
 interface DonationItem {
   id: string;
@@ -115,7 +115,7 @@ const DonationItemsForm: React.FC = () => {
       return;
     }
 
-    const formattedDonationItems: ItemDonationsInterface[] = donationItems.map(item => ({
+    const formattedDonationItems: ItemDonationInterface[] = donationItems.map(item => ({
       item_name: item.itemName,
       quantity: Number(item.quantity), // Convert to number
       unit: item.unit,
