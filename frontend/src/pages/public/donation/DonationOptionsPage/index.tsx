@@ -74,7 +74,7 @@ const DonationOptionsPage: React.FC = () => {
           </button>
           <button className="button blue-button">
             <h1>บริจาคสิ่งของ</h1>
-            <h2>ของใช้เล็กๆจากคุณ อาจหมายถึงทั้งโลกสำหรับพวกเขา</h2>
+            <h2 className='text-blue'>ของใช้เล็กๆจากคุณ อาจหมายถึงทั้งโลกสำหรับพวกเขา</h2>
           </button>
         </div>
       </div>

@@ -46,7 +46,6 @@ export function useAuthUser() {
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
   }, [refresh]);
-
   const logout = useCallback(() => {
     ["token", "token_type", "id",  "username", "email"].forEach((k) =>
       localStorage.removeItem(k)

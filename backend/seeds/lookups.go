@@ -62,6 +62,10 @@ func seedLookupsBase(db *gorm.DB) error {
 		FirstOrCreate(&entity.PaymentMethod{Name: "โอนเงินผ่านธนาคาร"}).Error; err != nil {
 		return err
 	}
+	if err := db.Where("name = ?", "พร้อมเพย์").
+		FirstOrCreate(&entity.PaymentMethod{Name: "พร้อมเพย์"}).Error; err != nil {
+		return err
+	}
 
 	if err := db.Where("name = ?", "Golden Retriever").
 		FirstOrCreate(&entity.Breed{Name: "Golden Retriever", Description: "a medium-to-large, muscular dog breed from Scotland known for its dense, lustrous golden coat, gentle and affectionate nature, and high intelligence"}).Error; err != nil {

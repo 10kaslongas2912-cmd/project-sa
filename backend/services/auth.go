@@ -42,7 +42,7 @@ func (j *JwtWrapper) GenerateToken(userID uint, username string, email string) (
 		Username: username,
 		Email: email,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(j.ExpirationHours)).Unix(),
+			ExpiresAt: time.Now().Local().Add(time.Hour	 * time.Duration(j.ExpirationHours)).Unix(),
 			Issuer:    j.Issuer,
 		},
 	}

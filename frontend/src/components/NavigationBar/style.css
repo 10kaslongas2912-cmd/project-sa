@@ -9,7 +9,7 @@
 /* Header Styles */
 .header {
     display: grid;
-    grid-template-columns: 1fr auto 1fr; /* Create 3 columns */
+    grid-template-columns: 1fr auto auto; /* Create 3 columns */
     align-items: center;
     padding: 15px 50px;
     background-color: rgba(0, 0, 0, 0.308);

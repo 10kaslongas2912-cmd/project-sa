@@ -184,7 +184,7 @@ func SignIn(c *gin.Context) {
 			"token_type": "Bearer",
 			"token":      signedToken,
 			"user": gin.H{
-				"ID":        out.ID,        // ใช้ gorm.Model => ฟิลด์ ID ใหญ่
+				"id":        out.ID,        // ใช้ gorm.Model => ฟิลด์ ID ใหญ่
 				"username":  out.Username,
 				"firstname": out.Firstname,
 				"lastname":  out.Lastname,
