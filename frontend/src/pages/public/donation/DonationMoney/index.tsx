@@ -42,22 +42,7 @@ const DonationMoneyForm: React.FC = () => {
 const fetchPaymentMethods = async () => {
   try {
     const res = await paymentMethodAPI.getAll();
-
-    // รองรับทั้งกรณีที่ wrapper คืน data ตรง ๆ หรือคืน AxiosResponse
-    const raw = Array.isArray((res as any)?.data) ? (res as any).data : res;
-
-    if (!Array.isArray(raw)) {
-      throw new Error('Invalid payment methods response shape');
-    }
-
-    // Normalize ชื่อฟิลด์ให้เป็น id/name เสมอ (กันเคส ID/Name)
-    const normalized: PaymentMethodInterface[] = raw.map((m: any) => ({
-      id: m.id ?? m.ID ?? m.Id,
-      name: m.name ?? m.Name,
-      // เก็บฟิลด์อื่น ๆ เพิ่มได้ถ้ามี
-    }));
-
-    setPaymentMethods(normalized);
+    setPaymentMethods(res);
   } catch (err) {
     console.error('fetchPaymentMethods error:', err);
     messageApi.open({
@@ -101,9 +86,11 @@ const fetchPaymentMethods = async () => {
       if (today.getDate() >= billingDay) {
         nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1);
       }
+            // Format nextPaymentDate to YYYY-MM-DD string
+      const formattedNextPaymentDate = nextPaymentDate.toISOString().split('T')[0]; // "YYYY-MM-DD"
       finalData = {
         ...finalData,
-        next_payment_date: nextPaymentDate,
+        next_payment_date: formattedNextPaymentDate,
       };
     }
 
@@ -298,7 +285,7 @@ const fetchPaymentMethods = async () => {
                       }}
                     >
                       {paymentMethods.map((method) => (
-                        <Select.Option key={method.id} value={method.id}>
+                        <Select.Option key={method.ID} value={method.ID}>
                           {method.name}
                         </Select.Option>
                       ))}

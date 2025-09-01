@@ -10,12 +10,11 @@ import type {
   MoneyDonationInterface,
   CreateDonationRequest,
 } from "../../../../interfaces/Donation";
-import DonationItemsForm from "../DonationItem";
+
 
 const CreditCardPaymentForm: React.FC = () => {
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
-  const []
   // form state
   const [cardNumber, setCardNumber] = useState("");
   const [expiryDate, setExpiryDate] = useState(""); // MM/YY
@@ -83,29 +82,13 @@ const CreditCardPaymentForm: React.FC = () => {
           : "-",
       };
 
-      // 4) สรุป donorId ที่ต้องส่ง (รองรับหลายชื่อคีย์)
-      const donorIdCandidate =
-        (donorInfo as any).donor_id ??
-        (donorInfo as any).id ??
-        (donorInfo as any).DonorID;
-      const donorId = Number(donorIdCandidate);
-
-      if (!Number.isFinite(donorId)) {
-        messageApi.open({
-          type: "error",
-          content:
-            "ไม่พบหมายเลขผู้บริจาค (donorId) กรุณากรอกข้อมูลผู้บริจาคให้ครบถ้วน",
-        });
-        return;
-      }
-
       // 5) รวม payload ตามสเปค CreateDonationRequest
       const payload: CreateDonationRequest = {
-        id?: userId.id,
-        donationType: donationType,         // 'money'
-        moneyDetails: moneyDetails,         // << รวมไว้ในก้อนเดียว
-        // itemDetails: []     // ถ้ามีของ (กรณี item) ใส่ภายหลัง
-      };
+              donor_info: donorInfo,                         // <-- เพิ่มข้อมูลผู้บริจาค
+              donation_type: donationType,                   // <-- แก้ชื่อ key
+              money_donation_details: moneyDetails,         // << รวมไว้ในก้อนเดียว
+              // itemDetails: []     // ถ้ามีของ (กรณี item) ใส่ภายหลัง
+            };
 
       // 6) เรียก API ครั้งเดียวด้วย payload ก้อนเดียว
       const result = await donationAPI.create(payload);

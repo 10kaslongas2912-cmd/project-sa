@@ -1,14 +1,18 @@
+// In file: controllers/donation/donation.go
+
 package donation
 
 import (
 	"net/http"
 	"time"
 
+	"github.com/gin-gonic/gin"
+
 	"example.com/project-sa/configs"
 	"example.com/project-sa/entity"
-	"github.com/gin-gonic/gin"
 )
 
+// CombinedDonationPayload struct remains the same
 type CombinedDonationPayload struct {
 	DonorInfo            entity.Donor          `json:"donor_info"`
 	DonationType         string                `json:"donation_type"`
@@ -24,28 +28,38 @@ func CreateDonation(c *gin.Context) {
 		return
 	}
 
-	// Start a database transaction
 	tx := configs.DB().Begin()
 
-	if payload.DonorInfo.UserID != nil {
-		var user entity.User
-		if err := tx.First(&user, payload.DonorInfo.UserID).Error; err != nil {
+	// ✅ --- START: NEW DONOR CHECKING LOGIC ---
+	var donorToUse entity.Donor
+	incomingDonor := payload.DonorInfo
+
+	if incomingDonor.UserID != nil && *incomingDonor.UserID > 0 {
+		// Case 1: Donor is a logged-in User.
+		// Find existing donor by UserID, or create a new one if not found.
+		if err := tx.Where(entity.Donor{UserID: incomingDonor.UserID}).
+			FirstOrCreate(&donorToUse, incomingDonor).Error; err != nil {
 			tx.Rollback()
-			c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process user donor: " + err.Error()})
+			return
+		}
+
+	} else {
+		// Case 2: Donor is a Guest.
+		// Find existing guest donor by Firstname & Lastname, or create if not found.
+		// We must ensure we only match with other guests (UserID IS NULL).
+		if err := tx.Where("firstname = ? AND lastname = ? AND user_id IS NULL", incomingDonor.Firstname, incomingDonor.Lastname).
+			FirstOrCreate(&donorToUse, incomingDonor).Error; err != nil {
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process guest donor: " + err.Error()})
 			return
 		}
 	}
+	// ✅ --- END: NEW DONOR CHECKING LOGIC ---
 
-	donor := payload.DonorInfo
-	if err := tx.Create(&donor).Error; err != nil {
-		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create donor: " + err.Error()})
-		return
-	}
-
-	// 2. Create Donation record
+	// 2. Create Donation record (using the donorToUse we found or created)
 	donation := entity.Donation{
-		DonorID:      donor.ID,
+		DonorID:      donorToUse.ID, // <-- Use ID from the correct donor
 		DonationType: payload.DonationType,
 		DonationDate: time.Now(),
 		Status:       "success",
@@ -56,9 +70,10 @@ func CreateDonation(c *gin.Context) {
 		return
 	}
 
+	// The rest of the function remains the same...
 	if payload.DonationType == "money" && payload.MoneyDonationDetails != nil {
 		moneyDonation := payload.MoneyDonationDetails
-		moneyDonation.DonationID = donation.ID // Link to the donation
+		moneyDonation.DonationID = donation.ID
 
 		if err := tx.Create(&moneyDonation).Error; err != nil {
 			tx.Rollback()
@@ -67,7 +82,7 @@ func CreateDonation(c *gin.Context) {
 		}
 	} else if payload.DonationType == "item" && payload.ItemDonationDetails != nil {
 		for _, item := range payload.ItemDonationDetails {
-			item.DonationID = donation.ID // Link each item to the donation
+			item.DonationID = donation.ID
 			if err := tx.Create(&item).Error; err != nil {
 				tx.Rollback()
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create item donation: " + err.Error()})

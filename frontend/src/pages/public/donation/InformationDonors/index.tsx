@@ -45,15 +45,15 @@ const InformationDonors: React.FC = () => {
   }, []); // Run only once on mount
 
   useEffect(() => {
-    const formData = { first_name: firstName, last_name: lastName, phone, email };
+    const formData = { firstname: firstName, lastname: lastName, phone, email };
     sessionStorage.setItem('donationInfoFormData', JSON.stringify(formData));
   }, [firstName, lastName, phone, email]); // Dependencies array
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault(); // ป้องกันการรีเฟรชหน้าเมื่อกดส่งฟอร์ม
     const formData: DonorInterface = { // Cast to DonorsInterface
-      first_name: firstName,
-      last_name: lastName,
+      firstname: firstName,
+      lastname: lastName,
       phone: phone,
       email: email,
     };

@@ -87,8 +87,9 @@ const MobileBankingPage: React.FC = () => {
 
       // 5) รวม payload ตามสเปค CreateDonationRequest
       const payload: CreateDonationRequest = {
-        donationType: donationType,         // 'money'
-        moneyDetails: moneyDetails,         // << รวมไว้ในก้อนเดียว
+        donor_info: donorInfo,                         // <-- เพิ่มข้อมูลผู้บริจาค
+        donation_type: donationType,                   // <-- แก้ชื่อ key
+        money_donation_details: moneyDetails,         // << รวมไว้ในก้อนเดียว
         // itemDetails: []     // ถ้ามีของ (กรณี item) ใส่ภายหลัง
       };
       // 4. Call CreateDonation
