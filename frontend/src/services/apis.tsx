@@ -78,8 +78,8 @@ export const paymentMethodAPI = {
 
 export const donationAPI = {
   getAll:  () => Get("/donations"),
-  getById: (id: number) => Get(`/donations/${id}`),
-  create:  (data: CreateDonationRequest) => Post("/donations/", data),
+  getById: (id: number) => Get(`/donation/${id}`),
+  create:  (data: CreateDonationRequest) => Post("/donations", data),
   // update:  (id: number, data: UpdateDogRequest) => Put(`/dog/${id}`, data),
   // remove:  (id: number) => Delete(`/dog/${id}`),
 };

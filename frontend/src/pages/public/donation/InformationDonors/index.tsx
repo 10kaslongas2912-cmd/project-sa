@@ -72,17 +72,29 @@ const InformationDonors: React.FC = () => {
 
   // บันทึกฟอร์มลง sessionStorage ทุกครั้งที่พิมพ์ (คีย์ camelCase)
   useEffect(() => {
-    const formData: DonorFormData = { firstName, lastName, phone, email };
-    sessionStorage.setItem(STORAGE_KEYS.donorForm, JSON.stringify(formData));
-  }, [firstName, lastName, phone, email]);
+    const formData = { firstname: firstName, lastname: lastName, phone, email };
+    sessionStorage.setItem('donationInfoFormData', JSON.stringify(formData));
+  }, [firstName, lastName, phone, email]); // Dependencies array
 
-  // ส่งฟอร์ม → ไปหน้าถัดไปตาม donationType
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const donationType = sessionStorage.getItem("donationType");
-    if (donationType === "money") navigate("/donation/money");
-    else if (donationType === "item") navigate("/donation/item");
-    else navigate("/donation/options");
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault(); // ป้องกันการรีเฟรชหน้าเมื่อกดส่งฟอร์ม
+    const formData: DonorInterface = { // Cast to DonorsInterface
+      firstname: firstName,
+      lastname: lastName,
+      phone: phone,
+      email: email,
+    };
+    console.log('Form Data Submitted:', formData);
+
+    const donationType = sessionStorage.getItem('donationType');
+    if (donationType === 'money') {
+      navigate('/donation/money');
+    } else if (donationType === 'item') {
+      navigate('/donation/item');
+    } else {
+      // Fallback or error handling
+      navigate('/donation/options');
+    }
   };
 
   return (

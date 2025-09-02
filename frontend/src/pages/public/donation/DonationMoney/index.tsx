@@ -45,19 +45,70 @@ const DonationMoneyForm: React.FC = () => {
     fetchPaymentMethods();
   }, []);
 
-  const fetchPaymentMethods = async () => {
-    try {
-      const res = await paymentMethodAPI.getAll();
-      const raw = Array.isArray((res as any)?.data) ? (res as any).data : res;
-      if (!Array.isArray(raw)) throw new Error("Invalid payment methods response shape");
-      const normalized: PaymentMethodInterface[] = raw.map((m: any) => ({
-        id: m.id ?? m.ID ?? m.Id,
-        name: m.name ?? m.Name,
-      }));
-      setPaymentMethods(normalized);
-    } catch (err) {
-      console.error("fetchPaymentMethods error:", err);
-      messageApi.open({ type: "error", content: "ไม่พบข้อมูลวิธีการชำระเงิน" });
+const fetchPaymentMethods = async () => {
+  try {
+    const res = await paymentMethodAPI.getAll();
+    setPaymentMethods(res);
+  } catch (err) {
+    console.error('fetchPaymentMethods error:', err);
+    messageApi.open({
+      type: 'error',
+      content: 'ไม่พบข้อมูลวิธีการชำระเงิน',
+    });
+  }
+};
+
+  const handleSubmit = async (values: any) => {
+    console.log('Form values on submit:', values);
+
+    const type = values.donationFrequency;
+
+    if (type === 'รายครั้ง' && !isLoggedIn && createAccount === null) {
+      messageApi.open({
+        type: "error",
+        content: "กรุณาเลือกการสร้างบัญชีบริจาค",
+      });
+      return;
+    }
+
+    if (type === 'รายครั้ง' && !values.paymentMethod) {
+      messageApi.open({
+        type: "error",
+        content: "กรุณาเลือกวิธีการชำระเงิน",
+      });
+      return;
+    }
+
+    let finalData: MoneyDonationInterface = {
+      amount: type === 'รายเดือน' ? Number(values.monthlyAmount) : Number(values.oneTimeAmount),
+      payment_method_id: values.paymentMethod,
+      payment_type: type === 'รายเดือน' ? 'monthly' : 'one-time',
+    };
+
+    if (type === 'รายเดือน') {
+      const today = new Date();
+      const billingDay = Number(values.billingDate);
+      let nextPaymentDate = new Date(today.getFullYear(), today.getMonth(), billingDay);
+      if (today.getDate() >= billingDay) {
+        nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1);
+      }
+            // Format nextPaymentDate to YYYY-MM-DD string
+      const formattedNextPaymentDate = nextPaymentDate.toISOString().split('T')[0]; // "YYYY-MM-DD"
+      finalData = {
+        ...finalData,
+        next_payment_date: formattedNextPaymentDate,
+      };
+    }
+
+    console.log('Final data before navigation:', finalData);
+
+    sessionStorage.setItem('moneyDonationData', JSON.stringify(finalData));
+
+    if (!isLoggedIn && createAccount === 3) {
+      sessionStorage.setItem('returnTo', '/donation/money');
+      navigate('/signup');
+    } else {
+      navigateToNextPage(type, values.paymentMethod);
     }
   };
 
@@ -67,7 +118,7 @@ const DonationMoneyForm: React.FC = () => {
       String(m.name).toLowerCase().includes("credit") ||
       String(m.name).toLowerCase().includes("บัตร")
     );
-    return cc?.id; // undefined ถ้าไม่มี
+    return cc?.ID; // undefined ถ้าไม่มี
   };
 
   const validateMinAmount = (_: any, value?: string | number) => {
@@ -289,7 +340,7 @@ const DonationMoneyForm: React.FC = () => {
                       onChange={(value) => form.setFieldValue("paymentMethod", value)}
                     >
                       {paymentMethods.map((method) => (
-                        <Select.Option key={method.id} value={method.id}>
+                        <Select.Option key={method.ID} value={method.ID}>
                           {method.name}
                         </Select.Option>
                       ))}

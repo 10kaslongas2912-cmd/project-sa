@@ -126,42 +126,14 @@ const MobileBankingPage: React.FC = () => {
         transaction_ref: transactionNumber || `PAY-${Date.now()}`,
       };
 
-      // การ์ดกัน payment_method_id หาย
-      if (!money_detail.payment_method_id) {
-        messageApi.open({
-          type: "error",
-          content: "ไม่พบช่องทางการชำระเงิน กรุณาลองใหม่",
-        });
-        return;
-      }
-
-      // 2) payload ตามสเปคใหม่
-      const payload: CreateDonationRequest = (() => {
-        if (isLoggedIn && Number.isFinite(Number(uid))) {
-          return {
-            donor_type: "user",
-            user_id: Number(uid),
-            money_detail,
-          };
-        }
-        // guest
-        if (!donorInfoString) {
-          messageApi.open({
-            type: "error",
-            content: "กรุณากรอกข้อมูลผู้บริจาคก่อนดำเนินการต่อ",
-          });
-          navigate("/donation/information");
-          throw new Error("missing donor info");
-        }
-        const donor = normalizeDonorFromStorage(JSON.parse(donorInfoString));
-        return {
-          donor_type: "guest",
-          donor,
-          money_detail,
-        };
-      })();
-
-      // 3) ยิง API
+      // 5) รวม payload ตามสเปค CreateDonationRequest
+      const payload: CreateDonationRequest = {
+        donor_info: donorInfos,                         // <-- เพิ่มข้อมูลผู้บริจาค
+        donation_type: donationType,                   // <-- แก้ชื่อ key
+        money_donation_details: moneyDetails,         // << รวมไว้ในก้อนเดียว
+        // itemDetails: []     // ถ้ามีของ (กรณี item) ใส่ภายหลัง
+      };
+      // 4. Call CreateDonation
       const result = await donationAPI.create(payload);
       const status = (result as any)?.status ?? 200;
       const data = (result as any)?.data ?? result;

@@ -42,9 +42,8 @@ export interface ItemDonationInterface {
 }
 
 export interface CreateDonationRequest {
-    user_id?: number;
-    donor?: DonorInterface;
-    donor_type: "user" | "guest";
-    money_detail?: MoneyDonationInterface;
-    item_detail?: ItemDonationInterface[];
+    donor_info: DonorInterface,
+    donation_type: string,
+    money_donation_details?: MoneyDonationInterface,
+    item_donation_details?: ItemDonationInterface[]
 }

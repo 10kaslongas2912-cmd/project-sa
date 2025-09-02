@@ -4,7 +4,7 @@ import type { AnimalSizeInterface } from "./AnimalSize";
 import type { BreedInterface } from "./Breed";
 
 export interface DogInterface {
-  id: number;
+  ID: number;
   name: string;
   animal_sex_id: number;
   animal_size_id: number
