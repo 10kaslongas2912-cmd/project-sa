@@ -1,11 +1,11 @@
 import type { RoleInterface } from "./Role";
 
 export interface StaffInterface {
-    id: number;
+    ID: number;
     username: string;
     password?: string;
-    firstname: string;
-    lastname: string;
+    first_name: string;
+    last_name: string;
     date_of_birth: string;
     phone: string;
     email: string;

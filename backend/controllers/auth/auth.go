@@ -88,8 +88,8 @@ func SignUp(c *gin.Context) {
 
 	// บันทึก
 	user := entity.User{
-		Firstname:   req.Firstname,
-		Lastname:    req.Lastname,
+		FirstName:   req.Firstname,
+		LastName:    req.Lastname,
 		Email:       req.Email,
 		Phone:       req.Phone,
 		Username:    req.Username,
@@ -186,8 +186,8 @@ func SignIn(c *gin.Context) {
 			"user": gin.H{
 				"id":        out.ID,        // ใช้ gorm.Model => ฟิลด์ ID ใหญ่
 				"username":  out.Username,
-				"firstname": out.Firstname,
-				"lastname":  out.Lastname,
+				"firstname": out.FirstName,
+				"lastname":  out.LastName,
 				"email":     out.Email,
 				"phone":     out.Phone,
 				"gender":    out.Gender, // ถ้า entity.Gender มี json tag ถูก จะ serialize เป็น object

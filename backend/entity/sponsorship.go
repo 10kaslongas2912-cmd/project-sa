@@ -1,7 +1,6 @@
 package entity
 
 import (
-
 	"gorm.io/gorm"
 )
 
@@ -23,14 +22,14 @@ const (
 
 type Sponsorship struct {
 	gorm.Model
-	SponsorID uint             `json:"sponsor_id"`
-	Sponsor   *Sponsor  `gorm:"foreignKey:SponsorID" json:"sponsor"`
-	DogID            uint             `json:"dog_id"`
-	Kind             string           `json:"kind"`   // ONE_TIME / SUBSCRIPTION
-	Status           string           `json:"status"` // PENDING, ACTIVE, COMPLETED, CANCELED
-	Note             *string          `json:"note"`
+	SponsorID uint     `json:"sponsor_id"`
+	Sponsor   *Sponsor `gorm:"foreignKey:SponsorID" json:"sponsor"`
+	DogID     uint     `json:"dog_id"`
+	Dog       *Dog     `gorm:"foreignKey:DogID" json:"dog"`
+	Kind      string   `json:"kind"`   // ONE_TIME / SUBSCRIPTION
+	Status    string   `json:"status"` // PENDING, ACTIVE, COMPLETED, CANCELED
+	Note      *string  `json:"note"`
 
-	Subscription *Subscription `json:"subscription"`
-	SponsorshipPayments     []SponsorshipPayment     `gorm:"foreignKey:SponsorshipID" json:"sponsorship_payments"`
+	Subscription        *Subscription        `json:"subscription"`
+	SponsorshipPayments []SponsorshipPayment `gorm:"foreignKey:SponsorshipID" json:"sponsorship_payments"`
 }
-

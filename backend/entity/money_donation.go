@@ -14,8 +14,8 @@ type MoneyDonation struct {
 	Status          string  `json:"status"`
 
 	DonationID uint     `json:"donation_id"`
-	Donation   Donation `gorm:"foreignKey:DonationID"`
+	Donation   *Donation `gorm:"foreignKey:DonationID" json:"donation"`
 
 	PaymentMethodID uint           `json:"payment_method_id"`
-	PaymentMethod   *PaymentMethod `gorm:"foreignKey:PaymentMethodID"`
+	PaymentMethod   *PaymentMethod `gorm:"foreignKey:PaymentMethodID" json:"payment_method"`
 }

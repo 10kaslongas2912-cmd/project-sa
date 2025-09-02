@@ -9,8 +9,8 @@ import (
 func seedDonations(db *gorm.DB) error {
 
 	var Donor1, Donor2 entity.Donor
-	if err := db.First(&Donor1, "firstname = ? AND lastname = ?", "John","Doe").Error; err != nil { return err}
-	if err := db.First(&Donor2, "firstname = ? AND lastname = ?", "Jane","Smith").Error; err != nil { return err}
+	if err := db.First(&Donor1, "first_name = ? AND last_name = ?", "John","Doe").Error; err != nil { return err}
+	if err := db.First(&Donor2, "first_name = ? AND last_name = ?", "Jane","Smith").Error; err != nil { return err}
 
 	Donation1 := entity.Donation{	
 		DonationDate: time.Date(2023, 7, 1, 0, 0, 0, 0, time.UTC),

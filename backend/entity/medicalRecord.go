@@ -19,10 +19,10 @@ type MedicalRecord struct {
 	Notes         string    `json:"notes"`       // Added Notes field
 
 	DogID uint `json:"dog_id"`
-	Dog   *Dog  `gorm:"foreignKey:DogID"`
+	Dog   *Dog  `gorm:"foreignKey:DogID" json:"dog"`
 
 	StaffID uint  `json:"staff_id"` // Foreign key for Staff
-	Staff   *Staff `gorm:"foreignKey:StaffID"` // Association to Staff
+	Staff   *Staff `gorm:"foreignKey:StaffID" json:"staff"` // Association to Staff
 
-	VaccineRecord []VaccineRecord `gorm:"foreignKey:MedID"`
+	VaccineRecords []VaccineRecord `gorm:"foreignKey:MedID" json:"vaccine_records"`
 }

@@ -48,7 +48,7 @@ func CreateDonation(c *gin.Context) {
 		// Case 2: Donor is a Guest.
 		// Find existing guest donor by Firstname & Lastname, or create if not found.
 		// We must ensure we only match with other guests (UserID IS NULL).
-		if err := tx.Where("firstname = ? AND lastname = ? AND user_id IS NULL", incomingDonor.Firstname, incomingDonor.Lastname).
+		if err := tx.Where("firstname = ? AND lastname = ? AND user_id IS NULL", incomingDonor.FirstName, incomingDonor.LastName).
 			FirstOrCreate(&donorToUse, incomingDonor).Error; err != nil {
 			tx.Rollback()
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process guest donor: " + err.Error()})

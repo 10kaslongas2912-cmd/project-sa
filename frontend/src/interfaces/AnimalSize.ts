@@ -1,4 +1,4 @@
 export interface AnimalSizeInterface{
-    id: number;
+    ID: number;
     name: string;
 }

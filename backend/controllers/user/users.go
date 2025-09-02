@@ -47,12 +47,12 @@ func parseDateYMD(s string) (time.Time, error) {
 }
 
 func userResp(u entity.User) gin.H {
-	fullname := strings.TrimSpace(u.Firstname + " " + u.Lastname)
+	fullname := strings.TrimSpace(u.FirstName + " " + u.LastName)
 	return gin.H{
 		"ID":        u.ID, // คุณใช้ gorm.Model → JSON จะเป็น "ID"
 		"name":      fullname,
-		"firstname": u.Firstname,
-		"lastname":  u.Lastname,
+		"firstname": u.FirstName,
+		"lastname":  u.LastName,
 		"username":  u.Username,
 		"email":     u.Email,
 		"phone":     u.Phone,

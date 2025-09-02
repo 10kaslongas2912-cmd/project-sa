@@ -4,10 +4,10 @@ import (
 	"gorm.io/gorm"
 )
 
-type KenelManagement struct {
+type KennelManagement struct {
 	gorm.Model
 	StaffID    uint      `json:"staff_id"`
-	Staff      *Staff    `gorm:"foreignKey:StaffID"`
+	Staff      *Staff    `gorm:"foreignKey:StaffID" json:"staff"`
 	KennelID   uint      `json:"kennel_id"`
-	Kennel     *Kennel   `gorm:"foreignKey:KennelID"`
+	Kennel     *Kennel   `gorm:"foreignKey:KennelID" json:"kennel"`
 }

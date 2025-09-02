@@ -15,14 +15,14 @@ type DogCardProps = {
 function DogCard({ dog }: DogCardProps) {
   const navigate = useNavigate();
   const handleClick = () => {
-    navigate(`dog-info/${dog.id}`);
+    navigate(`dog-info/${dog.ID}`);
   };
 
   return (
     <div className="card info">
       <div className="card img">
         {dog.photo_url ? ( // เปลี่ยนจาก photoURL เป็น photo_url
-          <Link to={`dog-info/${dog.id}`}>
+          <Link to={`dog-info/${dog.ID}`}>
             <img
               src={dog.photo_url} // เปลี่ยนจาก photoURL เป็น photo_url
               alt={`รูปภาพของ ${dog.name}`}
@@ -116,7 +116,7 @@ const SponsorPage: React.FC = () => {
             <div className="card wrapper">
               <div className="card container">
                 {dogs.map((dog) => (
-                  <DogCard key={dog.id} dog={dog} />
+                  <DogCard key={dog.ID} dog={dog} />
                 ))}
               </div>
             </div>

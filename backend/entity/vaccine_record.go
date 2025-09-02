@@ -12,8 +12,8 @@ type VaccineRecord struct {
 	NextDueDate time.Time `json:"next_due_date"`
 
 	MedID         uint           `json:"med_id"`
-	MedicalRecord *MedicalRecord `gorm:"foreignKey:MedID"`
+	MedicalRecord *MedicalRecord `gorm:"foreignKey:MedID" json:"medical_record"`
 
 	VaccineID uint     `json:"vaccine_id"`
-	Vaccine   *Vaccine `gorm:"foreignKey:VaccineID"`
+	Vaccine   *Vaccine `gorm:"foreignKey:VaccineID" json:"vaccine"`
 }

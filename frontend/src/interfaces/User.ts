@@ -1,11 +1,11 @@
 import type { GenderInterface } from "./Gender";
 
 export interface UserInterface {
-  id: number;
+  ID: number;
   username: string;
   password: string;
-  firstname: string;
-  lastname: string;
+  first_name: string;
+  last_name: string;
   date_of_birth: string;
   email: string;
   phone: string;
@@ -16,7 +16,7 @@ export interface UserInterface {
 }
 
 export interface AppUserInterface {
-  id: number;
+  ID: number;
   name: string;
   firstname: string;
   lastname: string;
