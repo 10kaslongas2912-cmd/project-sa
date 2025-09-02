@@ -129,10 +129,10 @@ const DonationSummaryPage: React.FC = () => {
       {contextHolder}
       <div className="summary-page-container">
         <div className="summary-content">
-          <button onClick={handleBack} className="back-button">
+          <button onClick={handleBack} className="back-button" style={{ fontFamily: 'Anakotmai-Medium' }}>
             &lt; ย้อนกลับ
           </button>
-          <h1 className="summary-main-title">รายละเอียดการบริจาคสิ่งของ</h1>
+          <h1 className="summary-main-title" style={{ fontSize: '50px' }}>รายละเอียดการบริจาคสิ่งของ</h1>
           <div className="summary-box">
             <h2 className="summary-section-title">สรุปรายการบริจาคสิ่งของ</h2>
             <ul className="donation-list">
@@ -174,7 +174,7 @@ const DonationSummaryPage: React.FC = () => {
               </div>
             </div>
           )}
-          <button onClick={handleNext} className="continue-button">
+          <button onClick={handleNext} className="continue-button" style={{ fontFamily: 'Anakotmai-Medium' }}>
             ยืนยันและเสร็จสิ้น
           </button>
         </div>

@@ -20,8 +20,8 @@ const InformationDonors: React.FC = () => {
   const initialData = getInitialFormData();
 
   // สร้าง State สำหรับเก็บค่าของแต่ละ Input
-  const [firstName, setFirstName] = useState(initialData.first_name || '');
-  const [lastName, setLastName] = useState(initialData.last_name || '');
+  const [firstName, setFirstName] = useState(initialData.firstname || '');
+  const [lastName, setLastName] = useState(initialData.lastname || '');
   const [phone, setPhone] = useState(initialData.phone || '');
   const [email, setEmail] = useState(initialData.email || '');
 

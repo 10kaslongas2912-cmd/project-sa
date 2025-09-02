@@ -3,8 +3,13 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #f0f2f5; /* สีพื้นหลังอ่อนๆ */
   font-family: 'Anakotmai', sans-serif;
+
+  /* --- Corrected Background Path --- */
+    background-image: url(../../../../assets/auth/dog1.webp);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .thank-you-card {
@@ -13,7 +18,7 @@
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   text-align: center;
-  max-width: 600px;
+  max-width: 900px;
   width: 100%;
 }
 

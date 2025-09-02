@@ -1,19 +1,19 @@
 @font-face {
-  font-family: 'Anakotmai';
+  font-family: 'Anakotmai-Light';
   src: url('./assets/fonts/Anakotmai-Light.woff2') format('woff2');
   font-weight: 300;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Anakotmai';
+  font-family: 'Anakotmai-Medium';
   src: url('./assets/fonts/Anakotmai-Medium.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Anakotmai';
+  font-family: 'Anakotmai-Bold';
   src: url('./assets/fonts/Anakotmai-Bold.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
@@ -27,7 +27,7 @@ html, body, #root {
 }
 
 body {
-  font-family: 'Anakotmai', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Anakotmai-Bold', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 500;
   /* color-scheme: light dark; */

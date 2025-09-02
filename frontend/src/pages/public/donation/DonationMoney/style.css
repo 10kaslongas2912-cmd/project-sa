@@ -67,8 +67,7 @@
 
 .form-input2 {
   margin-left: 15px;
-  margin-right: 20px;
-  width: 100%;
+  margin-right: 20px !important;
   height: 50px; /* ปรับความสูงของช่องวิธีการชำระเงิน */
   max-width: 750px; /* กำหนดความกว้างสูงสุด */
   font-family: 'Anakotmai', sans-serif;
@@ -163,9 +162,10 @@
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
-  gap: 35px;
+  gap: 49px;
   margin-bottom: 24px;
   font-family: 'Anakotmai', sans-serif;
+  margin-left: 4px;
 }
 
 .amount-input-row .ant-btn {
@@ -268,6 +268,7 @@
   display: flex;
   align-items: center;
   border-radius: 20px !important; /* เพิ่ม border-radius เพื่อให้มุมโค้งมน */
+  
 }
 
 .form-input2 .ant-select-selection-placeholder,
@@ -325,7 +326,7 @@
   margin-top: 10px;
   width: 100%;
   max-width: 850px; /* ให้กว้างเท่ากับ Select */
-  margin-left: 20px;
+  margin-left: 7px;
   margin-right: auto;
 }
 
@@ -367,8 +368,9 @@
   font-weight: bold;
   font-family: 'Anakotmai', sans-serif;
   text-align: left; /* Center text */
-  margin-left: 25px;
+  margin-left: 30px;
   flex: 1;
+  margin-bottom: 20px !important;
 }
 .jk{
   display: block !important;
@@ -379,7 +381,7 @@
   font-weight: bold;
   font-family: 'Anakotmai', sans-serif;
   text-align: left; /* Center text */
-  margin-left: 20px;
+  margin-left: 30px;
   flex: 1;
   margin-bottom: 0px;
 }
