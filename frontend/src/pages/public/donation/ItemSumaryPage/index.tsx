@@ -44,8 +44,19 @@ const DonationSummaryPage: React.FC = () => {
     }
 
     if (!isLoggedIn && createAccount) {
+      const donorInfoString = sessionStorage.getItem('donationInfoFormData');
+      if (donorInfoString) {
+        const donorInfo = JSON.parse(donorInfoString);
+        const signupPrefillData = {
+          firstname: donorInfo.firstname,
+          lastname: donorInfo.lastname,
+          email: donorInfo.email,
+          phone: donorInfo.phone,
+        };
+        sessionStorage.setItem('signupPrefillData', JSON.stringify(signupPrefillData));
+      }
       sessionStorage.setItem('returnTo', '/donation/summary');
-      navigate('/signup');
+      navigate('/auth');
       return;
     }
 
@@ -59,6 +70,11 @@ const DonationSummaryPage: React.FC = () => {
       navigate('/donation/options');
       return;
     }
+
+    console.log("Data from sessionStorage on Summary Page:", {
+      donorInfoString,
+      itemDetailsString,
+    });
 
     try {
       const donorInfo: DonorInterface = JSON.parse(donorInfoString);
@@ -79,27 +95,12 @@ const DonationSummaryPage: React.FC = () => {
         item_ref: `${transactionNumber}-${item.itemName}`
       }));
 
-      const donorIdCandidate =
-        (donorInfo as any).donor_id ??
-        (donorInfo as any).id ??
-        (donorInfo as any).DonorID;
-      const donorId = Number(donorIdCandidate);
-
-      if (!Number.isFinite(donorId)) {
-        messageApi.open({
-          type: "error",
-          content:
-            "ไม่พบหมายเลขผู้บริจาค (donorId) กรุณากรอกข้อมูลผู้บริจาคให้ครบถ้วน",
-        });
-        return;
-      }
-
-      // 5) รวม payload ตามสเปค CreateDonationRequest
       const payload: CreateDonationRequest = {
-        id: donorId,
-        donationType: donationType,         // 'money'
-        itemDetails: itemDetails     // ถ้ามีของ (กรณี item) ใส่ภายหลัง
-      };
+              donor_info: donorInfo,                         // <-- เพิ่มข้อมูลผู้บริจาค
+              donation_type: donationType,                   // <-- แก้ชื่อ key
+              //money_donation_details: moneyDetails,         // << รวมไว้ในก้อนเดียว
+              item_donation_details: itemDetails,     // ถ้ามีของ (กรณี item) ใส่ภายหลัง
+            };
       
       const result = await donationAPI.create(payload);
 

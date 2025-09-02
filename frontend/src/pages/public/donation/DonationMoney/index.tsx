@@ -98,10 +98,36 @@ const fetchPaymentMethods = async () => {
 
     sessionStorage.setItem('moneyDonationData', JSON.stringify(finalData));
 
-    if (!isLoggedIn && createAccount === 3) {
-      sessionStorage.setItem('returnTo', '/donation/money');
-      navigate('/signup');
+    const isMonthly = type === 'รายเดือน';
+    const isOneTime = type === 'รายครั้ง';
+    const wantsToCreateAccount = createAccount === 3;
+
+    // Condition to redirect to signup page
+    const shouldSignUp = !isLoggedIn && (isMonthly || (isOneTime && wantsToCreateAccount));
+
+    if (shouldSignUp) {
+      // Prepare prefill data for signup form
+      const donorInfoString = sessionStorage.getItem('donationInfoFormData');
+      if (donorInfoString) {
+        const donorInfo = JSON.parse(donorInfoString);
+        const signupPrefillData = {
+          firstname: donorInfo.firstname,
+          lastname: donorInfo.lastname,
+          email: donorInfo.email,
+          phone: donorInfo.phone,
+        };
+        sessionStorage.setItem('signupPrefillData', JSON.stringify(signupPrefillData));
+      }
+
+      // Set the return path after login
+      // For monthly, it's always credit card.
+      // For one-time, we come back here to be redirected again by navigateToNextPage.
+      const returnTo = isMonthly ? '/donation/payment/creditcard' : '/donation/money';
+      sessionStorage.setItem('returnTo', returnTo);
+      
+      navigate('/auth');
     } else {
+      // If not signing up, proceed to payment directly
       navigateToNextPage(type, values.paymentMethod);
     }
   };

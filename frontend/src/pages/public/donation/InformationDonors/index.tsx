@@ -32,9 +32,9 @@ const InformationDonors: React.FC = () => {
       try {
         const parsedPrefillData = JSON.parse(prefillData);
         console.log("InformationDonors: Parsed prefillData:", parsedPrefillData); // Log parsed data
-        setFirstName(parsedPrefillData.first_name || '');
-        setLastName(parsedPrefillData.last_name || '');
-        setPhone(parsedPrefillData.phone_number || '');
+        setFirstName(parsedPrefillData.firstname || '');
+        setLastName(parsedPrefillData.lastname || '');
+        setPhone(parsedPrefillData.phone || '');
         setEmail(parsedPrefillData.email || '');
         sessionStorage.removeItem('prefillUserData'); // Clear after use
         console.log("InformationDonors: Form fields set with prefill data."); // Confirm fields set
