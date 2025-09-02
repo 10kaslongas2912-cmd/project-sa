@@ -61,11 +61,11 @@ func main() {
 	protected := r.Group("/")
 	protected.Use(middlewares.Authorizes())
 	{
-		protected.GET("/user/me", user.Me)
-		protected.PUT("/user/:id", user.UpdateUser)
+		protected.GET("/users/me", user.Me)
+		protected.PUT("/users/:id", user.UpdateUser)
 		protected.GET("/users", user.GetAllUsers)
-		protected.GET("/user/:id", user.GetUserById)
-		protected.DELETE("/user/:id", user.DeleteUser)
+		protected.GET("/users/:id", user.GetUserById)
+		protected.DELETE("/users/:id", user.DeleteUser)
 	}
 
 	// health

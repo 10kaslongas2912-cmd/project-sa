@@ -1,7 +1,7 @@
 export interface DonorInterface {
-    donor_id?: number;
-    first_name?: string;
-    last_name?: string;
+    id?: number;
+    firstname?: string;
+    lastname?: string;
     phone?: string;
     email?: string;
     donor_type?: "user" | "guest";
@@ -10,7 +10,7 @@ export interface DonorInterface {
 
 
 export interface DonationInterface {
-    donation_id?: number;
+    id?: number;
     donation_date?: Date;
     donation_type?: string;
     status?: string;
@@ -33,7 +33,7 @@ export interface MoneyDonationInterface {
 }
 
 export interface ItemDonationInterface {
-    item_id?: number;
+    id?: number;
     item_name?: string;
     quantity?: number;
     unit?: string;
@@ -42,7 +42,9 @@ export interface ItemDonationInterface {
 }
 
 export interface CreateDonationRequest {
-    donationType: string,
-    moneyDetails?: MoneyDonationInterface,
-    itemDetails?: ItemDonationInterface[]
+    user_id?: number;
+    donor?: DonorInterface;
+    donor_type: "user" | "guest";
+    money_detail?: MoneyDonationInterface;
+    item_detail?: ItemDonationInterface[];
 }

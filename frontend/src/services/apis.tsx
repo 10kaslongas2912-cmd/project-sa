@@ -24,42 +24,41 @@ export const authAPI = {
   logout: () => Post("/user/logout", {}),
 };
 
-/** ---------- USERS (CRUD) ---------- */
 // ฐานพหูพจน์ + /:id
 export const userAPI = {
   getAll:  () => Get("/users"),
-  getById: (id: number) => Get(`/user/${id}`),
-  update:  (id: number, data: UpdateUserRequest) => Put(`/user/${id}`, data),
-  remove:  (id: number) => Delete(`/user/${id}`),
+  getById: (id: number) => Get(`/users/${id}`),
+  update:  (id: number, data: UpdateUserRequest) => Put(`/users/${id}`, data),
+  remove:  (id: number) => Delete(`/users/${id}`),
 };
 
 /** ---------- DOGS (CRUD) ---------- */
 // แก้ให้สม่ำเสมอทุกเมธอดอยู่ใต้ /dogs
 export const dogAPI = {
   getAll:  () => Get("/dogs"),
-  getById: (id: number) => Get(`/dog/${id}`),
-  create:  (data: CreateDogRequest) => Post("/dog", data),
-  update:  (id: number, data: UpdateDogRequest) => Put(`/dog/${id}`, data),
-  remove:  (id: number) => Delete(`/dog/${id}`),
+  getById: (id: number) => Get(`/dogs/${id}`),
+  create:  (data: CreateDogRequest) => Post("/dogs", data),
+  update:  (id: number, data: UpdateDogRequest) => Put(`/dogs/${id}`, data),
+  remove:  (id: number) => Delete(`/dogs/${id}`),
 };
 
 /** ---------- LOOKUPS ---------- */
 // แนะนำให้ใช้พหูพจน์เป็นฐาน และ /:id สำหรับตัวเดียว
 export const genderAPI = {
   getAll:  () => Get("/genders"),
-  getById: (id: number) => Get(`/gender/${id}`),
+  getById: (id: number) => Get(`/genders/${id}`),
 };
 
 export const breedAPI = {
   getAll:  () => Get("/breeds"),
-  getById: (id: number) => Get(`/breed/${id}`),
+  getById: (id: number) => Get(`/breeds/${id}`),
 };
 
 // คำว่า sexes ปกติสะกดเป็น "animal-sexes"
 // ถ้า BE ปัจจุบันของคุณใช้ "animal-sexs" อยู่ ให้คงตามนั้น หรือตั้ง alias ไว้ช่วงเปลี่ยนผ่าน
 export const animalSexAPI = {
   getAll:  () => Get("/animal-sexes"),        // ← ทางที่แนะนำ
-  getById: (id: number) => Get(`/animal-sex/${id}`),
+  getById: (id: number) => Get(`/animal-sexes/${id}`),
 
   // --- ถ้าต้องรองรับของเก่า ชั่วคราวใช้แบบนี้ ---
   // getAll:  () => Get("/animal-sexs"),
@@ -68,7 +67,7 @@ export const animalSexAPI = {
 
 export const roleAPI = {
   getAll:  () => Get("/roles"),
-  getById: (id: number) => Get(`/role/${id}`),
+  getById: (id: number) => Get(`/roles/${id}`),
 };
 
 
@@ -79,8 +78,8 @@ export const paymentMethodAPI = {
 
 export const donationAPI = {
   getAll:  () => Get("/donations"),
-  getById: (id: number) => Get(`/donation/${id}`),
-  create:  (data: CreateDonationRequest) => Post("/donation/", data),
+  getById: (id: number) => Get(`/donations/${id}`),
+  create:  (data: CreateDonationRequest) => Post("/donations/", data),
   // update:  (id: number, data: UpdateDogRequest) => Put(`/dog/${id}`, data),
   // remove:  (id: number) => Delete(`/dog/${id}`),
 };

@@ -15,7 +15,7 @@ import DonationItemsForm from "../DonationItem";
 const CreditCardPaymentForm: React.FC = () => {
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
-  const []
+
   // form state
   const [cardNumber, setCardNumber] = useState("");
   const [expiryDate, setExpiryDate] = useState(""); // MM/YY
@@ -101,7 +101,7 @@ const CreditCardPaymentForm: React.FC = () => {
 
       // 5) รวม payload ตามสเปค CreateDonationRequest
       const payload: CreateDonationRequest = {
-        id?: userId.id,
+        user_id: donorId,
         donationType: donationType,         // 'money'
         moneyDetails: moneyDetails,         // << รวมไว้ในก้อนเดียว
         // itemDetails: []     // ถ้ามีของ (กรณี item) ใส่ภายหลัง
