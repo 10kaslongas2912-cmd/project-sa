@@ -139,9 +139,7 @@ func GetAllDogs(c *gin.Context) {
         return
     }
 
-    c.JSON(http.StatusOK, gin.H{
-        "data": dogs,
-    })
+    c.JSON(http.StatusOK, dogs)
 }
 
 // UpdateDog (U) — partial update

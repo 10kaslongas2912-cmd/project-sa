@@ -18,6 +18,8 @@ export interface DogInterface {
   is_adopted?: boolean;
   breed_id?: number;
   breed?: BreedInterface
+  story?: string;
+  personality?: string[];
 }
 
 export interface CreateDogRequest {

@@ -14,6 +14,8 @@ type Dog struct {
 	Character   string `json:"character"`
 	ReadyToAdopt bool `json:"ready_to_adopt"`
 	IsAdopted   bool `json:"is_adopted"`
+	Story	*string	`json:"story"`
+	// Personality *str
 	
 	BreedID uint `json:"breed_id"`
 	Breed   *Breed `gorm:"foreignKey:BreedID" json:"breed"`

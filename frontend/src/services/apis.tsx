@@ -13,12 +13,12 @@ import type { CreateDonationRequest } from "../interfaces/Donation";
 // me/logout แนบ token (default ของ wrapper = แนบให้)
 export const authAPI = {
   logIn: (data: LoginUserRequest) =>
-    Post("/user/auth", data, false),     // ตาม BE ปัจจุบันของคุณ
+    Post("/users/auth", data, false),     // ตาม BE ปัจจุบันของคุณ
   signUp: (data: CreateUserRequest) =>
-    Post("/user/signup", data, false),
+    Post("/users/signup", data, false),
 
   // ถ้า BE ใช้ /auth/me ให้เปลี่ยน path ตรงนี้ที่เดียว
-  me: () => Get("/user/me"),
+  me: () => Get("/users/me"),
 
   // ถ้า BE ไม่มี endpoint นี้ ลบออกได้
   logout: () => Post("/user/logout", {}),

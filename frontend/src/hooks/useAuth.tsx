@@ -55,11 +55,11 @@ export function useAuthUser() {
   }, []);
 
   return {
-    user,        // ข้อมูล user หรือ null
-    loading,     // true ตอนกำลังโหลด / false ตอนเสร็จ
-    error,       // error object ถ้า fetch fail
-    isLoggedIn,  // boolean
-    refresh,     // ฟังก์ชัน manual refresh
-    logout,      // ฟังก์ชัน logout
+    user,     
+    loading,    
+    error,   
+    isLoggedIn, 
+    refresh,   
+    logout,  
   };
 }

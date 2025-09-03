@@ -16,8 +16,8 @@ import (
 /* ===== DTOs (ตามที่คุณมีอยู่) ===== */
 
 type CreateUserRequest struct {
-	Firstname   string  `json:"firstname"`
-	Lastname    string  `json:"lastname"`
+	Firstname   string  `json:"first_name"`
+	Lastname    string  `json:"last_name"`
 	DateOfBirth string  `json:"date_of_birth"`
 	Email       string  `gorm:"uniqueIndex" json:"email"`
 	Phone       string  `json:"phone"`
@@ -28,8 +28,8 @@ type CreateUserRequest struct {
 }
 
 type UpdateUserRequest struct {
-	Firstname   *string `json:"firstname"`
-	Lastname    *string `json:"lastname"`
+	Firstname   *string `json:"first_name"`
+	Lastname    *string `json:"last_name"`
 	DateOfBirth *string `json:"date_of_birth"` // "YYYY-MM-DD"
 	Email       *string `json:"email"`
 	Phone       *string `json:"phone"`
@@ -47,18 +47,18 @@ func parseDateYMD(s string) (time.Time, error) {
 }
 
 func userResp(u entity.User) gin.H {
-	fullname := strings.TrimSpace(u.FirstName + " " + u.LastName)
+	FullName := strings.TrimSpace(u.FirstName + " " + u.LastName)
 	return gin.H{
-		"ID":        u.ID, // คุณใช้ gorm.Model → JSON จะเป็น "ID"
-		"name":      fullname,
+		"ID":        u.ID, 
+		"name":      FullName,
 		"firstname": u.FirstName,
 		"lastname":  u.LastName,
 		"username":  u.Username,
 		"email":     u.Email,
 		"phone":     u.Phone,
 		"photo_url": u.PhotoURL,
-		"gender":    u.Gender,     // ถ้า entity.Gender มี json tag ถูก จะออกเป็น object
-		"createdAt": u.CreatedAt,  // เผื่ออยากใช้ด้านหน้า
+		"gender":    u.Gender,   
+		"createdAt": u.CreatedAt, 
 		"updatedAt": u.UpdatedAt,
 	}
 }

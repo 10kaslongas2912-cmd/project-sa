@@ -40,8 +40,8 @@ func main() {
 	r.Static("/static", "./static")
 
 	//  Routes (public)
-	r.POST("/user/auth", auth.SignIn)
-	r.POST("/user/signup", auth.SignUp)
+	r.POST("/users/auth", auth.SignIn)
+	r.POST("/users/signup", auth.SignUp)
 
 	r.GET("/dogs", dog.GetAllDogs)
 	r.GET("/dogs/:id", dog.GetDogById)
