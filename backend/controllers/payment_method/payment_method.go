@@ -1,0 +1,20 @@
+package payment_methods
+
+import (
+	"net/http"
+
+	"example.com/project-sa/configs"
+	"example.com/project-sa/entity"
+	"github.com/gin-gonic/gin"
+)
+
+func GetAll(c *gin.Context) {
+	var paymentMethods []entity.PaymentMethod
+	db := configs.DB()
+
+	if err := db.Find(&paymentMethods).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, paymentMethods)
+}

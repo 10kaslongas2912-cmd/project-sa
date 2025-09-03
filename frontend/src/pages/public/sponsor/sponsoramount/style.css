@@ -1,0 +1,337 @@
+
+
+/* Main Container */
+.sponsor-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 160px); /* ปรับ min-height ให้เท่ากับหน้าจอ ลบ Navbar */
+  background-color: #f0f2f5;
+  margin-top: 2rem;
+  padding: 2rem;
+  font-family: 'Anakotmai', sans-serif;
+}
+
+.sponsor-card {
+  width: 100%;
+  max-width: 800px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem;
+  box-sizing: border-box;
+  
+}
+
+
+.sponsor-header {
+  margin-bottom: 2rem;
+  background: linear-gradient(135deg, #ff9028, #ffee52);
+  padding: 2.5rem;
+
+} 
+
+.back-button {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #7a7a7a;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  padding: 0;
+}
+
+.sponsor-title {
+  font-size: 2.25rem;
+  font-weight: bold;
+  color: white;
+  margin: 0 auto;
+  
+}
+
+.sponsor-subtitle {
+  font-size: 1rem;
+  color: white;
+  margin-top: 0.5rem;
+}
+
+
+.sponsor-progress {
+  margin-bottom: 3rem;
+  width: 95%;
+}
+
+.progress-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.progress-step {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1rem;
+  z-index: 1;
+}
+
+.progress-step.active {
+  background-color: #ff8800;
+}
+
+.progress-line {
+position: absolute;
+width: 100%;
+height: 2px;
+background-color: #e0e0e0;
+
+}
+
+/* Content */
+.sponsor-content {
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #1a1a1a;
+  margin-bottom: 1rem;
+}
+
+.custom-amount-title {
+  margin-top: 2rem;
+}
+
+.donation-options {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.donation-button {
+  flex: 1;
+  min-width: 150px;
+  padding: 1.25rem;
+  border: 2px solid #e0e0e0;
+  background-color: #ffffff;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #4a4a4a;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.donation-button:hover {
+  background-color: #fffaf5;
+  border-color: #ff8800;
+  color: #ff8800;
+}
+
+.donation-button.selected {
+  background-color: #fffaf5;
+  border-color: #ff8800;
+  color: #ff8800;
+  box-shadow: 0 0 0 2px rgba(255, 136, 0, 0.2);
+}
+.custom-amount-input {
+  width: 100%;
+  padding: 1.25rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  box-sizing: border-box;
+}
+
+/* Footer */
+.sponsor-footer {
+  text-align: right;
+}
+
+.next-button {
+  background-color: #ff8800;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.next-button:hover {
+  background-color: #e67d00;
+}
+
+
+/* =========================
+   NEW: Plan type toggle (One-time / Subscription)
+   ========================= */
+/* แถวซ้าย-ขวา: ตัวเลือกแผน + ความถี่ */
+.plan-row {
+  display: grid;
+  grid-template-columns: auto 420px; /* ขวาคงที่: ปรับ 380–520 ได้ตามชอบ */
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap; /* กันล้นบนจอเล็ก */
+  column-gap: 12px;
+  min-height: 56px; /* ถ้าตัว select สูงกว่านี้ เพิ่มเป็น 60–64px */
+}
+/* ปุ่มเลือกแผนแบบชิป */
+.plan-toggle {
+  display: inline-flex;
+  gap: 8px;
+  background: #f6f7fb;
+  padding: 6px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.plan-chip {
+  border: 2px solid transparent;
+  background: transparent;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s ease;
+  color: #4a4a4a;
+  line-height: 1; height: 49px;
+}
+
+.plan-chip:hover {
+  background: #fffaf5;
+  border-color: #ff8800;
+  color: #ff8800;
+}
+
+.plan-chip.active {
+  background: #ff8800;
+  color: #fff;
+  border-color: #ff8800;
+  box-shadow: 0 2px 8px rgba(255,136,0,.25);
+}
+
+/* แผงความถี่ด้านขวา — ใช้ width+opacity transition เพื่อให้ลื่น */
+.freq-panel {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 8px;
+
+  /* ซ่อนแบบมีแอนิเมชัน: ไม่แตะ width/height เพื่อไม่ให้ดัน layout */
+  opacity: 0;
+  transform: translateX(6px);
+  pointer-events: none;
+  transition: opacity .22s ease, transform .22s ease;
+}
+
+.freq-panel.open {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.freq-label {
+  font-size: 1.2rem;
+  color: #4a4a4a;
+}
+
+.freq-select {
+  min-width: 260px;
+  padding: 0.9rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #fff;
+  transition: box-shadow .15s ease, border-color .15s ease;
+  appearance: none;
+}
+
+.freq-select:focus {
+  outline: none;
+  border-color: #ff8800;
+  box-shadow: 0 0 0 3px rgba(255,136,0,.15);
+}
+
+/* ปุ่มจำนวนเงิน: เพิ่ม focus ให้เข้าถึงได้ */
+.donation-button:focus-visible {
+  box-shadow: 0 0 0 3px rgba(255,136,0,.28);
+  border-color: #ff8800;
+}
+
+/* คำใบ้ใต้ input */
+.amount-hint {
+  font-size: 12px;
+  color: #7a7a7a;
+  margin-top: 6px;
+}
+
+/* จอเล็ก: ให้ความถี่ลงบรรทัดถัดไป กว้างเต็ม */
+@media (max-width: 640px) {
+  .freq-panel,
+  .freq-panel.open {
+    width: 100%;
+    padding-left: 0;
+    grid-template-columns: 1fr; /* label อยู่บรรทัดเดียวกับ select */
+  }
+}
+
+/* ====== Caret (ลูกศร) สำหรับ <select> ====== */
+/* ใช้กับทั้ง .freq-select และ select.form-input */
+select.form-input,
+.freq-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  /* ไอคอนลูกศรแบบ SVG (color = #7a7a7a) */
+  background-image: url("data:image/svg+xml;utf8,\
+  <svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%237a7a7a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>\
+  <polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center; /* ระยะห่างจากขวา */
+  background-size: 14px 14px;
+
+  padding-right: 2.5rem; /* เผื่อพื้นที่ให้ลูกศร */
+  cursor: pointer;
+}
+
+/* โฟกัส/โฮเวอร์: เปลี่ยนสีลูกศรให้เข้ากับธีมส้ม */
+select.form-input:focus,
+.freq-select:focus,
+select.form-input:hover,
+.freq-select:hover {
+  background-image: url("data:image/svg+xml;utf8,\
+  <svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23ff8800' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>\
+  <polyline points='6 9 12 15 18 9'/></svg>");
+}
+
+/* ซ่อนลูกศร native ของ IE/Edge รุ่นเก่า */
+select.form-input::-ms-expand,
+.freq-select::-ms-expand {
+  display: none;
+}
+
+/* Disabled style เล็กน้อย */
+select.form-input:disabled,
+.freq-select:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* =========================
+   END: Plan type toggle (One-time / Subscription)
+   ========================= */
+

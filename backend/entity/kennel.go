@@ -1,12 +1,17 @@
 package entity
 
+import "gorm.io/gorm"
 
 type Kennel struct {
-	KennelID uint `gorm:"primarykey;autoIncrement" json:"kennel_id"`
-	Location string `json:"location"`
-	Capacity uint `json:"capacity"`
+	gorm.Model
+	Name	string `json:"name"`
+	Capacity uint   `json:"capacity"`
 	Color    string `json:"color"`
-	Notes    string `json:"notes"`
+	Note    *string `json:"note"`
 
+	ZoneID uint  `json:"zone_id"`
+	Zone   *Zone `gorm:"foreignKey:ZoneID"`
+
+	KenelManagements []KenelManagement `gorm:"foreignKey:KennelID"`
 	Dogs []Dog `gorm:"foreignKey:KennelID"`
 }

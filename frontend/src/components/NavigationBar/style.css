@@ -1,14 +1,15 @@
 /* src/components/NavigationBar/style.css */
 @font-face {
   font-family: 'Anakotmai';
-  src: url('../../assets/fonts/anakotmai-bold.BE4ZYan3.woff2') format('woff2');
+  src: url('../../assets/fonts/Anakotmai-Bold.woff2') format('woff2');
   font-weight: bold;
   font-style: normal;
 }
+
 /* Header Styles */
 .header {
     display: grid;
-    grid-template-columns: 1fr auto 1fr; /* Create 3 columns */
+    grid-template-columns: 1fr auto auto; /* Create 3 columns */
     align-items: center;
     padding: 15px 50px;
     background-color: rgba(0, 0, 0, 0.308);
@@ -31,12 +32,12 @@
 .header-nav {
     justify-self: center;
     margin-right: 40px;
-    
 }
 
 .header-actions {
     justify-self: end;
     display: flex;
+    align-items: center;
     gap: 15px;
     font-size: larger;
     margin-top: 10px;
@@ -55,7 +56,6 @@
 .header-logo img {
     margin-top: 10px;
     height: 45px;
-    /* Adjust as needed */
     margin-left: 10px;
 }
 
@@ -71,7 +71,7 @@
     margin-top: 15px;
     margin-left: auto;
     margin-right: 25px;
-    font-family: Anakotmai, sans-serif; /* Apply the new font */
+    font-family: Anakotmai, sans-serif;
 }
 
 .header-nav a {
@@ -83,55 +83,30 @@
 
 .header-nav ul li a {
     text-decoration: none;
-    /* ลบเส้นใต้เริ่มต้นของลิงก์ */
     position: relative;
-    /* ทำให้ ::after สามารถอ้างอิงตำแหน่งได้ */
     color: #ffffff;
-    /* สีข้อความปกติ */
     padding: 10px;
     padding-bottom: 10px;
-    /* เพิ่มระยะห่างใต้ข้อความเพื่อให้มีที่ว่างสำหรับเส้น */
     transition: color 0.3s ease;
-    /* Transition สำหรับสีข้อความ */
 }
 
 .header-nav ul li a::after {
     content: '';
-    /* ต้องมีเสมอสำหรับ pseudo-elements */
     position: absolute;
-    /* ตำแหน่งสัมพัทธ์กับ parent (.header-nav ul li a) */
     width: 0;
-    /* เริ่มต้นเส้นไม่มีความกว้าง */
     height: 5px;
-    /* ความหนาของเส้น */
     background-color: #ffb300;
-    /* สีของเส้นใต้ (เลือกสีที่ต้องการ) */
     bottom: 0;
-    /* วางเส้นที่ด้านล่างของลิงก์ */
     left: 0;
-    /* เริ่มต้นเส้นจากด้านซ้าย */
     transition: width 0.3s ease-out;
-    /* Animation เมื่อความกว้างของเส้นเปลี่ยน */
 }
 
 .header-nav ul li a:hover::after {
     width: 100%;
-    /* เมื่อ hover ให้เส้นกว้างเต็ม 100% */
 }
 
-/* เพิ่มเติม: อาจจะทำให้ตัวอักษรหนาขึ้นเมื่อ hover ด้วย */
 .header-nav ul li a:hover {
     font-weight: bold;
-    /* ทำให้ตัวหนาขึ้น */
-}
-
-.header-actions {
-    margin-top: 10px;
-    display: flex;
-    gap: 15px;
-    font-size: larger;
-    margin-left: auto;
-    white-space: nowrap;
 }
 
 .header-actions .btn {
@@ -222,4 +197,226 @@
     font-size: 18px;
     color: white;
     transition: color 0.3s ease;
+}
+
+/* ==================== User Profile Styles ==================== */
+.user-profile-container {
+    position: relative;
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.user-profile-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 30px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    font-family: 'Anakotmai', sans-serif;
+    font-weight: bold;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.user-profile-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(135deg, #FBB03B 0%, #FF6700 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    flex-shrink: 0;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-initials {
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    font-family: 'Anakotmai', sans-serif;
+}
+
+.user-name {
+    color: white;
+    font-weight: bold;
+    white-space: nowrap;
+    font-family: 'Anakotmai', sans-serif;
+}
+
+.dropdown-arrow {
+    width: 18px;
+    height: 18px;
+    color: rgba(255, 255, 255, 0.8);
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+}
+
+.user-profile-btn:hover .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+/* Dropdown Menu */
+.user-dropdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    min-width: 280px;
+    overflow: hidden;
+    z-index: 1000;
+    animation: dropdownFadeIn 0.3s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-header {
+    padding: 20px;
+    background: linear-gradient(135deg, #FBB03B 0%, #FF6700 100%);
+    color: white;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-avatar-large {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    flex-shrink: 0;
+}
+
+.user-avatar-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-avatar-large .user-initials {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.user-details {
+    flex: 1;
+}
+
+.user-name-full {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    font-family: 'Anakotmai', sans-serif;
+}
+
+.user-role {
+    font-size: 14px;
+    opacity: 0.9;
+    font-family: 'Anakotmai', sans-serif;
+}
+
+.dropdown-menu {
+    padding: 12px 0;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Anakotmai', sans-serif;
+    transition: background-color 0.2s ease;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.item-icon {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.dropdown-divider {
+    border: none;
+    border-top: 1px solid #e9ecef;
+    margin: 8px 0;
+}
+
+.logout-btn {
+    color: #E74C3C;
+}
+
+.logout-btn:hover {
+    background-color: #fef2f2;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .user-name {
+        display: none;
+    }
+    
+    .user-dropdown {
+        min-width: 250px;
+        right: -20px;
+    }
+    
+    .dropdown-header {
+        padding: 15px;
+    }
+    
+    .user-name-full {
+        font-size: 16px;
+    }
 }

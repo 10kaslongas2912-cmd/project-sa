@@ -1,20 +1,20 @@
 @font-face {
-  font-family: 'Anakotmai';
-  src: url('./assets/fonts/anakotmai-light.opqZnjhY.woff2') format('woff2');
+  font-family: 'Anakotmai-Light';
+  src: url('./assets/fonts/Anakotmai-Light.woff2') format('woff2');
   font-weight: 300;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Anakotmai';
-  src: url('./assets/fonts/anakotmai-medium.BE4ZYan3.woff2') format('woff2');
+  font-family: 'Anakotmai-Medium';
+  src: url('./assets/fonts/Anakotmai-Medium.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Anakotmai';
-  src: url('./assets/fonts/anakotmai-bold.DAPGwlZb.woff2') format('woff2');
+  font-family: 'Anakotmai-Bold';
+  src: url('./assets/fonts/Anakotmai-Bold.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
 }
@@ -27,27 +27,16 @@ html, body, #root {
 }
 
 body {
-  font-family: 'Anakotmai', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Anakotmai-Bold', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 500;
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* color-scheme: light dark; */
+  /* color: rgba(255, 255, 255, 0.87); */
+  /* background-color: #242424; */
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Apply Anakotmai font to Ant Design components */
-.ant-btn,
-.ant-input,
-.ant-select,
-.ant-typography,
-.ant-card,
-.ant-form-item-label,
-.ant-picker,
-.ant-input-number {
-  font-family: 'Anakotmai', sans-serif !important;
-}
 
