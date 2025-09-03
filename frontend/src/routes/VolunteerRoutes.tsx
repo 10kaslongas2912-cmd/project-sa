@@ -5,7 +5,7 @@ import Loadable from "../components/third-patry/Loadable";
 import FirstPage from "../pages/public/firstpage";
 
 const VolunteerPage = Loadable(lazy(() => import("../pages/public/Volunteer/volunteerRegister")));
-const ZoneCageManagementPage = Loadable(lazy(() => import("../pages/ZoneCageManagement")));
+const ZoneCageManagementPage = Loadable(lazy(() => import("../pages/public/ZoneCageManagement")));
 const VolunteerApprovalPage = Loadable(lazy(() => import("../pages/public/Volunteer/volunteerApproval")));
 const VolunteerWaitForApprove = Loadable(lazy(() => import("../pages/public/Volunteer/volunteerWaitForApprove")));
 

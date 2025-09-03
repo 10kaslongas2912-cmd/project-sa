@@ -1,9 +1,10 @@
 package entity
 
+import "gorm.io/gorm"
 
 type Breed struct {
-	BreedID     uint   `gorm:"primarykey;autoIncrement" json:"breed_id"`
-	BreedName   string `json:"breed_name"`
+	gorm.Model
+	Name   string `json:"name"`
 	Description string `json:"description"`
 
 	Dog []Dog `gorm:"foreignKey:BreedID"`

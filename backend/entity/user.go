@@ -2,20 +2,24 @@ package entity
 
 import (
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type User struct {
-	UserID      uint      `gorm:"primarykey;autoIncrement" json:"user_id"`
-	FirstName   string    `json:"first_name"`
-	LastName    string    `json:"last_name"`
-	DateOfBirth time.Time `json:"date_of_birth"`
-	Email       string    `json:"email"`
-	PhoneNumber string    `json:"phone_number"`
-	UserName    string    `json:"username"`
+	gorm.Model
+	Firstname   string    `json:"firstname"`
+	Lastname    string    `json:"lastname"`
+	DateOfBirth time.Time `json:"date_of_birth" gorm:"type:date"`
+	Email       string    `gorm:"uniqueIndex" json:"email"`
+	Phone       string    `json:"phone"`
+	Username    string    `gorm:"uniqueIndex" json:"username"`
 	Password    string    `json:"-"`
+	PhotoURL    *string   `json:"photo_url"`
+	GenderID    uint      `json:"gender_id"`           // Foreign key for Genders
+	Gender      *Gender   `gorm:"foreignKey:GenderID"` // Association to Genders
 
-	GenderID *uint   `json:"gender_id"`     // Foreign key for Genders
-	Gender   Gender `gorm:"references:ID"` // Association to Genders
-
-	Donors []Donor `gorm:"foreignKey:UserID"`
+	Donors   []Donor   `gorm:"foreignKey:UserID"`
+	Sponsors []Sponsor `gorm:"foreignKey:UserID"`
+	Adopters []Adopter `gorm:"foreignKey:UserID"`
 }

@@ -1,4 +1,5 @@
 export interface PaymentMethodInterface {
-  payment_id?: number;
-  name?: string;
+  [x: string]: Key | null | undefined;
+  id: number;
+  name: string;
 }

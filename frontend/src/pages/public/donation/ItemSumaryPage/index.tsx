@@ -3,9 +3,8 @@ import './style.css';
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";
 
-import { CreateDonation } from "../../../../services/https";
-import type { DonorsInterface } from "../../../../interfaces/Donors";
-import type { ItemDonationsInterface } from "../../../../interfaces/ItemDonations";
+import { donationAPI } from "../../../../services/apis";
+import type { DonorInterface, ItemDonationInterface, CreateDonationRequest } from "../../../../interfaces/Donation";
 
 interface DonationItem { 
   itemName: string;
@@ -28,7 +27,7 @@ const DonationSummaryPage: React.FC = () => {
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
   const [createAccount, setCreateAccount] = useState<boolean | null>(null);
-  const [summaryData,] = useState(getDonationData());
+  const [summaryData] = useState(getDonationData());
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -45,8 +44,19 @@ const DonationSummaryPage: React.FC = () => {
     }
 
     if (!isLoggedIn && createAccount) {
+      const donorInfoString = sessionStorage.getItem('donationInfoFormData');
+      if (donorInfoString) {
+        const donorInfo = JSON.parse(donorInfoString);
+        const signupPrefillData = {
+          firstname: donorInfo.firstname,
+          lastname: donorInfo.lastname,
+          email: donorInfo.email,
+          phone: donorInfo.phone,
+        };
+        sessionStorage.setItem('signupPrefillData', JSON.stringify(signupPrefillData));
+      }
       sessionStorage.setItem('returnTo', '/donation/summary');
-      navigate('/signup');
+      navigate('/auth');
       return;
     }
 
@@ -61,8 +71,13 @@ const DonationSummaryPage: React.FC = () => {
       return;
     }
 
+    console.log("Data from sessionStorage on Summary Page:", {
+      donorInfoString,
+      itemDetailsString,
+    });
+
     try {
-      const donorInfo: DonorsInterface = JSON.parse(donorInfoString);
+      const donorInfo: DonorInterface = JSON.parse(donorInfoString);
       const itemDetailsRaw = JSON.parse(itemDetailsString);
 
       const token = localStorage.getItem('token');
@@ -73,14 +88,21 @@ const DonationSummaryPage: React.FC = () => {
       }
 
       const transactionNumber = `SA-ITEM-${Date.now()}`;
-      const itemDetails: ItemDonationsInterface[] = itemDetailsRaw.donationItems.map((item: DonationItem) => ({
+      const itemDetails: ItemDonationInterface[] = itemDetailsRaw.donationItems.map((item: DonationItem) => ({
         item_name: item.itemName,
         quantity: Number(item.quantity),
         unit: item.unit,
         item_ref: `${transactionNumber}-${item.itemName}`
       }));
 
-      const result = await CreateDonation(donorInfo, donationType, undefined, itemDetails);
+      const payload: CreateDonationRequest = {
+              donor_info: donorInfo,                         // <-- เพิ่มข้อมูลผู้บริจาค
+              donation_type: donationType,                   // <-- แก้ชื่อ key
+              //money_donation_details: moneyDetails,         // << รวมไว้ในก้อนเดียว
+              item_donation_details: itemDetails,     // ถ้ามีของ (กรณี item) ใส่ภายหลัง
+            };
+      
+      const result = await donationAPI.create(payload);
 
       if (result.status === 200) {
         messageApi.open({ type: "success", content: "การบริจาคสำเร็จ ขอบคุณ!" });
@@ -107,10 +129,10 @@ const DonationSummaryPage: React.FC = () => {
       {contextHolder}
       <div className="summary-page-container">
         <div className="summary-content">
-          <button onClick={handleBack} className="back-button">
+          <button onClick={handleBack} className="back-button" style={{ fontFamily: 'Anakotmai-Medium' }}>
             &lt; ย้อนกลับ
           </button>
-          <h1 className="summary-main-title">รายละเอียดการบริจาคสิ่งของ</h1>
+          <h1 className="summary-main-title" style={{ fontSize: '50px' }}>รายละเอียดการบริจาคสิ่งของ</h1>
           <div className="summary-box">
             <h2 className="summary-section-title">สรุปรายการบริจาคสิ่งของ</h2>
             <ul className="donation-list">
@@ -152,7 +174,7 @@ const DonationSummaryPage: React.FC = () => {
               </div>
             </div>
           )}
-          <button onClick={handleNext} className="continue-button">
+          <button onClick={handleNext} className="continue-button" style={{ fontFamily: 'Anakotmai-Medium' }}>
             ยืนยันและเสร็จสิ้น
           </button>
         </div>

@@ -2,11 +2,7 @@ import React, { useState, useEffect } from "react";
 import './style.css';
 
 import { useNavigate } from "react-router-dom";
-import type { DonorsInterface } from '../../../../interfaces/Donors'; // Import DonorsInterface
-
-interface DonationInfoFormProps {
-  onSubmit?: (formData: DonorsInterface) => void; // Use DonorsInterface
-}
+import type { DonorInterface } from '../../../../interfaces/Donation'; // Import DonorsInterface
 
 // Helper to get initial state from sessionStorage
 const getInitialFormData = () => {
@@ -19,17 +15,16 @@ const getInitialFormData = () => {
   }
 };
 
-const InformationDonors: React.FC<DonationInfoFormProps> = ({ onSubmit }) => {
+const InformationDonors: React.FC = () => {
   const navigate = useNavigate();
   const initialData = getInitialFormData();
 
   // สร้าง State สำหรับเก็บค่าของแต่ละ Input
-  const [firstName, setFirstName] = useState(initialData.firstName || '');
-  const [lastName, setLastName] = useState(initialData.lastName || '');
+  const [firstName, setFirstName] = useState(initialData.firstname || '');
+  const [lastName, setLastName] = useState(initialData.lastname || '');
   const [phone, setPhone] = useState(initialData.phone || '');
   const [email, setEmail] = useState(initialData.email || '');
 
-  // Use useEffect to pre-fill data from prefillUserData in sessionStorage
   useEffect(() => {
     const prefillData = sessionStorage.getItem('prefillUserData');
     console.log("InformationDonors: Retrieved prefillData from sessionStorage:", prefillData); // Log retrieved data
@@ -37,9 +32,9 @@ const InformationDonors: React.FC<DonationInfoFormProps> = ({ onSubmit }) => {
       try {
         const parsedPrefillData = JSON.parse(prefillData);
         console.log("InformationDonors: Parsed prefillData:", parsedPrefillData); // Log parsed data
-        setFirstName(parsedPrefillData.first_name || '');
-        setLastName(parsedPrefillData.last_name || '');
-        setPhone(parsedPrefillData.phone_number || '');
+        setFirstName(parsedPrefillData.firstname || '');
+        setLastName(parsedPrefillData.lastname || '');
+        setPhone(parsedPrefillData.phone || '');
         setEmail(parsedPrefillData.email || '');
         sessionStorage.removeItem('prefillUserData'); // Clear after use
         console.log("InformationDonors: Form fields set with prefill data."); // Confirm fields set
@@ -49,25 +44,20 @@ const InformationDonors: React.FC<DonationInfoFormProps> = ({ onSubmit }) => {
     }
   }, []); // Run only once on mount
 
-  // Use useEffect to save data to sessionStorage whenever state changes
   useEffect(() => {
-    const formData = { first_name: firstName, last_name: lastName, phone, email };
+    const formData = { firstname: firstName, lastname: lastName, phone, email };
     sessionStorage.setItem('donationInfoFormData', JSON.stringify(formData));
   }, [firstName, lastName, phone, email]); // Dependencies array
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault(); // ป้องกันการรีเฟรชหน้าเมื่อกดส่งฟอร์ม
-    const formData: DonorsInterface = { // Cast to DonorsInterface
-      first_name: firstName,
-      last_name: lastName,
+    const formData: DonorInterface = { // Cast to DonorsInterface
+      firstname: firstName,
+      lastname: lastName,
       phone: phone,
       email: email,
     };
     console.log('Form Data Submitted:', formData);
-    // เรียกใช้ฟังก์ชัน onSubmit ที่ส่งมาจาก parent component
-    if (onSubmit) {
-      onSubmit(formData);
-    }
 
     const donationType = sessionStorage.getItem('donationType');
     if (donationType === 'money') {
@@ -85,7 +75,6 @@ const InformationDonors: React.FC<DonationInfoFormProps> = ({ onSubmit }) => {
       <div className="form-card">
         {/* ปุ่มย้อนกลับ */}
         <button onClick={() => {
-          sessionStorage.removeItem('donationInfoFormData'); // ล้างข้อมูลเมื่อย้อนกลับ
           navigate('/donation/options');
         }} className="back-link">
           &lt; ย้อนกลับ

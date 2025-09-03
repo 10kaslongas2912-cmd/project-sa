@@ -3,9 +3,8 @@ import './style.css';
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";
 
-import { CreateDonation } from "../../../../services/https";
-import type { DonorsInterface } from "../../../../interfaces/Donors";
-import type { MoneyDonationsInterface } from "../../../../interfaces/MoneyDonations";
+import { donationAPI } from "../../../../services/apis";
+import type { DonorInterface, MoneyDonationInterface, CreateDonationRequest } from "../../../../interfaces/Donation";
 
 // ใช้ Base64 placeholder แทนการ import ไฟล์
 const qr_code = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y5ZjlmOSIgc3Ryb2tlPSIjZGRkIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8dGV4dCB4PSIxNTAiIHk9IjE1MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNjY2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iMC4zZW0iPkdSIENvZGU8L3RleHQ+Cjwvc3ZnPgo=";
@@ -54,7 +53,7 @@ const MobileBankingPage: React.FC = () => {
   const handleFinish = async () => {
     // 1. Retrieve data from sessionStorage
     const donorInfoString = sessionStorage.getItem('donationInfoFormData');
-    const moneyDetailsString = sessionStorage.getItem('donationMoneyFormData');
+    const moneyDetailsString = sessionStorage.getItem('moneyDonationData'); // CORRECT KEY
     const donationType = sessionStorage.getItem('donationType');
     const transactionNumber = sessionStorage.getItem('transactionNumber');
 
@@ -68,8 +67,8 @@ const MobileBankingPage: React.FC = () => {
     }
 
     try {
-      const donorInfo: DonorsInterface = JSON.parse(donorInfoString);
-      const moneyDetailsRaw = JSON.parse(moneyDetailsString);
+      const donorInfo: DonorInterface = JSON.parse(donorInfoString);
+      let moneyDetails: MoneyDonationInterface = JSON.parse(moneyDetailsString); // PARSE CORRECT DATA
 
       // 2. Determine donor_type
       const token = localStorage.getItem('token');
@@ -79,19 +78,22 @@ const MobileBankingPage: React.FC = () => {
         donorInfo.user_id = parseInt(userId, 10);
       }
 
-      // 3. Construct MoneyDonations object
-      const moneyDetails: MoneyDonationsInterface = {
-        amount: Number(moneyDetailsRaw.oneTimeAmount),
-        payment_method_id: moneyDetailsRaw.paymentMethod,
-        payment_type: 'one-time',
+      // 3. Add final properties to MoneyDonations object
+      moneyDetails = {
+        ...moneyDetails,
         status: 'complete',
         transaction_ref: transactionNumber || generatePaymentNumber(),
-        billing_date: "-",
-        next_payment_date: "-",
       };
 
+      // 5) รวม payload ตามสเปค CreateDonationRequest
+      const payload: CreateDonationRequest = {
+        donor_info: donorInfo,                         // <-- เพิ่มข้อมูลผู้บริจาค
+        donation_type: donationType,                   // <-- แก้ชื่อ key
+        money_donation_details: moneyDetails,         // << รวมไว้ในก้อนเดียว
+        // itemDetails: []     // ถ้ามีของ (กรณี item) ใส่ภายหลัง
+      };
       // 4. Call CreateDonation
-      const result = await CreateDonation(donorInfo, donationType, moneyDetails);
+      const result = await donationAPI.create(payload);
 
       if (result.status === 200) {
         messageApi.open({
@@ -100,7 +102,8 @@ const MobileBankingPage: React.FC = () => {
         });
         // Clear session storage after successful donation
         sessionStorage.removeItem('donationInfoFormData');
-        sessionStorage.removeItem('donationMoneyFormData');
+        sessionStorage.removeItem('moneyDonationData');
+        sessionStorage.removeItem('donationMoneyFormData'); // Also remove the old raw data
         sessionStorage.removeItem('donationType');
         sessionStorage.removeItem('transactionNumber');
         navigate('/donation/thankyou');

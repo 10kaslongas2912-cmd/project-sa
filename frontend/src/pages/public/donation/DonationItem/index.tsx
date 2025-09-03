@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import './style.css';
 import { useNavigate } from "react-router-dom";
-import type { ItemDonationsInterface } from '../../../../interfaces/ItemDonations'; // Import ItemDonationsInterface
+import type { ItemDonationInterface } from '../../../../interfaces/Donation'; // Import ItemDonationsInterface
 
 interface DonationItem {
   id: string;
@@ -10,37 +10,34 @@ interface DonationItem {
   unit: string;
 }
 
-interface DonationItemsFormProps {
-  onSubmit?: (formData: { donationItems: ItemDonationsInterface[] }) => void; // Use ItemDonationsInterface array
-}
-
 // รายการสิ่งของที่สามารถบริจาคได้
 const DONATION_ITEMS = [
   "ข้าว",
-  "น้ำดื่ม",
-  "อาหารกระป็อง",
-  "เสื้อผ้า",
+  "อาหารเม็ดสุนัข",
+  "อาหารกระป๋อง",
+  "เสื้อผ้าสุนัข",
   "ผ้าห่ม",
-  "ยา",
+  "ของเล่น",
   "อุปกรณ์การเรียน",
   "ของเล่น",
-  "หนังสือ",
-  "อุปกรณ์อิเล็กทรอนิกส์",
-  "อื่นๆ"
+  "น้ำยาล้างมือ",
+  "น้ำยาถูพื้น",
+  "ถุงขยะ",
+
 ];
 
 // หน่วยที่ใช้
 const UNITS = [
-  "กิโลกรัม (kg)",
-  "กรัม (g)",
+  "กิโลกรัม",
   "ชิ้น",
   "กล่อง",
   "ถุง",
   "ขวด",
   "แผ่น",
-  "เล่ม",
-  "คู่",
-  "ตัว"
+  "ห่อ",
+  "แพ็ค",
+  "ลัง",
+  "ผืน",
 ];
 
 // Helper to get initial state from sessionStorage
@@ -68,7 +65,7 @@ const getInitialFormData = () => {
   }
 };
 
-const DonationItemsForm: React.FC<DonationItemsFormProps> = ({ onSubmit }) => {
+const DonationItemsForm: React.FC = () => {
   const navigate = useNavigate();
   const initialData = getInitialFormData();
   
@@ -118,7 +115,7 @@ const DonationItemsForm: React.FC<DonationItemsFormProps> = ({ onSubmit }) => {
       return;
     }
 
-    const formattedDonationItems: ItemDonationsInterface[] = donationItems.map(item => ({
+    const formattedDonationItems: ItemDonationInterface[] = donationItems.map(item => ({
       item_name: item.itemName,
       quantity: Number(item.quantity), // Convert to number
       unit: item.unit,
@@ -129,9 +126,6 @@ const DonationItemsForm: React.FC<DonationItemsFormProps> = ({ onSubmit }) => {
     const formData = { donationItems: formattedDonationItems }; // Use formatted data
     console.log('Donation Items Submitted:', formData);
     
-    if (onSubmit) {
-      onSubmit(formData);
-    }
     navigate('/donation/summary');
   };
 

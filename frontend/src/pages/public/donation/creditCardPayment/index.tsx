@@ -1,92 +1,115 @@
-import React, { useState, useEffect } from "react";
-import './style.css';
+import React, { useState } from "react";
+import "./style.css";
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";
-import option_heart from '../../../../assets/visa-master-icon-5.png';
+import option_heart from "../../../../assets/visa-master-icon-5.png";
 
-import { CreateDonation } from "../../../../services/https";
-import type { DonorsInterface } from "../../../../interfaces/Donors";
-import type { MoneyDonationsInterface } from "../../../../interfaces/MoneyDonations";
+import { donationAPI } from "../../../../services/apis";
+import type {
+  DonorInterface,
+  MoneyDonationInterface,
+  CreateDonationRequest,
+} from "../../../../interfaces/Donation";
+
 
 const CreditCardPaymentForm: React.FC = () => {
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
-
-  // State for form inputs
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [cvv, setCvv] = useState('');
-  const [cardHolderName, setCardHolderName] = useState('');
+  // form state
+  const [cardNumber, setCardNumber] = useState("");
+  const [expiryDate, setExpiryDate] = useState(""); // MM/YY
+  const [cvv, setCvv] = useState("");
+  const [cardHolderName, setCardHolderName] = useState("");
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    // 1. Retrieve data from sessionStorage
-    const donorInfoString = sessionStorage.getItem('donationInfoFormData');
-    const moneyDetailsString = sessionStorage.getItem('donationMoneyFormData');
-    const donationType = sessionStorage.getItem('donationType');
+    // 1) โหลดข้อมูลจาก sessionStorage
+    const donorInfoString = sessionStorage.getItem("donationInfoFormData");
+    const moneyDetailsString = sessionStorage.getItem("donationMoneyFormData");
+    const donationType = sessionStorage.getItem("donationType");
 
     if (!donorInfoString || !moneyDetailsString || !donationType) {
       messageApi.open({
         type: "error",
         content: "ข้อมูลการบริจาคไม่สมบูรณ์ กรุณาเริ่มต้นใหม่",
       });
-      navigate('/donation/options');
+      navigate("/donation/options");
       return;
     }
 
     try {
-      const donorInfo: DonorsInterface = JSON.parse(donorInfoString);
+      const donorInfo: DonorInterface = JSON.parse(donorInfoString);
       const moneyDetailsRaw = JSON.parse(moneyDetailsString);
 
-      // 2. Determine donor_type
-      const token = localStorage.getItem('token');
-      const userId = localStorage.getItem('id');
+      // 2) enrich donorInfo จากสถานะ login (ถ้าต้องการ)
+      const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("id");
       donorInfo.donor_type = token ? "user" : "guest";
       if (token && userId) {
         donorInfo.user_id = parseInt(userId, 10);
       }
-      
-      // 3. Construct MoneyDonations object
-      const isMonthly = moneyDetailsRaw.donationFrequency === 'รายเดือน';
+
+      // 3) สร้าง moneyDetails
+      const isMonthly = moneyDetailsRaw.donationFrequency === "รายเดือน";
       const transactionNumber = `SA-TXN-${Date.now()}`;
 
-      const moneyDetails: MoneyDonationsInterface = {
-        amount: isMonthly ? Number(moneyDetailsRaw.monthlyAmount) : Number(moneyDetailsRaw.oneTimeAmount),
-        payment_method_id: isMonthly ? 1 : moneyDetailsRaw.paymentMethod, // Monthly is always 1 (Credit Card)
-        payment_type: isMonthly ? 'monthly' : 'one-time',
-        status: isMonthly ? 'success' : 'complete',
-        transaction_ref: transactionNumber, // Use generated transaction number
-        billing_date: isMonthly ? moneyDetailsRaw.billingDate.toString() : "-", // Add billing date
-        next_payment_date: isMonthly ? (() => {
-            const today = new Date();
-            const billingDay = Number(moneyDetailsRaw.billingDate);
-            let nextDate = new Date(today.getFullYear(), today.getMonth(), billingDay);
-            if (today.getDate() >= billingDay) {
+      const moneyDetails: MoneyDonationInterface = {
+        amount: isMonthly
+          ? Number(moneyDetailsRaw.monthlyAmount)
+          : Number(moneyDetailsRaw.oneTimeAmount),
+        payment_method_id: 1, // สมมติ 1=Credit Card
+        payment_type: isMonthly ? "monthly" : "one-time",
+        status: isMonthly ? "success" : "complete",
+        transaction_ref: transactionNumber,
+        billing_date: isMonthly ? String(moneyDetailsRaw.billingDate) : "-",
+        next_payment_date: isMonthly
+          ? (() => {
+              const today = new Date();
+              const billingDay = Number(moneyDetailsRaw.billingDate);
+              let nextDate = new Date(
+                today.getFullYear(),
+                today.getMonth(),
+                billingDay
+              );
+              if (today.getDate() >= billingDay) {
                 nextDate.setMonth(nextDate.getMonth() + 1);
-            }
-            return nextDate.toISOString().split('T')[0]; // Format to YYYY-MM-DD
-        })() : "-",
+              }
+              return nextDate.toISOString().split("T")[0]; // YYYY-MM-DD
+            })()
+          : "-",
       };
 
-      // 4. Call CreateDonation
-      const result = await CreateDonation(donorInfo, donationType, moneyDetails);
+      // 5) รวม payload ตามสเปค CreateDonationRequest
+      const payload: CreateDonationRequest = {
+              donor_info: donorInfo,                         // <-- เพิ่มข้อมูลผู้บริจาค
+              donation_type: donationType,                   // <-- แก้ชื่อ key
+              money_donation_details: moneyDetails,         // << รวมไว้ในก้อนเดียว
+              // itemDetails: []     // ถ้ามีของ (กรณี item) ใส่ภายหลัง
+            };
 
-      if (result.status === 200) {
+      // 6) เรียก API ครั้งเดียวด้วย payload ก้อนเดียว
+      const result = await donationAPI.create(payload);
+
+      // 7) ตรวจผลลัพธ์
+      const status = (result as any)?.status ?? 200; // รองรับทั้ง AxiosResponse/data
+      const data = (result as any)?.data ?? result;
+
+      if (status === 200) {
         messageApi.open({
           type: "success",
           content: "การบริจาคสำเร็จ ขอบคุณ!",
         });
-        // Clear session storage after successful donation
-        sessionStorage.removeItem('donationInfoFormData');
-        sessionStorage.removeItem('donationMoneyFormData');
-        sessionStorage.removeItem('donationType');
-        sessionStorage.removeItem('creditCardFormData');
-        navigate('/donation/thankyou');
+        // เคลียร์ค่า form/session
+        sessionStorage.removeItem("donationInfoFormData");
+        sessionStorage.removeItem("donationMoneyFormData");
+        sessionStorage.removeItem("donationType");
+        sessionStorage.removeItem("creditCardFormData");
+        navigate("/donation/thankyou");
       } else {
         messageApi.open({
           type: "error",
-          content: result.data?.error || "เกิดข้อผิดพลาดในการบันทึกข้อมูล",
+          content: data?.error || "เกิดข้อผิดพลาดในการบันทึกข้อมูล",
         });
       }
     } catch (error) {
@@ -104,14 +127,19 @@ const CreditCardPaymentForm: React.FC = () => {
       <div className="form-page-container">
         <div className="form-card">
           <button
-            onClick={() => navigate('/donation/money')}
+            onClick={() => navigate("/donation/money")}
             className="back-link"
           >
             &lt; ย้อนกลับ
           </button>
+
           <h1 className="form-title">ชำระเงินด้วยบัตรเครดิต</h1>
           <h1 className="form-subtitle">การ์ดที่รองรับ</h1>
-          <img src={option_heart} className="supported-cards" alt="การ์ดที่รองรับ" />
+          <img
+            src={option_heart}
+            className="supported-cards"
+            alt="การ์ดที่รองรับ"
+          />
 
           <form onSubmit={handleSubmit}>
             <input
@@ -152,6 +180,7 @@ const CreditCardPaymentForm: React.FC = () => {
               onChange={(e) => setCardHolderName(e.target.value)}
               required
             />
+
             <button type="submit" className="submit-button">
               ยืนยันการชำระเงิน
             </button>

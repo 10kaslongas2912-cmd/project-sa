@@ -1,8 +1,19 @@
 package entity
 
-import "time"
+import (
+	"time"
 
-type Volunteers struct {
+	"gorm.io/gorm"
+)
+
+type Volunteer struct {
+	gorm.Model
+	UserID uint   `json:"user_id"`
+	User   User   `gorm:"foreignKey:UserID"`
+	Skills string `json:"skills"`
+	Role   string `json:"role"` // admin, staff, vet, caretaker
+
+	Notes          string    `json:"notes"`
 	VolunteerID    uint      `gorm:"primarykey;autoIncrement" json:"volunteer_id"`
 	Address        string    `json:"address"`
 	PhoneNumber    string    `json:"phone_number"`
@@ -13,10 +24,4 @@ type Volunteers struct {
 	Skill          string    `json:"skill"`
 	Note           string    `json:"note"`
 	PhotoAdr       string    `json:"photo_adr"`
-
-	UserID uint
-	Users  *User `gorm:"references:UserID"` // Association to Users
-
-	SkillID uint
-	Skills  *Skills `gorm:"foreignKey:SkillID"` // Association to Skills
 }

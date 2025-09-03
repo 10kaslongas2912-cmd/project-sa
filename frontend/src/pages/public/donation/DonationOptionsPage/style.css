@@ -56,10 +56,19 @@ html { font-synthesis:none; }
   margin-bottom: 30px;
 }
 
+
 .orange-button {
   background-color: #FF8800; /* Orange */
   color: white;
 }
+
+.orange-button h2{
+  text-align: center;
+    margin-top: 10px;
+    font-size: 23px;
+}
+
+
 
 .orange-button:hover {
   background-color: #fcb65f;

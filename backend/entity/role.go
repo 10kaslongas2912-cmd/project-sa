@@ -1,6 +1,11 @@
 package entity
 
-type Roles struct {
-	RoleID uint   `gorm:"primarykey;autoIncrement" json:"role_id"`
-	Name   string `json:"name"`
+import (
+	"gorm.io/gorm"
+)
+
+type Role struct {
+	gorm.Model
+	Name   string  `json:"name"`
+	Staffs []Staff `gorm:"foreignKey:RoleID" json:"staffs"`
 }

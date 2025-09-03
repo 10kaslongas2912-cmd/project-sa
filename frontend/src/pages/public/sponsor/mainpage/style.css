@@ -32,7 +32,6 @@
 .image-box img {
   width: auto;
   object-fit: cover;
-
 }
 
 .text-box {
@@ -69,6 +68,7 @@
 .dog-info {
   font-size: 25px;
 }
+
 /* BOTTOM SECTION */
 .bottom-section {
   flex: 1; /* ส่วนที่เหลือ 30% */
@@ -81,16 +81,15 @@
   display: flex;
   justify-content: center;
 }
+
 .container {
   display: flex;
   flex-wrap: wrap;
-  
   justify-content: center;
   max-width: 80%;
 }
-  
 
-.card .info{
+.card.info {
   width: 400px;
   height: 700px;
   border: 3px solid rgb(185, 185, 185); 
@@ -100,21 +99,42 @@
   margin: 30px 15px;
 }
 
-.card .img {
-  max-width: 100%;
-  max-height: 60%;
+/* แก้ไขส่วนรูปภาพให้เป็น 1:1 ratio และคงที่ */
+.card.img {
+  width: 100%;
+  height: 350px; /* กำหนดความสูงคงที่ */
   border-radius: 24px;
   margin-bottom: 30px;
   overflow: hidden;
+  position: relative;
 }
 
-.card .img img {
+/* รูปภาพจริงและ placeholder */
+.dog-image {
   width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
   transition: transform 0.5s ease-in-out;
 }
 
-.card .img img:hover {
+.dog-image:hover {
   transform: scale(1.1);
+}
+
+.dog-image-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24px;
+}
+
+.placeholder-text {
+  color: #999;
+  font-size: 18px;
 }
 
 .dogname:hover {
@@ -122,27 +142,9 @@
   text-decoration: underline;
 }
 
-.card .text {
+.card.text {
   margin-bottom: 40px;
 }
-
-/* .card button {
-  color:  wheat;
-  padding: 0.7em 1.7em;
-  font-size: 18px;
-  border-radius: 1.5em;
-  background: #ff8800;
-  cursor: pointer;
-  border: 1px solid #e8e8e8;
-  transition: all 0.3s;
-  box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
-}
-
-.card button:active {
-  color: #ffffff;
-  box-shadow: inset 4px 4px 12px #ffb773, inset -4px -4px 12px #ffffff;
-} */
-/* ---------------- */
 
 .btn-new {
   padding: 17px 40px;
@@ -150,8 +152,7 @@
   cursor: pointer;
   border: 0;
   background-color: white;
-  border:Gold 2.5px solid;
-  /* box-shadow: rgb(0, 0, 0) 0 0 8px; */
+  border: Gold 2.5px solid;
   letter-spacing: 1.5px;
   text-transform: uppercase;
   font-size: 15px;
@@ -161,27 +162,19 @@
 .btn-new:hover {
   letter-spacing: 3px;
   background: linear-gradient(135deg, #ff9028, #ffee52);
-  border: white ;
-  color: hsl(0, 0%, 100%);
+  border: white;
   box-shadow: rgb(255, 254, 253) 0 0 8px;
-
 }
 
 .btn-new:active {
   letter-spacing: 3px;
-  background-color: hsl(261deg 80% 48%);
-  color: hsl(0, 0%, 100%);
+  background-color: hsl(0, 0%, 100%);
+  color: hsl(0, 0%, 0%);
   box-shadow: rgb(93 24 220) 0px 0px 0px 0px;
   transform: translateY(10px);
   transition: 100ms;
 }
 
-
-
-
-
-
-/* -------------------- */
 .bottom-title {
   font-size: 2rem;
   margin-bottom: 2rem;
@@ -195,7 +188,7 @@
   flex-wrap: wrap;
 }
 
-.card .dog{
+.card.dog {
   width: 300px; /* กำหนดความกว้างของ card */
   background-color: #fff;
   border-radius: 8px;
@@ -205,7 +198,7 @@
   padding: 1rem;
 }
 
-.card .dog img {
+.card.dog img {
   width: 100%;
   height: 200px;
   object-fit: cover;

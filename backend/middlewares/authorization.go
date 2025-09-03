@@ -22,23 +22,27 @@ func Authorizes() gin.HandlerFunc {
 		}
 
 		extractedToken := strings.Split(clientToken, "Bearer ")
-		if len(extractedToken) == 2 {
-			clientToken = strings.TrimSpace(extractedToken[1])
-		} else {
+		if len(extractedToken) != 2 {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Incorrect Format of Authorization Token"})
 			return
 		}
+
+		clientToken = strings.TrimSpace(extractedToken[1])
 
 		jwtWrapper := services.JwtWrapper{
 			SecretKey: "SvNQpBN8y3qlVrsGAYYWoJJk56LtzFHx",
 			Issuer:    "AuthService",
 		}
 
-		_, err := jwtWrapper.ValidateToken(clientToken)
+		claims, err := jwtWrapper.ValidateToken(clientToken)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			return
 		}
+
+		c.Set("user_id", claims.ID)
+		c.Set("username", claims.Username)
+		c.Set("user_email", claims.Email)
 		c.Next()
 	}
 }

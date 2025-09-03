@@ -1,61 +1,82 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
-	"example.com/project-sa/config"
-	"example.com/project-sa/controllers/donation"
-	"example.com/project-sa/controllers/gender"
-	"example.com/project-sa/controllers/user"
-	"example.com/project-sa/controllers/payment_method"
-	"example.com/project-sa/controllers/dog"
-	"example.com/project-sa/controllers/health_record"
+	"example.com/project-sa/configs"
+	auth "example.com/project-sa/controllers/auth"
+	dog "example.com/project-sa/controllers/dog"
+	donation "example.com/project-sa/controllers/donation"
+	gender "example.com/project-sa/controllers/gender"
+	health_record "example.com/project-sa/controllers/health_record"
+	payment_method "example.com/project-sa/controllers/payment_method"
+	user "example.com/project-sa/controllers/user"
 	"example.com/project-sa/middlewares"
+	"example.com/project-sa/migrations"
+	"example.com/project-sa/seeds"
 	"github.com/gin-gonic/gin"
 )
 
-const PORT = "8000"
+const (
+	PORT = "8000"
+)
 
 func main() {
 
-	// open connection database
-	config.ConnectionDB()
+	configs.RemoveDBFile()
+	db := configs.MustOpenDB()
 
-	// Generate databases
-	config.SetupDatabase()
-
-	r := gin.Default()
-
-	r.Use(CORSMiddleware())
-	r.Static("/static", "./static") // Add this line to serve static files
-
-	// Auth Route
-	r.POST("/signup", users.SignUp)
-	r.POST("/signin", users.SignIn)
-	r.POST("/donations", donations.CreateDonation)
-
-	router := r.Group("/")
-	{
-		router.Use(middlewares.Authorizes())
-		// User Route
-		router.PUT("/user/:id", users.Update)
-		router.GET("/users", users.GetAll)
-		router.GET("/user/:id", users.Get)
-		router.DELETE("/user/:id", users.Delete)
+	if err := migrations.AutoMigrate(db); err != nil {
+		log.Fatal(err)
+	}
+	if err := seeds.SeedAll(db); err != nil {
+		log.Fatal(err)
 	}
 
-	r.GET("/genders", genders.GetAll)
-	r.GET("/payment-methods", payment_methods.GetAll)
-	r.GET("/dogs/search", dogs.SearchDogs)
-	r.GET("/health-records/dog/:id", health_records.GetHealthRecordsByDogId)
-	r.POST("/health-records", health_records.CreateHealthRecord)
-	r.PUT("/health-records/:id", health_records.UpdateHealthRecord)
-	r.DELETE("/health-records/:id", health_records.DeleteHealthRecord)
+	//  Setup Gin
+	r := gin.Default()
+	r.Use(CORSMiddleware())
+	r.Static("/static", "./static")
+
+	//  Routes (public)
+	r.POST("/user/auth", auth.SignIn)
+	r.POST("/user/signup", auth.SignUp)
+
+	r.GET("/dogs", dog.GetAllDogs)
+	r.GET("/dogs/:id", dog.GetDogById)
+	// r.POST("/dogs", dogs.CreateDog)
+	// r.PUT("/dogs/:id", dogs.UpdateDog)
+	// r.DELETE("/dogs/:id", dogs.DeleteDog)
+
+	r.POST("/donations", donation.CreateDonation)
+	r.GET("/genders", gender.GetAll)
+	r.GET("/paymentMethods", payment_method.GetAll)
+	r.GET("/health-records/dog/:id", health_record.GetHealthRecordsByDogId)
+	r.POST("/health-records", health_record.CreateHealthRecord)
+	r.PUT("/health-records/:id", health_record.UpdateHealthRecord)
+	r.DELETE("/health-records/:id", health_record.DeleteHealthRecord)
+
+	// 7) Routes (protected)
+	protected := r.Group("/")
+	protected.Use(middlewares.Authorizes())
+	{
+		protected.GET("/user/me", user.Me)
+		protected.PUT("/user/:id", user.UpdateUser)
+		protected.GET("/users", user.GetAllUsers)
+		protected.GET("/user/:id", user.GetUserById)
+		protected.DELETE("/user/:id", user.DeleteUser)
+	}
+
+	// health
 	r.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "API RUNNING... PORT: %s", PORT)
 	})
-	// Run the server
-	r.Run("localhost:" + PORT)
+
+	// 8) Run (แนะนำ bind ทุก iface)
+	if err := r.Run("localhost:" + PORT); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func CORSMiddleware() gin.HandlerFunc {
