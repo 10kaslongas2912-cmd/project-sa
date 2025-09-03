@@ -20,6 +20,15 @@ const NavigationBar: React.FC = () => {
       navigate("/donation");
     }
   };
+  const handleVisitClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+
+    if (isLoggedIn && user?.id) {
+      navigate("/visitplan");
+    } else {
+      navigate("/auth");
+    }
+  };
   
   useEffect(() => {
     const controlNavbar = () => {
@@ -46,6 +55,9 @@ const NavigationBar: React.FC = () => {
 
       <div className="header-actions">
         <a href="#adopt" className="btn btn-action adopt-btn">รับเลี้ยง</a>
+        <a onClick={handleVisitClick} className="btn btn-action visit-btn">
+           เยี่ยมชม
+        </a>
         <Link to="/sponsor" className="btn btn-action sponsor-btn">อุปถัมภ์</Link>
         <a onClick={handleDonateClick} className="btn btn-action donate-btn">
           <span className="heart-icon">&#x2764;</span> บริจาค

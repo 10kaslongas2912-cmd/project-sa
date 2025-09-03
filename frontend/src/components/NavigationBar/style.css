@@ -164,6 +164,14 @@
     color: #333;
 }
 
+.visit-btn::before {
+    background-color: #e7943c;
+}
+
+.visit-btn {
+    color: rgb(0, 0, 0);
+}
+
 .sponsor-btn::before {
     background-color: #FF6700;
 }

@@ -5,6 +5,7 @@ import AuthRoutes from "./AuthRoutes";
 import DashboardRoutes from "./DashboardRoutes";
 import SponsorRoutes from "./SponsorRoutes";
 import DonationRoutes from "./DonationRoutes";
+import VisitPlanRoutes from "./visitPlan";
 
 // ==============================|| ROUTING RENDER ||============================== //
 
@@ -15,5 +16,6 @@ export default function ThemeRoutes() {
     DashboardRoutes(),
     SponsorRoutes(),
     DonationRoutes(),
+    VisitPlanRoutes(),
   ]);
 }
