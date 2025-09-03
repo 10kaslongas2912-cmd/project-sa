@@ -1,65 +1,136 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { message } from 'antd';
+import { message, Modal, Spin } from 'antd';
 import type { HealthRecord, DogInfo } from '../../../../interfaces/HealthRecord';
 import { healthRecordAPI, dogAPI } from '../../../../services/apis';
 import { Card, Typography, Row, Col, Button, Space } from 'antd';
-import { ArrowLeftOutlined, DeleteOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
+const { confirm } = Modal;
 
 const DetailPage: React.FC = () => {
   const { dogId } = useParams<{ dogId: string }>();
   const navigate = useNavigate();
   const [selectedDog, setSelectedDog] = useState<DogInfo | null>(null);
   const [dogHealthRecords, setDogHealthRecords] = useState<HealthRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [deleteLoading, setDeleteLoading] = useState<number | null>(null);
 
   useEffect(() => {
-    if (dogId) {
-      const fetchDogAndHealthRecords = async () => {
-        try {
-          // Fetch dog details
-          const dogDetails = await dogAPI.getById(parseInt(dogId));
-          setSelectedDog(dogDetails);
-
-          // Fetch health records
-          const records = await healthRecordAPI.getHealthRecordsByDogId(dogId);
-          setDogHealthRecords(records);
-        } catch (error) {
-          message.error('Failed to fetch dog details or health records.');
-          console.error(error);
-        }
-      };
+    if (dogId && !isNaN(parseInt(dogId))) {
       fetchDogAndHealthRecords();
+    } else {
+      message.error('รหัสสุนัขไม่ถูกต้อง');
+      navigate('/health-record/search');
     }
   }, [dogId]);
 
+  const fetchDogAndHealthRecords = async () => {
+    if (!dogId) return;
+    
+    setLoading(true);
+    try {
+      const dogIdNum = parseInt(dogId);
+      
+      // Fetch both dog details and health records concurrently
+      const [dogDetails, records] = await Promise.all([
+        dogAPI.getById(dogIdNum),
+        healthRecordAPI.getHealthRecordsByDogId(dogId)
+      ]);
+
+      setSelectedDog(dogDetails);
+      setDogHealthRecords(records || []);
+    } catch (error) {
+      message.error('ไม่สามารถโหลดข้อมูลสุนัขหรือประวัติสุขภาพได้');
+      console.error('Fetch error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleViewHealthRecordDetail = (record: HealthRecord) => {
-    navigate(`/health-record/record/${record.MedID}`);
+    if (record.MedID) {
+      navigate(`/health-record/record/${record.MedID}`);
+    } else {
+      message.error('ไม่สามารถเปิดรายละเอียดประวัติสุขภาพได้');
+    }
   };
 
   const handleAddHealthRecord = () => {
     navigate(`/health-record/dog/${dogId}/add`);
   };
 
-  const handleDeleteHealthRecord = async (medId: number) => {
+  const handleDeleteHealthRecord = (medId: number) => {
+    confirm({
+      title: 'ยืนยันการลบ',
+      icon: <ExclamationCircleOutlined />,
+      content: 'คุณแน่ใจหรือไม่ที่จะลบบันทึกสุขภาพนี้? การลบไม่สามารถย้อนกลับได้',
+      okText: 'ลบ',
+      okType: 'danger',
+      cancelText: 'ยกเลิก',
+      onOk: () => performDelete(medId),
+    });
+  };
+
+  const performDelete = async (medId: number) => {
+    setDeleteLoading(medId);
     try {
       await healthRecordAPI.deleteHealthRecord(medId);
       message.success('ลบบันทึกสุขภาพเรียบร้อยแล้ว');
+      
       // Refresh health records after successful deletion
       if (dogId) {
         const records = await healthRecordAPI.getHealthRecordsByDogId(dogId);
-        setDogHealthRecords(records);
+        setDogHealthRecords(records || []);
       }
     } catch (error) {
-      message.error('Failed to delete health record.');
-      console.error(error);
+      message.error('ไม่สามารถลบบันทึกสุขภาพได้');
+      console.error('Delete error:', error);
+    } finally {
+      setDeleteLoading(null);
     }
   };
 
   const handleBack = () => {
     navigate('/health-record/search');
   };
+
+  const formatDate = (dateString: string | null | undefined) => {
+    if (!dateString) return '-';
+    try {
+      return new Date(dateString).toLocaleDateString('th-TH');
+    } catch {
+      return dateString;
+    }
+  };
+
+  const truncateText = (text: string | null | undefined, maxLength: number = 50) => {
+    if (!text) return '-';
+    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+  };
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '100px' }}>
+        <Spin size="large" />
+        <div style={{ marginTop: '16px' }}>
+          <Text>กำลังโหลดข้อมูล...</Text>
+        </div>
+      </div>
+    );
+  }
+
+  if (!selectedDog) {
+    return (
+      <div style={{ textAlign: 'center', padding: '100px' }}>
+        <Text type="secondary">ไม่พบข้อมูลสุนัข</Text>
+        <div style={{ marginTop: '16px' }}>
+          <Button onClick={handleBack}>กลับไปค้นหา</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="health-detail-page">
@@ -73,23 +144,36 @@ const DetailPage: React.FC = () => {
           ย้อนกลับ
         </Button>
         <Title level={2} className="page-title">
-          รายละเอียดสุขภาพ - {selectedDog?.Name}
+          รายละเอียดสุขภาพ - {selectedDog.Name}
         </Title>
       </div>
 
       <Card className="health-detail-card">
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
           <img
-            src={selectedDog?.PhotoURL}
-            alt={selectedDog?.Name}
+            src={selectedDog.PhotoURL}
+            alt={selectedDog.Name}
             style={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover' }}
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = '/default-dog-image.jpg'; // fallback image
+            }}
           />
         </div>
 
-        <Title level={3} style={{ textAlign: 'center', marginBottom: '20px', color: '#ff6600', fontSize: '29px' }}>ประวัติบันทึกสุขภาพ</Title>
+        <Title level={3} style={{ textAlign: 'center', marginBottom: '20px', color: '#ff6600', fontSize: '29px' }}>
+          ประวัติบันทึกสุขภาพ
+        </Title>
 
         {dogHealthRecords.length === 0 ? (
-          <Text>ไม่พบข้อมูลประวัติสุขภาพสำหรับสุนัขตัวนี้</Text>
+          <div style={{ textAlign: 'center', padding: '40px' }}>
+            <Text style={{ fontSize: '16px' }}>ไม่พบข้อมูลประวัติสุขภาพสำหรับสุนัขตัวนี้</Text>
+            <div style={{ marginTop: '20px' }}>
+              <Button type="primary" onClick={handleAddHealthRecord}>
+                เพิ่มบันทึกสุขภาพแรก
+              </Button>
+            </div>
+          </div>
         ) : (
           <Space direction="vertical" size="middle" style={{ width: '100%' }}>
             {dogHealthRecords.map((record) => (
@@ -100,14 +184,35 @@ const DetailPage: React.FC = () => {
               >
                 <Row gutter={[16, 8]} align="middle">
                   <Col span={18}>
-                    <Text strong>วันที่บันทึก:</Text> {record.recordDate}<br />
-                    <Text strong>อาการที่พบ:</Text> {record.symptoms ? record.symptoms.substring(0, 50) + '...' : '-'}<br />
-                    <Text strong>การฉีดวัคซีน:</Text> {record.vaccination === 'YES' ? 'ฉีดแล้ว' : 'ยังไม่ฉีด'}
+                    <div>
+                      <Text strong>วันที่บันทึก:</Text> {formatDate(record.recordDate)}<br />
+                      <Text strong>อาการที่พบ:</Text> {truncateText(record.symptoms)}<br />
+                      <Text strong>การฉีดวัคซีน:</Text> {record.vaccination === 'YES' ? 'ฉีดแล้ว' : 'ยังไม่ฉีด'}<br />
+                      {record.nextAppointment && (
+                        <>
+                          <Text strong>นัดหมายครั้งต่อไป:</Text> {formatDate(record.nextAppointment)}
+                        </>
+                      )}
+                    </div>
                   </Col>
                   <Col span={6} style={{ textAlign: 'right' }}>
-                    <Space>
-                      <Button type="primary" onClick={() => handleViewHealthRecordDetail(record)}>ดูรายละเอียดเพิ่มเติม</Button>
-                      <Button danger icon={<DeleteOutlined />} onClick={() => handleDeleteHealthRecord(record.MedID)} />
+                    <Space direction="vertical" size="small">
+                      <Button 
+                        type="primary" 
+                        onClick={() => handleViewHealthRecordDetail(record)}
+                        style={{ width: '100%' }}
+                      >
+                        ดูรายละเอียดเพิ่มเติม
+                      </Button>
+                      <Button 
+                        danger 
+                        icon={<DeleteOutlined />} 
+                        onClick={() => handleDeleteHealthRecord(record.MedID)}
+                        loading={deleteLoading === record.MedID}
+                        style={{ width: '100%' }}
+                      >
+                        ลบ
+                      </Button>
                     </Space>
                   </Col>
                 </Row>
@@ -117,7 +222,9 @@ const DetailPage: React.FC = () => {
         )}
 
         <Space style={{ marginTop: '30px', width: '100%', justifyContent: 'center' }}>
-          <Button type="primary" onClick={handleAddHealthRecord}>เพิ่มบันทึกสุขภาพ</Button> {/* New button */}
+          <Button type="primary" size="large" onClick={handleAddHealthRecord}>
+            เพิ่มบันทึกสุขภาพใหม่
+          </Button>
         </Space>
       </Card>
     </div>

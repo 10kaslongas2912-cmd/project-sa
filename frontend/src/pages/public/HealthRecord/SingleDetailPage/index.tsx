@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { message } from 'antd';
+import { message, Spin } from 'antd';
 import { 
   Form, 
   Input, 
@@ -13,42 +13,107 @@ import {
   Typography,
   Space,
   Select,
+  Descriptions,
 } from 'antd';
-import { ArrowLeftOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, EditOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import type { HealthRecord } from '../../../../interfaces/HealthRecord';
 import { healthRecordAPI } from '../../../../services/apis';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 const { TextArea } = Input;
 
 const SingleDetailPage: React.FC = () => {
   const { recordId } = useParams<{ recordId: string }>();
   const navigate = useNavigate();
+  const [form] = Form.useForm();
   const [healthRecord, setHealthRecord] = useState<HealthRecord | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (recordId) {
-      const fetchRecord = async () => {
-        try {
-          const record = await healthRecordAPI.getHealthRecordById(parseInt(recordId));
-          setHealthRecord(record);
-        } catch (error) {
-          message.error('Failed to fetch health record.');
-          console.error(error);
-        }
-      };
+    if (recordId && !isNaN(parseInt(recordId))) {
       fetchRecord();
+    } else {
+      message.error('รหัสประวัติสุขภาพไม่ถูกต้อง');
+      navigate(-1);
     }
   }, [recordId]);
 
+  const fetchRecord = async () => {
+    if (!recordId) return;
+
+    setLoading(true);
+    try {
+      const record = await healthRecordAPI.getHealthRecordById(parseInt(recordId));
+      setHealthRecord(record);
+      
+      // Set form values after data fetch
+      form.setFieldsValue({
+        ...record,
+        recordDate: record.recordDate ? dayjs(record.recordDate) : null,
+        nextAppointment: record.nextAppointment ? dayjs(record.nextAppointment) : null,
+        vaccination: record.vaccination || undefined,
+      });
+    } catch (error) {
+      message.error('ไม่สามารถโหลดข้อมูลประวัติสุขภาพได้');
+      console.error('Fetch record error:', error);
+      navigate(-1);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleBack = () => {
-    if (healthRecord) {
+    if (healthRecord && healthRecord.dogId) {
       navigate(`/health-record/dog/${healthRecord.dogId}`);
     } else {
       navigate(-1);
     }
   };
+
+  const handleEdit = () => {
+    if (healthRecord && healthRecord.dogId && healthRecord.MedID) {
+      navigate(`/health-record/dog/${healthRecord.dogId}/edit/${healthRecord.MedID}`);
+    }
+  };
+
+  const formatDate = (dateString: string | null | undefined) => {
+    if (!dateString) return '-';
+    try {
+      return dayjs(dateString).format('DD/MM/YYYY');
+    } catch {
+      return dateString;
+    }
+  };
+
+  const formatValue = (value: any) => {
+    if (value === null || value === undefined || value === '') {
+      return '-';
+    }
+    return value;
+  };
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '100px' }}>
+        <Spin size="large" />
+        <div style={{ marginTop: '16px' }}>
+          <Text>กำลังโหลดข้อมูล...</Text>
+        </div>
+      </div>
+    );
+  }
+
+  if (!healthRecord) {
+    return (
+      <div style={{ textAlign: 'center', padding: '100px' }}>
+        <Text type="secondary">ไม่พบข้อมูลประวัติสุขภาพ</Text>
+        <div style={{ marginTop: '16px' }}>
+          <Button onClick={handleBack}>ย้อนกลับ</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="health-form-page">
@@ -68,12 +133,37 @@ const SingleDetailPage: React.FC = () => {
       </div>
 
       <Card className="health-form-card">
+        {/* Summary Information */}
+        <div style={{ marginBottom: '24px' }}>
+          <Descriptions title="ข้อมูลทั่วไป" bordered column={2}>
+            <Descriptions.Item label="รหัสประวัติ">{healthRecord.MedID}</Descriptions.Item>
+            <Descriptions.Item label="รหัสสุนัข">{healthRecord.dogId}</Descriptions.Item>
+            <Descriptions.Item label="วันที่บันทึก">{formatDate(healthRecord.recordDate)}</Descriptions.Item>
+            <Descriptions.Item label="การฉีดวัคซีน">
+              <span style={{ 
+                color: healthRecord.vaccination === 'YES' ? '#52c41a' : '#ff4d4f',
+                fontWeight: 'bold'
+              }}>
+                {healthRecord.vaccination === 'YES' ? 'ฉีดแล้ว' : 'ยังไม่ฉีด'}
+              </span>
+            </Descriptions.Item>
+            <Descriptions.Item label="น้ำหนัก">{healthRecord.weight} กก.</Descriptions.Item>
+            <Descriptions.Item label="อุณหภูมิ">{healthRecord.temperature} °C</Descriptions.Item>
+            {healthRecord.nextAppointment && (
+              <Descriptions.Item label="นัดหมายครั้งต่อไป" span={2}>
+                {formatDate(healthRecord.nextAppointment)}
+              </Descriptions.Item>
+            )}
+          </Descriptions>
+        </div>
+
+        {/* Detailed Form View */}
         <Form
+          form={form}
           layout="vertical"
-          initialValues={healthRecord || undefined}
         >
           <Row gutter={16}>
-            <Col span={6}>
+            <Col xs={24} sm={12} md={8}>
               <Form.Item
                 name="weight"
                 label="น้ำหนัก (กก.)"
@@ -84,13 +174,11 @@ const SingleDetailPage: React.FC = () => {
                   step={0.1} 
                   style={{ width: '100%' }}
                   readOnly
+                  bordered={false}
                 />
               </Form.Item>
             </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={12}>
+            <Col xs={24} sm={12} md={8}>
               <Form.Item
                 name="temperature"
                 label="อุณหภูมิ (°C)"
@@ -102,15 +190,21 @@ const SingleDetailPage: React.FC = () => {
                   step={0.1} 
                   style={{ width: '100%' }}
                   readOnly
+                  bordered={false}
                 />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col xs={24} sm={12} md={8}>
               <Form.Item
                 name="recordDate"
                 label="วันที่บันทึก"
               >
-                <DatePicker style={{ width: '100%' }} disabled />
+                <DatePicker 
+                  style={{ width: '100%' }} 
+                  disabled 
+                  format="DD/MM/YYYY"
+                  bordered={false}
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -120,9 +214,11 @@ const SingleDetailPage: React.FC = () => {
             label="อาการที่พบ"
           >
             <TextArea 
-              rows={3} 
-              placeholder="อธิบายอาการที่พบในสุนัข..."
+              rows={4} 
+              placeholder="ไม่มีข้อมูล"
               readOnly
+              bordered={false}
+              style={{ backgroundColor: '#fafafa' }}
             />
           </Form.Item>
 
@@ -131,9 +227,11 @@ const SingleDetailPage: React.FC = () => {
             label="การวินิจฉัย"
           >
             <TextArea 
-              rows={3} 
-              placeholder="ผลการวินิจฉัยโรค..."
+              rows={4} 
+              placeholder="ไม่มีข้อมูล"
               readOnly
+              bordered={false}
+              style={{ backgroundColor: '#fafafa' }}
             />
           </Form.Item>
 
@@ -142,27 +240,40 @@ const SingleDetailPage: React.FC = () => {
             label="การรักษา"
           >
             <TextArea 
-              rows={3} 
-              placeholder="วิธีการรักษาที่ให้..."
+              rows={4} 
+              placeholder="ไม่มีข้อมูล"
               readOnly
+              bordered={false}
+              style={{ backgroundColor: '#fafafa' }}
             />
           </Form.Item>
 
           <Row gutter={16}>
-            <Col span={12}>
+            <Col xs={24} sm={12}>
               <Form.Item
                 name="medication"
                 label="ยาที่ให้"
               >
-                <Input placeholder="ชื่อยาและขนาด" readOnly />
+                <Input 
+                  placeholder="ไม่มีข้อมูล" 
+                  readOnly 
+                  bordered={false}
+                  style={{ backgroundColor: '#fafafa' }}
+                />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col xs={24} sm={12}>
               <Form.Item
                 name="nextAppointment"
                 label="นัดหมายครั้งต่อไป"
               >
-                <DatePicker style={{ width: '100%' }} disabled />
+                <DatePicker 
+                  style={{ width: '100%' }} 
+                  disabled 
+                  format="DD/MM/YYYY"
+                  bordered={false}
+                  placeholder="ไม่มีการนัดหมาย"
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -173,7 +284,12 @@ const SingleDetailPage: React.FC = () => {
                 name="vaccination"
                 label="การฉีดวัคซีน"
               >
-                <Select placeholder="เลือกสถานะ" disabled>
+                <Select 
+                  placeholder="ไม่มีข้อมูล" 
+                  disabled
+                  bordered={false}
+                  style={{ backgroundColor: '#fafafa' }}
+                >
                   <Select.Option value="YES">ฉีดแล้ว</Select.Option>
                   <Select.Option value="NO">ยังไม่ฉีด</Select.Option>
                 </Select>
@@ -186,15 +302,27 @@ const SingleDetailPage: React.FC = () => {
             label="หมายเหตุเพิ่มเติม"
           >
             <TextArea 
-              rows={2} 
-              placeholder="บันทึกเพิ่มเติม..."
+              rows={3} 
+              placeholder="ไม่มีหมายเหตุเพิ่มเติม"
               readOnly
+              bordered={false}
+              style={{ backgroundColor: '#fafafa' }}
             />
           </Form.Item>
 
           <Form.Item className="submit-section">
-            <Space>
-              <Button onClick={handleBack}>ย้อนกลับ</Button>
+            <Space size="large">
+              <Button onClick={handleBack} size="large">
+                ย้อนกลับ
+              </Button>
+              <Button 
+                type="primary" 
+                icon={<EditOutlined />}
+                onClick={handleEdit}
+                size="large"
+              >
+                แก้ไขข้อมูล
+              </Button>
             </Space>
           </Form.Item>
         </Form>

@@ -11,22 +11,26 @@
 .search-page .back-button {
     position: absolute;
     /* Position the button absolutely */
-    top: 0;
-    left: 0;
+    top: 20px;
+    left: 20px;
     font-size: 16px;
     color: rgba(0, 0, 0, 0.65);
+    font-family: 'Anakotmai-Bold';
 }
 
 .search-page .page-title {
     margin-bottom: 15px !important;
     color: #ff6600;
     font-size: 40px;
+    font-family: 'Anakotmai-Bold';
+    margin-left: 245px;
+    font-size: 50px;
 }
 
 .search-page .search-container {
-    max-width: 3000px !important;
+    max-width: 300vh !important;
     width: 100% !important;
-    margin-left: 125px !important;
+    margin-left: 250px !important;
 }
 
 .search-page .search-input {
@@ -36,17 +40,20 @@
 
 .search-page .search-input .ant-input {
     padding: 8px 16px;
+    font-family: 'Anakotmai-Bold' !important;
 }
 
 .search-results {
     max-width: 1200px !important; /* เพิ่ม max-width ให้กว้างขึ้น */
     margin: 0 auto;
+    font-family: 'Anakotmai-Bold' !important;
 }
 
 .no-results {
     text-align: center;
     padding: 40px;
     color: #888;
+    font-family: 'Anakotmai-Bold'!important;
 }
 
 .dog-silhouette {
@@ -114,10 +121,10 @@
 
 .title-underline {
   height: 5px; /* ความหนาของเส้น */
-  width: 90%;  /* ความกว้างของเส้น (เทียบกับพื้นที่ทั้งหมด) */
-  max-width: 1190px; /* แต่กำหนดให้กว้างสุดไม่เกิน 550px */
+  width: 100%;  /* ความกว้างของเส้น (เทียบกับพื้นที่ทั้งหมด) */
+  max-width: 1200px; /* แต่กำหนดให้กว้างสุดไม่เกิน 550px */
   background-color: #253C90; /* สีน้ำเงิน (สีหลักของ Ant Design) */
-  margin-left:125px; /* จัดให้อยู่กลาง และเว้นระยะห่างด้านล่าง */
+  margin-left:250px; /* จัดให้อยู่กลาง และเว้นระยะห่างด้านล่าง */
   border-radius: 2px; /* ทำให้ขอบเส้นมนเล็กน้อย */
   margin-bottom: 20px;
 }
