@@ -45,7 +45,7 @@ const NavigationBar: React.FC = () => {
       </nav>
 
       <div className="header-actions">
-        <a href="#adopt" className="btn btn-action adopt-btn">รับเลี้ยง</a>
+        <a href="/search" className="btn btn-action adopt-btn">รับเลี้ยง</a>
         <Link to="/sponsor" className="btn btn-action sponsor-btn">อุปถัมภ์</Link>
         <a onClick={handleDonateClick} className="btn btn-action donate-btn">
           <span className="heart-icon">&#x2764;</span> บริจาค

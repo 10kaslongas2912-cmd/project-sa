@@ -1,0 +1,123 @@
+/* src/components/style.css */
+
+.search-page .search-header {
+    position: relative;
+    /* Set container to relative to position children */
+    padding-top: 50px;
+    /* Add padding to the top to make space for the back button */
+    margin-bottom: 24px;
+}
+
+.search-page .back-button {
+    position: absolute;
+    /* Position the button absolutely */
+    top: 0;
+    left: 0;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.65);
+}
+
+.search-page .page-title {
+    margin-bottom: 15px !important;
+    color: #ff6600;
+    font-size: 40px;
+}
+
+.search-page .search-container {
+    max-width: 3000px !important;
+    width: 100% !important;
+    margin-left: 125px !important;
+}
+
+.search-page .search-input {
+    border-radius: 30px !important;
+    border-width: 2px;
+}
+
+.search-page .search-input .ant-input {
+    padding: 8px 16px;
+}
+
+.search-results {
+    max-width: 1200px !important; /* เพิ่ม max-width ให้กว้างขึ้น */
+    margin: 0 auto;
+}
+
+.no-results {
+    text-align: center;
+    padding: 40px;
+    color: #888;
+}
+
+.dog-silhouette {
+    width: 80px;
+    height: 80px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23cccccc"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-12h2v4h-2zm0 6h2v2h-2z"/></svg>');
+    /* Simple placeholder icon */
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin: 0 auto 16px;
+    opacity: 0.5;
+}
+
+
+.dog-result-card {
+    margin-bottom: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
+    width: 100%;
+    min-height: 150px !important; /* เพิ่ม min-height เพื่อให้ Card ยาวขึ้น */
+    overflow: visible; /* ตรวจสอบให้แน่ใจว่าเนื้อหาไม่ถูกซ่อน */
+    min-width: 500px;
+    margin-left: -10px;
+    border-radius: 20px !important;
+}
+
+.dog-result-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dog-result-card .dog-image {
+    width: 50%;
+    height: 50%; /* Make image fill its parent container */
+    object-fit: cover !important;
+    border-radius: 4px;
+}
+
+.dog-result-card .dog-name {
+    margin: auto;
+    font-size: 30px !important;
+    
+}
+
+.dog-result-card .health-history .history-title {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.dog-result-card .health-history .history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+}
+
+.dog-result-card .health-history .details-link {
+    padding: 0;
+}
+
+.search-container .ant-input-affix-wrapper {
+  max-width: 1200px !important; /* <-- กำหนดความกว้างสูงสุดที่ต้องการที่นี่ */
+  width: 100% !important;
+}
+
+.title-underline {
+  height: 5px; /* ความหนาของเส้น */
+  width: 90%;  /* ความกว้างของเส้น (เทียบกับพื้นที่ทั้งหมด) */
+  max-width: 1190px; /* แต่กำหนดให้กว้างสุดไม่เกิน 550px */
+  background-color: #253C90; /* สีน้ำเงิน (สีหลักของ Ant Design) */
+  margin-left:125px; /* จัดให้อยู่กลาง และเว้นระยะห่างด้านล่าง */
+  border-radius: 2px; /* ทำให้ขอบเส้นมนเล็กน้อย */
+  margin-bottom: 20px;
+}

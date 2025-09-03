@@ -1,0 +1,77 @@
+/* General Container Styles */
+.dog-health-record-container {
+    padding: 24px;
+    background-image: url('../../../assets/background.jpg');
+    min-height: 100vh;
+    max-width: 100%;
+    background-size: cover;
+    z-index: 0;
+    justify-content: center;
+    align-items: center;
+}
+
+.page-title {
+    text-align: center;
+    margin-bottom: 24px !important;
+}
+
+.back-button {
+    position: absolute;
+    top: 28px;
+    left: 24px;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.65);
+}
+
+.dog-result-card {
+    margin-bottom: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
+    width: 100%;
+    min-height: 100px;
+    /* เพิ่ม min-height เพื่อให้ Card ยาวขึ้น */
+    overflow: visible;
+    /* ตรวจสอบให้แน่ใจว่าเนื้อหาไม่ถูกซ่อน */
+    min-width: 500px;
+    margin-left: -10px;
+    border-radius: 20px !important;
+}
+
+.dog-result-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dog-result-card .dog-image {
+    height: 80px;
+    /* Reduced height for better fit */
+    overflow: hidden;
+}
+
+.dog-result-card .dog-image img {
+    width: 100%;
+    height: 100%;
+    /* Make image fill its parent container */
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.dog-result-card .dog-name {
+    margin-bottom: 8px !important;
+}
+
+.dog-result-card .health-history .history-title {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.dog-result-card .health-history .history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+}
+
+.dog-result-card .health-history .details-link {
+    padding: 0;
+}

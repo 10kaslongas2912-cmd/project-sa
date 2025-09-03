@@ -84,6 +84,15 @@ export const donationAPI = {
   // remove:  (id: number) => Delete(`/dog/${id}`),
 };
 // รวม export เดียว
+export const healthRecordAPI = {
+  searchDogs: (query: string) => Get(`/dogs/search?q=${query}`),
+  getHealthRecordsByDogId: (dogId: string) => Get(`/dogs/${dogId}/health-records`),
+  getHealthRecordById: (recordId: number) => Get(`/health-records/${recordId}`),
+  createHealthRecord: (data: any) => Post(`/health-records`, data),
+  updateHealthRecord: (recordId: number, data: any) => Put(`/health-records/${recordId}`, data),
+  deleteHealthRecord: (recordId: number) => Delete(`/health-records/${recordId}`),
+};
+
 export const api = {
   authAPI,
   userAPI,
@@ -94,4 +103,5 @@ export const api = {
   roleAPI,
   paymentMethodAPI,
   donationAPI,
+  healthRecordAPI,
 };

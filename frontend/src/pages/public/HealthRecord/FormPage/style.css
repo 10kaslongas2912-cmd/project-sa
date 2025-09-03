@@ -1,0 +1,81 @@
+/* --- Health Form Styles --- */
+.health-form-page {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.health-form-page .form-header {
+    position: relative;
+    margin-bottom: 24px;
+}
+
+.health-form-card {
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.submit-section {
+    text-align: right;
+    margin-top: 24px;
+    margin-bottom: 0 !important;
+}
+
+/* Custom Button Styles */
+
+/* Primary Button (e.g., "บันทึก", "เพิ่มบันทึกสุขภาพ") */
+*[danger],
+*[danger="true"],
+.ant-btn-danger,
+.ant-btn.ant-btn-danger,
+.ant-btn[class*="danger"] {
+    background: #dc3545 !important;
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: #ffffff !important;
+    border: 1px solid #dc3545 !important;
+}
+
+*[danger]:hover,
+*[danger="true"]:hover,
+*[danger]:focus,
+*[danger="true"]:focus,
+.ant-btn-danger:hover,
+.ant-btn-danger:focus,
+.ant-btn.ant-btn-danger:hover,
+.ant-btn.ant-btn-danger:focus,
+.ant-btn[class*="danger"]:hover,
+.ant-btn[class*="danger"]:focus {
+    background: #c82333 !important;
+    background-color: #c82333 !important;
+    border-color: #c82333 !important;
+    color: #ffffff !important;
+    border: 1px solid #c82333 !important;
+}
+
+/* Primary Button */
+.ant-btn-primary {
+    background-color: #253C90 !important;
+    border-color: #253C90 !important;
+    color: #fff !important;
+}
+
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
+    background-color: #4863c3 !important;
+    border-color: #4863c3 !important;
+    color: #fff !important;
+}
+
+/* Default Button - แต่ไม่ apply กับ danger และ primary */
+.ant-btn:not([danger]):not([danger="true"]):not(.ant-btn-primary):not(.ant-btn-danger):not([class*="danger"]) {
+    background-color: #f0f2f5 !important;
+    border-color: #d9d9d9 !important;
+    color: rgba(0, 0, 0, 0.65) !important;
+}
+
+.ant-btn:not([danger]):not([danger="true"]):not(.ant-btn-primary):not(.ant-btn-danger):not([class*="danger"]):hover,
+.ant-btn:not([danger]):not([danger="true"]):not(.ant-btn-primary):not(.ant-btn-danger):not([class*="danger"]):focus {
+    background-color: #e6e6e6 !important;
+    border-color: #bfbfbf !important;
+    color: rgba(0, 0, 0, 0.85) !important;
+}
