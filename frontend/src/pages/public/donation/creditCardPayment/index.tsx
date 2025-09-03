@@ -44,7 +44,7 @@ const CreditCardPaymentForm: React.FC = () => {
 
       // 2) enrich donorInfo จากสถานะ login (ถ้าต้องการ)
       const token = localStorage.getItem("token");
-      const userId = localStorage.getItem("id");
+      const userId = localStorage.getItem("ID");
       donorInfo.donor_type = token ? "user" : "guest";
       if (token && userId) {
         donorInfo.user_id = parseInt(userId, 10);

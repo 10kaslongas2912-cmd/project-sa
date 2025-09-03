@@ -26,8 +26,8 @@ export function useAuthUser() {
         const userForApp: AppUserInterface = {
           ID: res.ID,
           name: res.name,
-          first_name: res.firstname,
-          last_name: res.lastname,
+          first_name: res.first_name,
+          last_name: res.last_name,
           photo_url: res.photo_url,
         };
   
@@ -59,7 +59,7 @@ export function useAuthUser() {
     return () => window.removeEventListener("storage", onStorage);
   }, [refresh]);
   const logout = useCallback(() => {
-    ["token", "token_type", "id",  "username", "email"].forEach((k) =>
+    ["token", "token_type", "ID",  "username", "email"].forEach((k) =>
       localStorage.removeItem(k)
     );
     setUser(null);

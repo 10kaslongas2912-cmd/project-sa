@@ -13,6 +13,8 @@ import (
 )
 
 // CombinedDonationPayload struct remains the same
+
+
 type CombinedDonationPayload struct {
 	DonorInfo            entity.Donor          `json:"donor_info"`
 	DonationType         string                `json:"donation_type"`
