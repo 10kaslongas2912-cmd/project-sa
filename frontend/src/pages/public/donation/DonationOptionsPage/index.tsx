@@ -8,11 +8,11 @@ const DonationOptionsPage: React.FC = () => {
   const navigate = useNavigate();
   const { user, isLoggedIn } = useAuthUser();
   const prefillUser = async () => {
-  if (!isLoggedIn || !user?.id) return;  // เช็ค login และมี user.ID จริง
+  if (!isLoggedIn || !user?.id) return;
   try {
-    const res = await userAPI.getById(user.id); // 👈 ไม่ต้องไป localStorage
-    if (res.status === 200) {
-      sessionStorage.setItem("prefillUserData", JSON.stringify(res.data));
+    const userData = await userAPI.getById(user.id);
+    if (userData) {
+      sessionStorage.setItem("prefillUserData", JSON.stringify(userData));
     }
   } catch (err) {
     console.error("Error fetching user data:", err);

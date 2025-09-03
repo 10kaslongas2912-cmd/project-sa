@@ -58,9 +58,7 @@ const CreditCardPaymentForm: React.FC = () => {
         amount: isMonthly
           ? Number(moneyDetailsRaw.monthlyAmount)
           : Number(moneyDetailsRaw.oneTimeAmount),
-        payment_method_id: isMonthly
-          ? 1
-          : Number(moneyDetailsRaw.paymentMethod), // สมมติ 1=Credit Card
+        payment_method_id: 1, // สมมติ 1=Credit Card
         payment_type: isMonthly ? "monthly" : "one-time",
         status: isMonthly ? "success" : "complete",
         transaction_ref: transactionNumber,

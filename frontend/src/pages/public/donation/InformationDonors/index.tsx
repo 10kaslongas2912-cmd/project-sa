@@ -20,8 +20,8 @@ const InformationDonors: React.FC = () => {
   const initialData = getInitialFormData();
 
   // สร้าง State สำหรับเก็บค่าของแต่ละ Input
-  const [firstName, setFirstName] = useState(initialData.first_name || '');
-  const [lastName, setLastName] = useState(initialData.last_name || '');
+  const [firstName, setFirstName] = useState(initialData.firstname || '');
+  const [lastName, setLastName] = useState(initialData.lastname || '');
   const [phone, setPhone] = useState(initialData.phone || '');
   const [email, setEmail] = useState(initialData.email || '');
 
@@ -32,9 +32,9 @@ const InformationDonors: React.FC = () => {
       try {
         const parsedPrefillData = JSON.parse(prefillData);
         console.log("InformationDonors: Parsed prefillData:", parsedPrefillData); // Log parsed data
-        setFirstName(parsedPrefillData.first_name || '');
-        setLastName(parsedPrefillData.last_name || '');
-        setPhone(parsedPrefillData.phone_number || '');
+        setFirstName(parsedPrefillData.firstname || '');
+        setLastName(parsedPrefillData.lastname || '');
+        setPhone(parsedPrefillData.phone || '');
         setEmail(parsedPrefillData.email || '');
         sessionStorage.removeItem('prefillUserData'); // Clear after use
         console.log("InformationDonors: Form fields set with prefill data."); // Confirm fields set

@@ -21,10 +21,22 @@ export function useAuthUser() {
 
     try {
       setLoading(true);
-      const res = await authAPI.me(); 
-      // res อาจเป็น any → cast ให้เป็น AppUser
-      setUser(res as AppUserInterface);
-      setIsLoggedIn(true);
+      const res = await authAPI.me();
+      if (res) {
+        const userForApp: AppUserInterface = {
+          id: res.ID,
+          name: res.name,
+          firstname: res.firstname,
+          lastname: res.lastname,
+          photo_url: res.photo_url,
+        };
+  
+        setUser(userForApp);
+        setIsLoggedIn(true);
+      } else {
+        throw new Error("User data not found");
+      }
+
       setError(null);
     } catch (e) {
       localStorage.removeItem("token"); // เผื่อ token หมดอายุ

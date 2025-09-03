@@ -98,10 +98,36 @@ const fetchPaymentMethods = async () => {
 
     sessionStorage.setItem('moneyDonationData', JSON.stringify(finalData));
 
-    if (!isLoggedIn && createAccount === 3) {
-      sessionStorage.setItem('returnTo', '/donation/money');
-      navigate('/signup');
+    const isMonthly = type === 'รายเดือน';
+    const isOneTime = type === 'รายครั้ง';
+    const wantsToCreateAccount = createAccount === 3;
+
+    // Condition to redirect to signup page
+    const shouldSignUp = !isLoggedIn && (isMonthly || (isOneTime && wantsToCreateAccount));
+
+    if (shouldSignUp) {
+      // Prepare prefill data for signup form
+      const donorInfoString = sessionStorage.getItem('donationInfoFormData');
+      if (donorInfoString) {
+        const donorInfo = JSON.parse(donorInfoString);
+        const signupPrefillData = {
+          firstname: donorInfo.firstname,
+          lastname: donorInfo.lastname,
+          email: donorInfo.email,
+          phone: donorInfo.phone,
+        };
+        sessionStorage.setItem('signupPrefillData', JSON.stringify(signupPrefillData));
+      }
+
+      // Set the return path after login
+      // For monthly, it's always credit card.
+      // For one-time, we come back here to be redirected again by navigateToNextPage.
+      const returnTo = isMonthly ? '/donation/payment/creditcard' : '/donation/money';
+      sessionStorage.setItem('returnTo', returnTo);
+      
+      navigate('/auth');
     } else {
+      // If not signing up, proceed to payment directly
       navigateToNextPage(type, values.paymentMethod);
     }
   };
@@ -156,7 +182,7 @@ const fetchPaymentMethods = async () => {
           <button onClick={() => {
             sessionStorage.removeItem('donationMoneyFormData');
             navigate('/donation/information');
-          }} className="back-link">
+          }} className="back-link" style={{ fontFamily: 'Anakotmai-Medium' }}>
             &lt; ย้อนกลับ
           </button>
 
@@ -214,7 +240,7 @@ const fetchPaymentMethods = async () => {
                 </Form.Item>
               </div>
             ) : (
-              <div className="amount-input-row">
+              <div className="amount-input-row" style={{ gap: '65px'}}>
                 <Button onClick={() => handlePresetOneTimeAmount(100)}>100 บาท</Button>
                 <Button onClick={() => handlePresetOneTimeAmount(300)}>300 บาท</Button>
                 <Button onClick={() => handlePresetOneTimeAmount(500)}>500 บาท</Button>
@@ -237,12 +263,13 @@ const fetchPaymentMethods = async () => {
                 <>
                   <Form.Item
                     name="months"
-                    label={<div style={{ textAlign: "center", fontFamily: "Anakotmai", fontSize: "1.4em", width: "100%", marginLeft: "30px", marginTop: "55px", maxWidth: "175px" }}>จำนวนเดือนที่จะบริจาค:</div>}
+                    label={<div style={{ textAlign: "center", fontFamily: "Anakotmai", fontSize: "1.4em", width: "100%", marginLeft: "30px", marginTop: "55px", maxWidth: "175px",marginRight: "15px" }}>จำนวนเดือนที่จะบริจาค:</div>}
                     colon={false}
-                    rules={[{ required: true, message: 'กรุณาเลือกจำนวนเดือน!' }]}
+                    rules={[{ required: false, message: 'กรุณาเลือกจำนวนเดือน!' }]}
                     className="form-row-item"
                   >
                     <Select
+                      style={{ width: "100%",marginLeft: "10px",marginRight: "-10px",maxWidth: "750px" }}
                       placeholder="เลือกจำนวนเดือน"
                       className="form-input2"
                       options={[
@@ -255,14 +282,15 @@ const fetchPaymentMethods = async () => {
 
                   <Form.Item
                     name="billingDate"
-                    label={<div style={{ textAlign: "center", fontFamily: "Anakotmai", fontSize: "1.4em", width: "100%", marginLeft: "40px", marginTop: "55px" }}>วันที่ตัดบัตร:</div>}
+                    label={<div style={{ textAlign: "center", fontFamily: "Anakotmai", fontSize: "1.4em", width: "100%", marginLeft: "20px", marginTop: "55px" }}>วันที่ตัดบัตร:</div>}
                     colon={false}
                     rules={[
-                      { required: true, message: 'กรุณาเลือกวันที่ตัดบัตร!' },
+                      { required: false, message: 'กรุณาเลือกวันที่ตัดบัตร!' },
                     ]}
                     className="form-row-item"
                   >
                     <Select
+                    style={{ width: "100%", marginLeft: "10px", marginRight: "20px",maxWidth: "700px" }}
                       placeholder="เลือกวันที่ตัดบัตร"
                       className="form-input2"
                       options={Array.from({ length: 31 }, (_, i) => ({ label: `${i + 1}`, value: i + 1 }))}
@@ -271,8 +299,9 @@ const fetchPaymentMethods = async () => {
                 </>
               ) : (
                 <>
-                  <p className="pk">ช่องทางการชำระเงิน</p>
+                  <p className="pk" style={{ marginBottom: "20px" }}>ช่องทางการชำระเงิน</p>
                   <Form.Item
+                    style={{ marginTop: "70px",marginLeft: "-1250px" }}
                     name="paymentMethod"
                     rules={[{ required: true, message: 'กรุณาเลือกวิธีการชำระเงิน!' }]}
                     className="form-row-item-full"
@@ -295,12 +324,14 @@ const fetchPaymentMethods = async () => {
                       <div className="account-options-container">
                         <p className="jk">สร้างบัญชีบริจาค</p>
                         <Button
+                        style={{ marginLeft: "70px",marginTop: "15px" }}
                           onClick={() => setCreateAccount(3)}
                           className={`account-option-button ${createAccount === 3 ? 'selected' : ''}`}
                         >
                           ฉันต้องการสร้างบัญชีบริจาค
                         </Button>
                         <Button
+                        style={{ marginLeft: "70px" }}
                           onClick={() => setCreateAccount(4)}
                           className={`account-option-button ${createAccount === 4 ? 'selected' : ''}`}
                         >
@@ -332,7 +363,7 @@ const fetchPaymentMethods = async () => {
                 style={{
                   marginTop: donationType === 'รายครั้ง' ? '20px' : '20px',
                   width: donationType === 'รายครั้ง' ? '90%' : '100%',
-                  maxWidth: donationType === 'รายครั้ง' ? '1000px' : 'auto',
+                  maxWidth: donationType === 'รายครั้ง' ? '9000px' : 'auto',
                   marginLeft: donationType === 'รายครั้ง' ? '-15px' : '0'
                 }}
               >
