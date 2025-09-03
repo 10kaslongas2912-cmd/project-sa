@@ -1,13 +1,8 @@
 package entity
 
-import (
-	"gorm.io/gorm"
-)
-
 type Zone struct {
-	gorm.Model
-	Name string `json:"name"`
-	Staffs   []Staff `gorm:"foreignKey:ZoneID" json:"staffs"`
-	Kennels  []Kennel `gorm:"foreignKey:ZoneID" json:"kennels"`
+	ZoneID   uint   `gorm:"primarykey;autoIncrement" json:"zone_id"`
+	ZoneName string `json:"zone_name"`
+	KennelID uint   `json:"kennel_id"`           // Foreign key to Kennel
+	Kennel   Kennel `gorm:"references:KennelID"` // Association to Kennel
 }
-

@@ -24,6 +24,7 @@ const DonationOptionsPage: React.FC = () => {
     sessionStorage.removeItem("createAccount");
   }, []);
 
+
   const handleDonationMoneyClick = async () => {
     sessionStorage.setItem("donationType", "money");
     await prefillUser();
