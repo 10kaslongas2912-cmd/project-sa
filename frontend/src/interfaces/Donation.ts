@@ -1,7 +1,7 @@
 export interface DonorInterface {
     ID?: number;
-    firstname?: string;
-    lastname?: string;
+    first_name?: string;
+    last_name?: string;
     phone?: string;
     email?: string;
     donor_type?: "user" | "guest";

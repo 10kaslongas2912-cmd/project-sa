@@ -33,7 +33,7 @@ function AuthPage() {
       localStorage.setItem("isLogin", "true");
       localStorage.setItem("token_type", payload.token_type);
       localStorage.setItem("token", payload.token);
-      if (payload.user?.id) localStorage.setItem("id", String(payload.user.id));
+      if (payload.user?.ID) localStorage.setItem("ID", String(payload.user.ID));
 
       const returnTo = sessionStorage.getItem("returnTo");
       if (returnTo) {
@@ -55,7 +55,7 @@ function AuthPage() {
       const list = Array.isArray(res) ? res : [];
 
       const normalized: GenderInterface[] = list.map((g: any) => ({
-        id: g.id ?? g.ID,
+        ID: g.ID,
         name: g.name
       }));
       setGenders(normalized);
@@ -70,26 +70,24 @@ function AuthPage() {
     const payload: CreateUserRequest = {
       username: values.username ?? values.email, // ถ้าไม่มีช่อง username ใช้อีเมลแทน
       password: values.password,
-      firstname: values.first_name,
-      lastname: values.last_name,
+      first_name: values.first_name,
+      last_name: values.last_name,
       date_of_birth: values.birthday?.format?.("YYYY-MM-DD") ?? values.birthday, // DatePicker (dayjs)
       email: values.email,
       phone: values.phone_number,
       gender_id: values.gender_id,
     };
-    // เช็คstatus response เผื่อเอาตามจารย์
-    // const res = await api.auth.signUp(payload); // ได้ทั้ง AxiosResponse
-    // if (res?.status === 201 || res?.status === 200) {
-    //   messageApi.success("สมัครสมาชิกสำเร็จ");
-    //   handleToggleForm(true);
-    // } else {
-    //   messageApi.error(res?.data?.error ?? "สมัครสมาชิกไม่สำเร็จ");
-    // }
+
     try {
-      const res = await api.authAPI.signUp(payload); // { data: user }
-      messageApi.success("สมัครสมาชิกสำเร็จ");
-      // กลับไปหน้า Login
-      handleToggleForm(true);
+      await api.authAPI.signUp(payload);
+      messageApi.success("สมัครสมาชิกสำเร็จ, กำลังเข้าสู่ระบบ...");
+
+      // Automatically log the user in after successful registration
+      await onFinishLogin({
+        username: payload.username,
+        password: payload.password,
+      });
+
     } catch (e: any) {
       const err = e?.response?.data?.error ?? "สมัครสมาชิกไม่สำเร็จ";
       messageApi.error(err);
@@ -98,6 +96,26 @@ function AuthPage() {
 
   useEffect(() => {
     onGetGender();
+
+    const prefillDataString = sessionStorage.getItem('signupPrefillData');
+    if (prefillDataString) {
+      try {
+        const prefillData = JSON.parse(prefillDataString);
+        
+        registerForm.setFieldsValue({
+          first_name: prefillData.first_name,
+          last_name: prefillData.last_name,
+          email: prefillData.email,
+          phone_number: prefillData.phone,
+        });
+
+        setIsLoginActive(false);
+
+        sessionStorage.removeItem('signupPrefillData');
+      } catch (error) {
+        console.error("Error parsing or using prefill data:", error);
+      }
+    }
   }, []);
 
   return (
@@ -143,7 +161,7 @@ function AuthPage() {
                 >
                   <Select placeholder="เพศ">
                     {genders.map((gender) => (
-                      <Select.Option value={gender.id} key={gender.id}>
+                      <Select.Option value={gender.ID} key={gender.ID}>
                         {gender.name}
                       </Select.Option>
                     ))}

@@ -15,6 +15,7 @@ const carouselImages = [
 ];
 
 function FirstPage() {
+
     return (
         <div className="main-container">
             <Carousel

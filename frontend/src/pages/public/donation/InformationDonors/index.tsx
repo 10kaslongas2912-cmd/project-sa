@@ -1,86 +1,59 @@
 import React, { useState, useEffect } from "react";
-import "./style.css";
+import './style.css';
+
 import { useNavigate } from "react-router-dom";
+import type { DonorInterface } from '../../../../interfaces/Donation'; // Import DonorsInterface
 
-// ============ Types & Consts ============
-type DonorFormData = {
-  firstName: string;
-  lastName: string;
-  phone: string;
-  email: string;
-};
-
-const STORAGE_KEYS = {
-  donorForm: "donationInfoFormData",
-  prefill: "prefillUserData",
-} as const;
-
-// รองรับหลายรูปแบบชื่อคีย์จากแหล่ง prefill แล้ว normalize เป็น camelCase
-const normalizePrefill = (u: any): Partial<DonorFormData> => ({
-  firstName: u?.firstName ?? u?.firstname ?? u?.first_name,
-  lastName:  u?.lastName  ?? u?.lastname  ?? u?.last_name,
-  phone:     u?.phone     ?? u?.phonenumber ?? u?.phone_number,
-  email:     u?.email,
-});
-
-// อ่านค่าเริ่มต้นจาก sessionStorage (คีย์ camelCase ให้คงที่)
-const readInitial = (): DonorFormData => {
+// Helper to get initial state from sessionStorage
+const getInitialFormData = () => {
   try {
-    const raw = sessionStorage.getItem(STORAGE_KEYS.donorForm);
-    const j = raw ? JSON.parse(raw) : {};
-    return {
-      firstName: j.firstName ?? "",
-      lastName:  j.lastName  ?? "",
-      phone:     j.phone     ?? "",
-      email:     j.email     ?? "",
-    };
-  } catch {
-    return { firstName: "", lastName: "", phone: "", email: "" };
+    const storedData = sessionStorage.getItem('donationInfoFormData');
+    return storedData ? JSON.parse(storedData) : {};
+  } catch (error) {
+    console.error("Error parsing stored form data:", error);
+    return {};
   }
 };
 
-// ============ Component ============
 const InformationDonors: React.FC = () => {
   const navigate = useNavigate();
-  const initial = readInitial();
+  const initialData = getInitialFormData();
 
-  // Controlled states (camelCase)
-  const [firstName, setFirstName] = useState(initial.firstName);
-  const [lastName,  setLastName]  = useState(initial.lastName);
-  const [phone,     setPhone]     = useState(initial.phone);
-  const [email,     setEmail]     = useState(initial.email);
+  // สร้าง State สำหรับเก็บค่าของแต่ละ Input
+  const [firstName, setFirstName] = useState(initialData.first_name || '');
+  const [lastName, setLastName] = useState(initialData.last_name || '');
+  const [phone, setPhone] = useState(initialData.phone || '');
+  const [email, setEmail] = useState(initialData.email || '');
 
-  // เติมข้อมูลอัตโนมัติจาก prefillUserData (ครั้งเดียว)
   useEffect(() => {
-    const prefillRaw = sessionStorage.getItem(STORAGE_KEYS.prefill);
-    if (!prefillRaw) return;
-
-    try {
-      const u = JSON.parse(prefillRaw);
-      const n = normalizePrefill(u);
-      if (n.firstName != null) setFirstName(n.firstName);
-      if (n.lastName  != null) setLastName(n.lastName);
-      if (n.phone     != null) setPhone(n.phone);
-      if (n.email     != null) setEmail(n.email);
-    } catch (e) {
-      console.error("Error parsing prefillUserData:", e);
-    } finally {
-      // ลบทิ้งหลังใช้ เพื่อไม่ให้เติมซ้ำรอบถัดไป
-      sessionStorage.removeItem(STORAGE_KEYS.prefill);
+    const prefillData = sessionStorage.getItem('prefillUserData');
+    console.log("InformationDonors: Retrieved prefillData from sessionStorage:", prefillData); // Log retrieved data
+    if (prefillData) {
+      try {
+        const parsedPrefillData = JSON.parse(prefillData);
+        console.log("InformationDonors: Parsed prefillData:", parsedPrefillData); // Log parsed data
+        setFirstName(parsedPrefillData.first_name || '');
+        setLastName(parsedPrefillData.last_name || '');
+        setPhone(parsedPrefillData.phone || '');
+        setEmail(parsedPrefillData.email || '');
+        sessionStorage.removeItem('prefillUserData'); // Clear after use
+        console.log("InformationDonors: Form fields set with prefill data."); // Confirm fields set
+      } catch (error) {
+        console.error("Error parsing prefill user data:", error);
+      }
     }
-  }, []);
+  }, []); // Run only once on mount
 
-  // บันทึกฟอร์มลง sessionStorage ทุกครั้งที่พิมพ์ (คีย์ camelCase)
   useEffect(() => {
-    const formData = { firstname: firstName, lastname: lastName, phone, email };
+    const formData = { first_name: firstName, last_name: lastName, phone, email };
     sessionStorage.setItem('donationInfoFormData', JSON.stringify(formData));
   }, [firstName, lastName, phone, email]); // Dependencies array
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault(); // ป้องกันการรีเฟรชหน้าเมื่อกดส่งฟอร์ม
     const formData: DonorInterface = { // Cast to DonorsInterface
-      firstname: firstName,
-      lastname: lastName,
+      first_name: firstName,
+      last_name: lastName,
       phone: phone,
       email: email,
     };
@@ -100,13 +73,16 @@ const InformationDonors: React.FC = () => {
   return (
     <div className="form-page-container">
       <div className="form-card">
-        <button onClick={() => navigate("/donation/options")} className="back-link">
+        {/* ปุ่มย้อนกลับ */}
+        <button onClick={() => {
+          navigate('/donation/options');
+        }} className="back-link">
           &lt; ย้อนกลับ
         </button>
-
         <h1 className="form-title">ข้อมูลการบริจาค</h1>
         <h2 className="form-subtitle">ผู้บริจาค</h2>
 
+        {/* ฟอร์ม */}
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -141,6 +117,7 @@ const InformationDonors: React.FC = () => {
             required
           />
 
+          {/* ปุ่มส่งฟอร์ม */}
           <button type="submit" className="submit-button">
             ต่อไป
           </button>

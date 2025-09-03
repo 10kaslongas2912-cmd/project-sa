@@ -18,8 +18,8 @@ export interface UserInterface {
 export interface AppUserInterface {
   ID: number;
   name: string;
-  firstname: string;
-  lastname: string;
+  first_name: string;
+  last_name: string;
   photo_url?: string;
 }
 
@@ -31,8 +31,8 @@ export interface LoginUserRequest {
 export interface CreateUserRequest {
   username: string;
   password: string;
-  firstname: string;
-  lastname: string;
+  first_name: string;
+  last_name: string;
   date_of_birth: string;
   email: string;
   phone: string;
@@ -43,8 +43,8 @@ export interface CreateUserRequest {
 export interface UpdateUserRequest {
   username?: string;
   password?: string; 
-  firstname?: string;
-  lastname?: string;
+  first_name?: string;
+  last_name?: string;
   photo_url?: string;
   date_of_birth?: string;
   email?: string;

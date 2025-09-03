@@ -51,8 +51,8 @@ func userResp(u entity.User) gin.H {
 	return gin.H{
 		"ID":        u.ID, 
 		"name":      FullName,
-		"firstname": u.FirstName,
-		"lastname":  u.LastName,
+		"first_name": u.FirstName,
+		"last_name":  u.LastName,
 		"username":  u.Username,
 		"email":     u.Email,
 		"phone":     u.Phone,
