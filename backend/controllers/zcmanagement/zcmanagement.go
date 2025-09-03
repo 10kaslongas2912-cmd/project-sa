@@ -11,10 +11,10 @@ import (
 // GetAllManagementData retrieves all data from zones, kennels, kennel management, and staff
 func GetAllManagementData(c *gin.Context) {
 	// TODO: Adjust these entity names to match your actual entity structs
-	var zones []entity.Zones                       // CHANGE: Replace with your actual Zone entity name
+	var zones []entity.Zone                        // CHANGE: Replace with your actual Zone entity name
 	var kennels []entity.Kennel                    // CHANGE: Replace with your actual Kennel entity name
 	var kennelManagement []entity.KennelManagement // CHANGE: Replace with your actual KennelManagement entity name
-	var staff []entity.Staffs                      // CHANGE: Replace with your actual Staff entity name
+	var staff []entity.Staff                       // CHANGE: Replace with your actual Staff entity name
 
 	// Fetch all zones data
 	// TODO: Add Preload() if zones have associations you want to include
@@ -68,7 +68,7 @@ func GetAllManagementData(c *gin.Context) {
 func GetManagementByZone(c *gin.Context) {
 	zoneID := c.Param("zone_id")
 
-	var zone entity.Zones       // CHANGE: Replace with your actual Zone entity name
+	var zone entity.Zone        // CHANGE: Replace with your actual Zone entity name
 	var kennels []entity.Kennel // CHANGE: Replace with your actual Kennel entity name
 
 	// Fetch zone details
@@ -88,7 +88,7 @@ func GetManagementByZone(c *gin.Context) {
 	var kennelIDs []uint
 	for _, kennel := range kennels {
 		// TODO: Adjust field name based on your Kennel entity (might be ID, KennelID, etc.)
-		kennelIDs = append(kennelIDs, kennel.KennelID) // CHANGE: Replace ID with actual primary key field
+		kennelIDs = append(kennelIDs, kennel.ID) // CHANGE: Replace ID with actual primary key field
 	}
 
 	// Fetch kennel management data for these kennels
@@ -140,7 +140,7 @@ func GetAvailableKennels(c *gin.Context) {
 
 // GetStaffAssignments retrieves staff with their current assignments
 func GetStaffAssignments(c *gin.Context) {
-	var staff []entity.Staffs // CHANGE: Replace with your actual Staff entity name
+	var staff []entity.Staff // CHANGE: Replace with your actual Staff entity name
 
 	// TODO: If staff have assignments or zones they manage, add Preload
 	// Example: config.DB().Preload("Assignments").Preload("ManagedZones").Find(&staff)

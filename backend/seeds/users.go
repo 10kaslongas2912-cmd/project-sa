@@ -2,6 +2,7 @@ package seeds
 
 import (
 	"fmt"
+	"time"
 
 	"example.com/project-sa/entity"
 	"example.com/project-sa/utils/pointer"
@@ -22,7 +23,7 @@ func seedUsers(db *gorm.DB) error {
 		{
 			Firstname:   "ศิริเดช",
 			Lastname:    "สุภาพ",
-			DateOfBirth: "1990-01-01",
+			DateOfBirth: time.Date(1990, 1, 1, 0, 0, 0, 0, time.UTC),
 			Email:       "nam@example.com",
 			Phone:       "0800000000",
 			Username:    "Nam",
@@ -33,7 +34,7 @@ func seedUsers(db *gorm.DB) error {
 		{
 			Firstname:   "รับเช็ค",
 			Lastname:    "อึ่งชัยภูมิ",
-			DateOfBirth: "1995-09-20",
+			DateOfBirth: time.Date(1995, 9, 20, 0, 0, 0, 0, time.UTC),
 			Email:       "ta@example.com",
 			Phone:       "0898765432",
 			Username:    "Ta",

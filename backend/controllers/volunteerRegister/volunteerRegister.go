@@ -11,7 +11,7 @@ import (
 
 // GetAllVolunteers retrieves all volunteers
 func GetAllVolunteers(c *gin.Context) {
-	var volunteers []entity.Volunteers
+	var volunteers []entity.Volunteer
 
 	if err := config.DB().Preload("Users").Preload("Skills").Find(&volunteers).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -24,7 +24,7 @@ func GetAllVolunteers(c *gin.Context) {
 // GetVolunteerByID retrieves a volunteer by ID
 func GetVolunteerByID(c *gin.Context) {
 	id := c.Param("id")
-	var volunteer entity.Volunteers
+	var volunteer entity.Volunteer
 
 	if err := config.DB().Preload("Users").Preload("Skills").First(&volunteer, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "volunteer not found"})
@@ -37,7 +37,7 @@ func GetVolunteerByID(c *gin.Context) {
 // GetVolunteersByUserID retrieves volunteers for a specific user
 func GetVolunteersByUserID(c *gin.Context) {
 	userID := c.Param("user_id")
-	var volunteers []entity.Volunteers
+	var volunteers []entity.Volunteer
 
 	if err := config.DB().Preload("Users").Preload("Skills").Where("user_id = ?", userID).Find(&volunteers).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "volunteers not found for this user"})
@@ -50,7 +50,7 @@ func GetVolunteersByUserID(c *gin.Context) {
 // GetVolunteersBySkillID retrieves volunteers with a specific skill
 func GetVolunteersBySkillID(c *gin.Context) {
 	skillID := c.Param("skill_id")
-	var volunteers []entity.Volunteers
+	var volunteers []entity.Volunteer
 
 	if err := config.DB().Preload("Users").Preload("Skills").Where("skill_id = ?", skillID).Find(&volunteers).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "volunteers not found for this skill"})
@@ -62,7 +62,7 @@ func GetVolunteersBySkillID(c *gin.Context) {
 
 // CreateVolunteer creates a new volunteer record
 func CreateVolunteer(c *gin.Context) {
-	var volunteer entity.Volunteers
+	var volunteer entity.Volunteer
 
 	// Bind the incoming JSON to the volunteer struct
 	if err := c.ShouldBindJSON(&volunteer); err != nil {
@@ -90,7 +90,7 @@ func CreateVolunteer(c *gin.Context) {
 // UpdateVolunteer updates an existing volunteer record
 func UpdateVolunteer(c *gin.Context) {
 	id := c.Param("id")
-	var updatedVolunteer entity.Volunteers
+	var updatedVolunteer entity.Volunteer
 
 	// Bind the incoming JSON to the updatedVolunteer struct
 	if err := c.ShouldBindJSON(&updatedVolunteer); err != nil {
@@ -99,7 +99,7 @@ func UpdateVolunteer(c *gin.Context) {
 	}
 
 	// Find the existing volunteer
-	var existingVolunteer entity.Volunteers
+	var existingVolunteer entity.Volunteer
 	if err := config.DB().First(&existingVolunteer, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "volunteer not found"})
 		return
@@ -116,7 +116,6 @@ func UpdateVolunteer(c *gin.Context) {
 	existingVolunteer.Note = updatedVolunteer.Note
 	existingVolunteer.PhotoAdr = updatedVolunteer.PhotoAdr
 	existingVolunteer.UserID = updatedVolunteer.UserID
-	existingVolunteer.SkillID = updatedVolunteer.SkillID
 
 	// Save the updated volunteer to the database
 	if err := config.DB().Save(&existingVolunteer).Error; err != nil {
@@ -135,7 +134,7 @@ func DeleteVolunteer(c *gin.Context) {
 	id := c.Param("id")
 
 	// Find the volunteer
-	var volunteer entity.Volunteers
+	var volunteer entity.Volunteer
 	if err := config.DB().First(&volunteer, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "volunteer not found"})
 		return
@@ -164,7 +163,7 @@ func GetVolunteersByWorkingDate(c *gin.Context) {
 		return
 	}
 
-	var volunteers []entity.Volunteers
+	var volunteers []entity.Volunteer
 
 	// Query for volunteers working on the specific date
 	startOfDay := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, date.Location())

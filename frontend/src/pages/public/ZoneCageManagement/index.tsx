@@ -1,6 +1,6 @@
 import './style.css';
 import React from 'react';
-import NavigationBar from '../../components/NavigationBar';
+import NavigationBar from '../../../components/NavigationBar';
 
 const ZoneCageManagementPage = () => {
 const [selectedZone, setSelectedZone] = React.useState('');

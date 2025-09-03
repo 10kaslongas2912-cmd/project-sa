@@ -51,7 +51,7 @@ func seedLookupsBase(db *gorm.DB) error {
 	}
 	if err := db.Where("name = ?", "ใหญ่").
 		FirstOrCreate(&entity.AnimalSize{Name: "ใหญ่"}).Error; err != nil {
-	return err
+		return err
 	}
 
 	if err := db.Where("name = ?", "บัตรเครดิต").
@@ -81,11 +81,11 @@ func seedLookupsBase(db *gorm.DB) error {
 	}
 
 	if err := db.Where("name = ?", "A").
-		FirstOrCreate(&entity.Zone{Name: "A"}).Error; err != nil {
+		FirstOrCreate(&entity.Zone{ZoneName: "A"}).Error; err != nil {
 		return err
 	}
 	if err := db.Where("name = ?", "B").
-		FirstOrCreate(&entity.Zone{Name: "B"}).Error; err != nil {
+		FirstOrCreate(&entity.Zone{ZoneName: "B"}).Error; err != nil {
 		return err
 	}
 

@@ -71,14 +71,26 @@ func CreateDog(c *gin.Context) {
 		return
 	}
 
+	dob, err := time.Parse("2006-01-02", req.DateOfBirth)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid date_of_birth (YYYY-MM-DD)"})
+		return
+	}
+
+	doa, err := time.Parse("2006-01-02", req.DateOfArrived)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid date_of_arrived (YYYY-MM-DD)"})
+		return
+	}
+
 	dog := entity.Dog{
 		Name:          req.Name,
 		AnimalSexID:   req.AnimalSexID,
 		AnimalSizeID:  req.AnimalSizeID,
 		BreedID:       req.BreedID,
 		KennelID:      req.KennelID,
-		DateOfBirth:   req.DateOfBirth,
-		DateOfArrived: req.DateOfArrived,
+		DateOfBirth:   dob,
+		DateOfArrived: doa,
 		IsAdopted:     req.IsAdopted,
 		PhotoURL:      req.PhotoURL,
 		Character:     req.Character,
@@ -114,34 +126,34 @@ func GetDogById(c *gin.Context) {
 
 // GetAllDogs (R - all) + filter (no pagination)
 func GetAllDogs(c *gin.Context) {
-    // Start with a new DB instance
-    db := configs.DB()
+	// Start with a new DB instance
+	db := configs.DB()
 
-    // Add optional filters
-    if name := c.Query("name"); name != "" {
-        db = db.Where("name LIKE ?", "%"+name+"%")
-    }
-    if sexID := c.Query("animal_sex_id"); sexID != "" {
-        db = db.Where("animal_sex_id = ?", sexID)
-    }
-    if breedID := c.Query("breed_id"); breedID != "" {
-        db = db.Where("breed_id = ?", breedID)
-    }
-    if kennelID := c.Query("kennel_id"); kennelID != "" {
-        db = db.Where("kennel_id = ?", kennelID)
-    }
+	// Add optional filters
+	if name := c.Query("name"); name != "" {
+		db = db.Where("name LIKE ?", "%"+name+"%")
+	}
+	if sexID := c.Query("animal_sex_id"); sexID != "" {
+		db = db.Where("animal_sex_id = ?", sexID)
+	}
+	if breedID := c.Query("breed_id"); breedID != "" {
+		db = db.Where("breed_id = ?", breedID)
+	}
+	if kennelID := c.Query("kennel_id"); kennelID != "" {
+		db = db.Where("kennel_id = ?", kennelID)
+	}
 
-    var dogs []entity.Dog
-    
-    // Chain the preload and order commands and then execute the Find method
-    if err := preloadDog(db).Order("id DESC").Find(&dogs).Error; err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "query failed: " + err.Error()})
-        return
-    }
+	var dogs []entity.Dog
 
-    c.JSON(http.StatusOK, gin.H{
-        "data": dogs,
-    })
+	// Chain the preload and order commands and then execute the Find method
+	if err := preloadDog(db).Order("id DESC").Find(&dogs).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "query failed: " + err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": dogs,
+	})
 }
 
 // UpdateDog (U) — partial update

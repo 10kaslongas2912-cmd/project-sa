@@ -17,7 +17,7 @@ const MobileBankingPage = Loadable(lazy(() => import("../pages/public/donation/s
 const DonationItemPage = Loadable(lazy(() => import("../pages/public/donation/DonationItem")));
 const DonationSummaryPage = Loadable(lazy(() => import("../pages/public/donation/ItemSumaryPage")));
 const VolunteerPage = Loadable(lazy(() => import("../pages/public/Volunteer/volunteerRegister")));
-const ZoneCageManagementPage = Loadable(lazy(() => import("../pages/ZoneCageManagement")));
+const ZoneCageManagementPage = Loadable(lazy(() => import("../pages/public/ZoneCageManagement")));
 
 const MainRoutes = (): RouteObject => { 
 

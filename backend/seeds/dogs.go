@@ -2,6 +2,7 @@ package seeds
 
 import (
 	"fmt"
+	"time"
 
 	"example.com/project-sa/entity"
 	"gorm.io/gorm"
@@ -54,8 +55,8 @@ func seedDogs(db *gorm.DB) error {
 			AnimalSizeID:  sizeSmall.ID,
 			BreedID:       golden.ID,
 			KennelID:      kenA.ID,
-			DateOfBirth:   "2012-08-09",
-			DateOfArrived: "2012-12-01",
+			DateOfBirth:   time.Date(2012, 8, 9, 0, 0, 0, 0, time.UTC),
+			DateOfArrived: time.Date(2012, 12, 1, 0, 0, 0, 0, time.UTC),
 			IsAdopted:     false,
 			ReadyToAdopt:  true,
 			Character:     "Playful",
@@ -67,8 +68,8 @@ func seedDogs(db *gorm.DB) error {
 			AnimalSizeID:  sizeMedium.ID,
 			BreedID:       poodle.ID,
 			KennelID:      kenB.ID,
-			DateOfBirth:   "1995-10-09",
-			DateOfArrived: "1999-04-09",
+			DateOfBirth:   time.Date(1995, 10, 9, 0, 0, 0, 0, time.UTC),
+			DateOfArrived: time.Date(1999, 4, 9, 0, 0, 0, 0, time.UTC),
 			IsAdopted:     false,
 			ReadyToAdopt:  true,
 			Character:     "Calm",
@@ -80,8 +81,8 @@ func seedDogs(db *gorm.DB) error {
 			AnimalSizeID:  sizeLarge.ID,
 			BreedID:       bulldog.ID,
 			KennelID:      kenA.ID,
-			DateOfBirth:   "2010-12-01",
-			DateOfArrived: "2011-10-02",
+			DateOfBirth:   time.Date(2010, 12, 1, 0, 0, 0, 0, time.UTC),
+			DateOfArrived: time.Date(2011, 10, 2, 0, 0, 0, 0, time.UTC),
 			IsAdopted:     false,
 			ReadyToAdopt:  true,
 			Character:     "Energetic",
@@ -93,8 +94,8 @@ func seedDogs(db *gorm.DB) error {
 			AnimalSizeID:  sizeLarge.ID,
 			BreedID:       bulldog.ID,
 			KennelID:      kenA.ID,
-			DateOfBirth:   "2022-12-01",
-			DateOfArrived: "2023-10-02",
+			DateOfBirth:   time.Date(2022, 12, 1, 0, 0, 0, 0, time.UTC),
+			DateOfArrived: time.Date(2023, 10, 2, 0, 0, 0, 0, time.UTC),
 			IsAdopted:     false,
 			ReadyToAdopt:  true,
 			Character:     "Energetic",
@@ -106,8 +107,8 @@ func seedDogs(db *gorm.DB) error {
 			AnimalSizeID:  sizeLarge.ID,
 			BreedID:       bulldog.ID,
 			KennelID:      kenA.ID,
-			DateOfBirth:   "2025-01-01",
-			DateOfArrived: "2025-01-02",
+			DateOfBirth:   time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
+			DateOfArrived: time.Date(2025, 1, 2, 0, 0, 0, 0, time.UTC),
 			IsAdopted:     false,
 			ReadyToAdopt:  true,
 			Character:     "Energetic",

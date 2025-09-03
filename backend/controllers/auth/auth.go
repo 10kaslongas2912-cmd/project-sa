@@ -86,7 +86,11 @@ func SignUp(c *gin.Context) {
 		return
 	}
 
-	// บันทึก
+	dob, err := time.Parse("2006-01-02", req.DateOfBirth)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid date_of_birth (YYYY-MM-DD)"})
+		return
+	}
 	user := entity.User{
 		Firstname:   req.Firstname,
 		Lastname:    req.Lastname,
@@ -94,7 +98,7 @@ func SignUp(c *gin.Context) {
 		Phone:       req.Phone,
 		Username:    req.Username,
 		Password:    hashed,
-		DateOfBirth: req.DateOfBirth, // หาก entity.User ใช้ time.Time ให้แปลงก่อน
+		DateOfBirth: dob, // หาก entity.User ใช้ time.Time ให้แปลงก่อน
 		GenderID:    req.GenderID,
 	}
 	if err := db.Create(&user).Error; err != nil {
@@ -166,7 +170,7 @@ func SignIn(c *gin.Context) {
 		signedToken, err = generateForUser.GenerateTokenForUser(user.ID, user.Username, user.Email)
 	} else {
 		// Fallback: ใช้ของเดิมที่รับ string เดียว (เดิมคุณรับ email; ถ้าของเดิมยังรับ email ให้เปลี่ยนเป็น user.Email)
-		signedToken, err = jwtWrapper.GenerateToken(user.ID,user.Username,user.Email)
+		signedToken, err = jwtWrapper.GenerateToken(user.ID, user.Username, user.Email)
 	}
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "error signing token"})
@@ -184,7 +188,7 @@ func SignIn(c *gin.Context) {
 			"token_type": "Bearer",
 			"token":      signedToken,
 			"user": gin.H{
-				"id":        out.ID,        // ใช้ gorm.Model => ฟิลด์ ID ใหญ่
+				"id":        out.ID, // ใช้ gorm.Model => ฟิลด์ ID ใหญ่
 				"username":  out.Username,
 				"firstname": out.Firstname,
 				"lastname":  out.Lastname,
