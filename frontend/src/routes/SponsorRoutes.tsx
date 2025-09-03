@@ -22,7 +22,7 @@ const SponsorRoutes = (): RouteObject => {
             element: <SponsorPage />
         },
         {
-            path: 'dog-info',
+            path: 'dog-info/:id',
             element: <DogInfoPage />
         },
         {

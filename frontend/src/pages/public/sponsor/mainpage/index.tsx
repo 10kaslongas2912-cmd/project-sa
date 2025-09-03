@@ -13,7 +13,7 @@ type DogCardProps = {
 function DogCard({ dog }: DogCardProps) {
   const navigate = useNavigate();
   const handleClick = () => {
-    navigate("dog-info");
+    navigate(`dog-info/${dog.ID}`);
   };
 
   return (
@@ -35,7 +35,9 @@ function DogCard({ dog }: DogCardProps) {
       </div>
 
       <div className="card text">
-        <h3 className="dogname">{dog.name}</h3>
+        <Link to={`dog-info/${dog.ID}`}>
+          <h3 className="dogname">{dog.name}</h3>
+        </Link>
         <p className="dog-info">
           {dog.animal_sex?.name}・ขนาด {dog.animal_size?.name}
           {dog.date_of_birth && (

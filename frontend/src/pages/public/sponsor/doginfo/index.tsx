@@ -1,39 +1,21 @@
 import React from 'react';
+import { useParams, useNavigate } from "react-router-dom";
+import { useDog } from "../../../../hooks/useDog";
+import { ageText } from "../../../../utils/date"
 import './style.css';
 
-interface PetData {
-  name: string;
-  gender: string;
-  size: string;
-  age: string;
-  personality: string[];
-  care: string;
-  donationAmount: string;
-  imageUrl: string;
-}
 
 const DogInfo: React.FC = () => {
-  const petData: PetData = {
-    name: "H2K",
-    gender: "ตัวเมีย",
-    size: "กลาง",
-    age: "7 ปี 3 เดือน",
-    personality: [
-      "ชอบผจญภัย",
-      "ชอบเรียนรู้สิ่งใหม่ ๆ",
-      "มั่นใจในตนเอง",
-      "สงบ",
-      "เข้ากับคนอื่นง่าย",
-      "เป็นมิตร",
-    ],
-    care: "เคยพบเจอเหตุการณ์ที่รุนแรงต่อจิตใจ",
-    donationAmount: "$3",
-    imageUrl: "http://localhost:8000/static/images/dog/dog6.jpg",
-  };
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { dog, loading, error } = useDog(id ? Number(id) : null);
+  console.log(dog);
+  if (loading) return <p>กำลังโหลด...</p>;
+  if (error) return <p>โหลดไม่ได้: {error}</p>;
+  if (!dog) return <p>ไม่พบน้องหมา</p>;
 
   const handleBackClick = (): void => {
-    // Navigate back functionality
-    console.log('Navigate back');
+    navigate(-1);
     // window.history.back(); // หรือใช้ React Router
   };
 
@@ -52,7 +34,7 @@ const DogInfo: React.FC = () => {
             ← ย้อนกลับ
           </button>
           <div className="header-content">
-            <h1 className="dog-name">{petData.name}</h1>
+            <h1 className="dog-name">{dog.name}</h1>
             <p className="header-subtitle">รู้จักเพื่อนตัวน้อยของเรา</p>
           </div>
         </div>
@@ -61,17 +43,17 @@ const DogInfo: React.FC = () => {
         <div className="dog-image-section">
           <div className="dog-image-container">
             <img 
-              src={petData.imageUrl} 
-              alt={petData.name}
+              src={dog.photo_url} 
+              alt={dog.name}
               className="dog-image"
               onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                 const target = e.target as HTMLImageElement;
                 target.src = 'https://via.placeholder.com/400x300/ff9028/ffffff?text=🐕';
               }}
             />
-            <div className="donation-badge">
-              ค่าใช้จ่าย {petData.donationAmount} ต่อเดือน
-            </div>
+            {/* <div className="donation-badge">
+              ค่าใช้จ่าย {dog.donationAmount} ต่อเดือน
+            </div> */}
           </div>
         </div>
 
@@ -83,15 +65,15 @@ const DogInfo: React.FC = () => {
             <div className="basic-info-grid">
               <div className="info-item">
                 <span className="info-label">เพศ:</span>
-                <span className="info-value">{petData.gender}</span>
+                <span className="info-value">{dog.animal_sex?.name}</span>
               </div>
               <div className="info-item">
                 <span className="info-label">ขนาด:</span>
-                <span className="info-value">{petData.size}</span>
+                <span className="info-value">{dog.animal_size?.name}</span>
               </div>
               <div className="info-item">
                 <span className="info-label">อายุ:</span>
-                <span className="info-value">{petData.age}</span>
+                <span className="info-value">{ageText(dog.date_of_birth)}</span>
               </div>
             </div>
           </div>
@@ -100,11 +82,11 @@ const DogInfo: React.FC = () => {
           <div className="info-section">
             <h2 className="section-title">บุคลิกภาพ</h2>
             <div className="personality-tags">
-              {petData.personality.map((trait: string, index: number) => (
+              {/* {petData.personality.map((trait: string, index: number) => (
                 <span key={index} className="personality-tag">
                   {trait}
                 </span>
-              ))}
+              ))} */}
             </div>
           </div>
 
@@ -114,10 +96,10 @@ const DogInfo: React.FC = () => {
             <div className="care-info">
               <div className="care-item">
                 <div className="care-icon">💝</div>
-                <p className="care-text">{petData.care}</p>
+                <p className="care-text">{}</p>
               </div>
               <p className="care-description">
-                {petData.name} ต้องการความรักและความเข้าใจเป็นพิเศษ 
+                {dog.name} ต้องการความรักและความเข้าใจเป็นพิเศษ 
                 การสนับสนุนของคุณจะช่วยให้เขาได้รับการดูแลที่ดีที่สุด
               </p>
             </div>
@@ -125,19 +107,19 @@ const DogInfo: React.FC = () => {
 
           {/* Story Section */}
           <div className="info-section">
-            <h2 className="section-title">เรื่องราวของ {petData.name}</h2>
+            <h2 className="section-title">เรื่องราวของ {dog.name}</h2>
             <div className="story-content">
               <p>
-                {petData.name} เป็นสุนัขตัวเมียที่มีอายุ {petData.age} 
+                {dog.name} เป็นสุนัขตัวเมียที่มีอายุ {ageText(dog.date_of_birth)} 
                 แม้จะเคยผ่านประสบการณ์ที่ไม่ดีมาก่อน แต่เธอยังคงมีจิตใจที่แข็งแกร่ง
                 และพร้อมที่จะเรียนรู้สิ่งใหม่ ๆ อยู่เสมอ
               </p>
               <p>
-                ด้วยบุคลิกที่เป็นมิตรและเข้ากับคนอื่นได้ง่าย {petData.name} 
+                ด้วยบุคลิกที่เป็นมิตรและเข้ากับคนอื่นได้ง่าย {dog.name} 
                 จึงเป็นเพื่อนที่น่ารักและพร้อมที่จะมอบความรักให้กับคนที่ดูแลเธอ
               </p>
               <p>
-                การสนับสนุนจากคุณจะช่วยให้ {petData.name} 
+                การสนับสนุนจากคุณจะช่วยให้ {dog.name} 
                 ได้รับอาหาร การรักษาพยาบาล และความรักที่เธอสมควรได้รับ
               </p>
             </div>
@@ -147,8 +129,8 @@ const DogInfo: React.FC = () => {
         {/* Footer */}
         <div className="dog-info-footer">
           <div className="sponsor-call-to-action">
-            <h3>ร่วมเป็นผู้อุปถัมภ์ {petData.name}</h3>
-            <p>ด้วยเพียง {petData.donationAmount} ต่อเดือน คุณจะช่วยให้ {petData.name} มีชีวิตที่ดีขึ้น</p>
+            <h3>ร่วมเป็นผู้อุปถัมภ์ {dog.name}</h3>
+            <p>ด้วยเพียง {} ต่อเดือน คุณจะช่วยให้ {dog.name} มีชีวิตที่ดีขึ้น</p>
             <button className="sponsor-button" onClick={handleSponsorClick}>
               เริ่มการอุปถัมภ์
             </button>
