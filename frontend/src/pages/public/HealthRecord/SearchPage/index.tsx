@@ -5,12 +5,10 @@ import {
   Input, 
   Button, 
   Card,
-  Row,
-  Col,
   Typography,
 } from 'antd';
 import { SearchOutlined, ArrowLeftOutlined } from '@ant-design/icons';
-import type { DogInfo } from '../../../../interfaces/HealthRecord';
+import type { DogInterface } from '../../../../interfaces/Dog';
 import { healthRecordAPI } from '../../../../services/apis';
 import "./style.css";
 
@@ -19,7 +17,7 @@ const { Title, Text } = Typography;
 const SearchPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [dogSearchResults, setDogSearchResults] = useState<DogInfo[]>([]);
+  const [dogSearchResults, setDogSearchResults] = useState<DogInterface[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
@@ -52,9 +50,9 @@ const SearchPage: React.FC = () => {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const handleDogSelect = (dog: DogInfo) => {
-    if (dog.dog_id) {
-      navigate(`/health-record/dog/${dog.dog_id}`);
+  const handleDogSelect = (dog: DogInterface) => {
+    if (dog.ID) {
+      navigate(`/health-record/dog/${dog.ID}`);
     } else {
       message.error('ไม่สามารถเปิดข้อมูลสุนัขได้');
     }
@@ -114,50 +112,43 @@ const SearchPage: React.FC = () => {
             <Text type="secondary" style={{ fontFamily: 'Anakotmai-Bold' }}>
               ไม่พบสุนัขที่ค้นหา
             </Text>
-            <div style={{ marginTop: '8px' }}>
-              <Text type="secondary" style={{ fontSize: '14px' }}>
-                ลองเปลี่ยนคำค้นหาหรือตรวจสอบการสะกดอีกครั้ง
-              </Text>
-            </div>
-          </div>
-        )}
-
-        {!loading && dogSearchResults.length > 0 && (
-          <div style={{ marginBottom: '16px' }}>
-            <Text type="secondary">
-              พบ {dogSearchResults.length} ผลลัพธ์
-            </Text>
           </div>
         )}
 
         {!loading && dogSearchResults.map((dog) => (
           <Card 
-            key={dog.dog_id}
+            key={dog.ID}
             className="dog-result-card"
             onClick={() => handleDogSelect(dog)}
             hoverable
-            style={{ marginBottom: '12px' }}
           >
-            <Row gutter={16} align="middle">
-              <Col span={6}>
-                <div className="dog-image">
-                  <img 
-                    src={dog.PhotoURL} 
-                    alt={dog.Name}
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = '/default-dog-image.jpg'; // fallback image
-                    }}
-                  />
+            <div className="dog-image">
+              <img 
+                src={dog.photo_url || '/default-dog-image.jpg'} 
+                alt={dog.name || 'Dog'}
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = '/default-dog-image.jpg'; // fallback image
+                }}
+              />
+            </div>
+            
+            <div className="dog-info">
+              <Title level={4} className="dog-name">{dog.name}</Title>
+              <Text type="secondary">ID: {dog.ID}</Text>
+              
+              {dog.breed && (
+                <div style={{ marginTop: '8px' }}>
+                  <Text type="secondary">สายพันธุ์: {dog.breed.name}</Text>
                 </div>
-              </Col>
-              <Col span={18}>
-                <div className="dog-info">
-                  <Title level={4} className="dog-name">{dog.Name}</Title>
-                  <Text type="secondary">ID: {dog.dog_id}</Text>
+              )}
+              
+              {dog.age && (
+                <div style={{ marginTop: '4px' }}>
+                  <Text type="secondary">อายุ: {dog.age} ปี</Text>
                 </div>
-              </Col>
-            </Row>
+              )}
+            </div>
           </Card>
         ))}
       </div>

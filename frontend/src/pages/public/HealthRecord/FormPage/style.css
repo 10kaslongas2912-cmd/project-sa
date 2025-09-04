@@ -79,3 +79,21 @@
     border-color: #bfbfbf !important;
     color: rgba(0, 0, 0, 0.85) !important;
 }
+
+.health-form-page .back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.65);
+    font-family: 'Anakotmai-Bold';
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.health-form-page .back-button:hover,
+.health-form-page .back-button:focus {
+    background: transparent;
+    color: #ff6600;
+}

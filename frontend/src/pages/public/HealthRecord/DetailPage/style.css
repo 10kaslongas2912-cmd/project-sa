@@ -1,4 +1,6 @@
-/* General Container Styles */
+/* src/components/style.css */
+
+/* ===== General Container Styles ===== */
 .dog-health-record-container {
     padding: 24px;
     background-image: url('../../../assets/background.jpg');
@@ -10,59 +12,223 @@
     align-items: center;
 }
 
-.page-title {
-    text-align: center;
-    margin-bottom: 24px !important;
+/* ===== Health Detail Page ===== */
+.health-detail-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 24px;
+    font-family: 'Anakotmai-Bold' !important;
 }
 
-.back-button {
+.health-detail-page .form-header {
+    position: relative;
+    padding-top: 50px;
+    margin-bottom: 24px;
+}
+
+.health-detail-page .back-button {
     position: absolute;
-    top: 28px;
-    left: 24px;
+    top: 20px;
+    left: 20px;
     font-size: 16px;
     color: rgba(0, 0, 0, 0.65);
+    font-family: 'Anakotmai-Bold';
 }
 
+.health-detail-page .page-title {
+    text-align: center;
+    margin-bottom: 15px !important;
+    color: #ff6600;
+    font-size: 40px;
+    font-family: 'Anakotmai-Bold';
+}
+
+/* ===== Title Underline ===== */
+.title-underline {
+    height: 5px;
+    width: 100%;
+    max-width: 500px;
+    background-color: #253C90;
+    margin: 0 auto;
+    border-radius: 2px;
+    margin-bottom: 30px;
+}
+
+/* ===== Health Detail Card ===== */
+.health-detail-card {
+    border-radius: 20px !important;
+    padding: 30px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: #fff;
+}
+
+.health-detail-card .ant-card-body {
+    padding: 20px !important;
+}
+
+/* ===== No Records Section ===== */
+.no-records {
+    text-align: center;
+    padding: 40px;
+    color: #888;
+}
+
+/* ===== Health Record Items ===== */
+.health-record-item {
+    margin-bottom: 16px !important;
+    border-radius: 12px !important;
+    border: 1px solid #e8e8e8;
+    transition: all 0.3s ease;
+}
+
+.health-record-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #1890ff;
+}
+
+.health-record-item .ant-card-body {
+    padding: 20px !important;
+}
+
+.health-record-item .record-info {
+    line-height: 1.8;
+}
+
+.health-record-item .record-info .ant-typography {
+    font-family: 'Anakotmai-Bold' !important;
+}
+
+/* ===== Search Page Styles ===== */
+.search-page .search-header {
+    position: relative;
+    padding-top: 50px;
+    margin-bottom: 24px;
+}
+
+
+
+.search-page .page-title {
+    margin-bottom: 15px !important;
+    color: #ff6600;
+    font-size: 50px;
+    font-family: 'Anakotmai-Bold';
+    margin-left: 245px;
+}
+
+.search-page .search-container {
+    max-width: 300vh !important;
+    width: 100% !important;
+    margin-left: 250px !important;
+}
+
+.search-page .search-input {
+    border-radius: 30px !important;
+    border-width: 2px;
+}
+
+.search-page .search-input .ant-input {
+    padding: 8px 16px;
+    font-family: 'Anakotmai-Bold' !important;
+}
+
+.search-results {
+    max-width: 1200px !important;
+    margin: 0 auto;
+    font-family: 'Anakotmai-Bold' !important;
+}
+
+.no-results {
+    text-align: center;
+    padding: 40px;
+    color: #888;
+    font-family: 'Anakotmai-Bold' !important;
+}
+
+.dog-silhouette {
+    width: 80px;
+    height: 80px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23cccccc"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-12h2v4h-2zm0 6h2v2h-2z"/></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin: 0 auto 16px;
+    opacity: 0.5;
+}
+
+/* ===== Dog Result Card (Search Page) ===== */
 .dog-result-card {
     margin-bottom: 16px;
-    border-radius: 8px;
     cursor: pointer;
     transition: box-shadow 0.3s ease;
     width: 100%;
-    min-height: 100px;
-    /* เพิ่ม min-height เพื่อให้ Card ยาวขึ้น */
-    overflow: visible;
-    /* ตรวจสอบให้แน่ใจว่าเนื้อหาไม่ถูกซ่อน */
     min-width: 500px;
     margin-left: -10px;
     border-radius: 20px !important;
+    overflow: hidden;
 }
 
 .dog-result-card:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.dog-result-card .dog-image {
-    height: 80px;
-    /* Reduced height for better fit */
-    overflow: hidden;
+/* ===== บังคับให้ Card Body เป็น Flexbox ===== */
+.dog-result-card .ant-card-body {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 20px !important;
+    padding: 20px !important;
+    min-height: 200px !important;
 }
 
+/* ===== Container รูปภาพ ===== */
+.dog-result-card .dog-image {
+    width: 180px !important;
+    height: 180px !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    flex-shrink: 0 !important;
+    background-color: #f5f5f5;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* ===== รูปภาพจริง ===== */
 .dog-result-card .dog-image img {
-    width: 100%;
-    height: 100%;
-    /* Make image fill its parent container */
-    object-fit: contain;
-    border-radius: 4px;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    border-radius: 12px !important;
+    display: block !important;
+}
+
+/* ===== ส่วนข้อมูลสุนัข ===== */
+.dog-result-card .dog-info {
+    flex: 1 !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
 }
 
 .dog-result-card .dog-name {
-    margin-bottom: 8px !important;
+    margin: 0 0 12px 0 !important;
+    font-size: 28px !important;
+    font-family: 'Anakotmai-Bold' !important;
+    line-height: 1.2 !important;
 }
 
+.dog-result-card .dog-info .ant-typography {
+    margin-bottom: 8px !important;
+    font-family: 'Anakotmai-Bold' !important;
+}
+
+/* ===== Health History (ถ้ามี) ===== */
 .dog-result-card .health-history .history-title {
     display: block;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
+    font-weight: bold;
+    font-family: 'Anakotmai-Bold' !important;
 }
 
 .dog-result-card .health-history .history-item {
@@ -70,8 +236,171 @@
     justify-content: space-between;
     align-items: center;
     font-size: 13px;
+    margin-bottom: 4px;
 }
 
 .dog-result-card .health-history .details-link {
     padding: 0;
+}
+
+/* ===== Search Container ===== */
+.search-container .ant-input-affix-wrapper {
+    max-width: 1200px !important;
+    width: 100% !important;
+}
+
+/* ===== Search Page Title Underline ===== */
+.search-page .title-underline {
+    height: 5px;
+    width: 100%;
+    max-width: 1200px;
+    background-color: #253C90;
+    margin-left: 250px;
+    border-radius: 2px;
+    margin-bottom: 20px;
+}
+
+/* ===== Custom Button Styles ===== */
+
+/* Primary Button */
+.ant-btn-primary {
+    background-color: #253C90 !important;
+    border-color: #253C90 !important;
+    color: #fff !important;
+    font-family: 'Anakotmai-Bold' !important;
+}
+
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
+    background-color: #4863c3 !important;
+    border-color: #4863c3 !important;
+    color: #fff !important;
+}
+
+/* Danger Button */
+*[danger],
+*[danger="true"],
+.ant-btn-danger,
+.ant-btn.ant-btn-danger,
+.ant-btn[class*="danger"] {
+    background: #dc3545 !important;
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: #ffffff !important;
+    border: 1px solid #dc3545 !important;
+    font-family: 'Anakotmai-Bold' !important;
+}
+
+*[danger]:hover,
+*[danger="true"]:hover,
+*[danger]:focus,
+*[danger="true"]:focus,
+.ant-btn-danger:hover,
+.ant-btn-danger:focus,
+.ant-btn.ant-btn-danger:hover,
+.ant-btn.ant-btn-danger:focus,
+.ant-btn[class*="danger"]:hover,
+.ant-btn[class*="danger"]:focus {
+    background: #c82333 !important;
+    background-color: #c82333 !important;
+    border-color: #c82333 !important;
+    color: #ffffff !important;
+    border: 1px solid #c82333 !important;
+}
+
+/* Default Button */
+.ant-btn:not([danger]):not([danger="true"]):not(.ant-btn-primary):not(.ant-btn-danger):not([class*="danger"]) {
+    background-color: #f0f2f5 !important;
+    border-color: #d9d9d9 !important;
+    color: rgba(0, 0, 0, 0.65) !important;
+    font-family: 'Anakotmai-Bold' !important;
+}
+
+.ant-btn:not([danger]):not([danger="true"]):not(.ant-btn-primary):not(.ant-btn-danger):not([class*="danger"]):hover,
+.ant-btn:not([danger]):not([danger="true"]):not(.ant-btn-primary):not(.ant-btn-danger):not([class*="danger"]):focus {
+    background-color: #e6e6e6 !important;
+    border-color: #bfbfbf !important;
+    color: rgba(0, 0, 0, 0.85) !important;
+}
+
+/* ===== Typography ===== */
+.ant-typography {
+    font-family: 'Anakotmai-Bold' !important;
+}
+
+/* ===== รองรับหน้าจอขนาดเล็ก ===== */
+@media (max-width: 768px) {
+    .health-detail-page {
+        padding: 16px;
+    }
+    
+    .dog-result-card {
+        min-width: auto;
+        margin-left: 0;
+    }
+    
+    .dog-result-card .ant-card-body {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+    
+    .dog-result-card .dog-image {
+        width: 150px !important;
+        height: 150px !important;
+    }
+    
+    .search-page .page-title {
+        margin-left: 0;
+        text-align: center;
+    }
+    
+    .search-page .search-container {
+        margin-left: 0 !important;
+    }
+    
+    .search-page .title-underline {
+        margin-left: 0;
+    }
+}
+
+/* ===== แก้ไขปัญหา Ant Design Override ===== */
+.dog-result-card.ant-card .ant-card-body {
+    display: flex !important;
+}
+
+.dog-result-card .ant-row {
+    display: none !important;
+}
+
+.dog-result-card .ant-col {
+    display: none !important;
+}d.ant-card .ant-card-body {
+    display: flex !important;
+}
+
+.dog-result-card .ant-row {
+    display: none !important;
+}
+
+.dog-result-card .ant-col {
+    display: none !important;
+}
+
+.health-form-page .back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.65);
+    font-family: 'Anakotmai-Bold';
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.health-form-page .back-button:hover,
+.health-form-page .back-button:focus {
+    background: transparent;
+    color: #ff6600;
 }

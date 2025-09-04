@@ -11,10 +11,10 @@ const SingleDetailPage = Loadable(lazy(() => import("../pages/public/HealthRecor
 
 const HealthRecordRoutes = (): RouteObject => {
   return {
-    path: "search",
+    path: "health-record",
     children: [
       {
-        index: true,
+        path: "search",
         element: <SearchPage />,
       },
       {

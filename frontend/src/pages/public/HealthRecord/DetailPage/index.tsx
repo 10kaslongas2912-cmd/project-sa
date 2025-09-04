@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { message, Modal, Spin } from 'antd';
-import type { HealthRecord, DogInfo } from '../../../../interfaces/HealthRecord';
+import type { HealthRecord } from '../../../../interfaces/HealthRecord';
+import type { DogInterface } from '../../../../interfaces/Dog';
 import { healthRecordAPI, dogAPI } from '../../../../services/apis';
 import { Card, Typography, Row, Col, Button, Space } from 'antd';
 import { ArrowLeftOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import "./style.css";
 
 const { Title, Text } = Typography;
 const { confirm } = Modal;
@@ -12,7 +14,7 @@ const { confirm } = Modal;
 const DetailPage: React.FC = () => {
   const { dogId } = useParams<{ dogId: string }>();
   const navigate = useNavigate();
-  const [selectedDog, setSelectedDog] = useState<DogInfo | null>(null);
+  const [selectedDog, setSelectedDog] = useState<DogInterface | null>(null);
   const [dogHealthRecords, setDogHealthRecords] = useState<HealthRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteLoading, setDeleteLoading] = useState<number | null>(null);
@@ -39,8 +41,8 @@ const DetailPage: React.FC = () => {
         healthRecordAPI.getHealthRecordsByDogId(dogId)
       ]);
 
-      setSelectedDog(dogDetails);
-      setDogHealthRecords(records || []);
+      setSelectedDog(dogDetails.data);
+      setDogHealthRecords(records.data || []);
     } catch (error) {
       message.error('ไม่สามารถโหลดข้อมูลสุนัขหรือประวัติสุขภาพได้');
       console.error('Fetch error:', error);
@@ -82,7 +84,7 @@ const DetailPage: React.FC = () => {
       // Refresh health records after successful deletion
       if (dogId) {
         const records = await healthRecordAPI.getHealthRecordsByDogId(dogId);
-        setDogHealthRecords(records || []);
+        setDogHealthRecords(records.data || []);
       }
     } catch (error) {
       message.error('ไม่สามารถลบบันทึกสุขภาพได้');
@@ -144,15 +146,16 @@ const DetailPage: React.FC = () => {
           ย้อนกลับ
         </Button>
         <Title level={2} className="page-title">
-          รายละเอียดสุขภาพ - {selectedDog.Name}
+          รายละเอียดสุขภาพ - {selectedDog.name}
         </Title>
+        <div className="title-underline"></div>
       </div>
 
       <Card className="health-detail-card">
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
           <img
-            src={selectedDog.PhotoURL}
-            alt={selectedDog.Name}
+            src={selectedDog.photo_url}
+            alt={selectedDog.name}
             style={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover' }}
             onError={(e) => {
               const target = e.target as HTMLImageElement;
@@ -161,46 +164,56 @@ const DetailPage: React.FC = () => {
           />
         </div>
 
-        <Title level={3} style={{ textAlign: 'center', marginBottom: '20px', color: '#ff6600', fontSize: '29px' }}>
+        <Title level={3} style={{ 
+          textAlign: 'center', 
+          marginBottom: '20px', 
+          color: '#ff6600', 
+          fontSize: '29px',
+          fontFamily: 'Anakotmai-Bold'
+        }}>
           ประวัติบันทึกสุขภาพ
         </Title>
 
         {dogHealthRecords.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px' }}>
-            <Text style={{ fontSize: '16px' }}>ไม่พบข้อมูลประวัติสุขภาพสำหรับสุนัขตัวนี้</Text>
-            <div style={{ marginTop: '20px' }}>
-              <Button type="primary" onClick={handleAddHealthRecord}>
-                เพิ่มบันทึกสุขภาพแรก
-              </Button>
-            </div>
+          <div className="no-records">
+            <Text style={{ fontFamily: 'Anakotmai-Bold' }}>
+              ไม่พบข้อมูลประวัติสุขภาพสำหรับสุนัขตัวนี้
+            </Text>
           </div>
         ) : (
           <Space direction="vertical" size="middle" style={{ width: '100%' }}>
             {dogHealthRecords.map((record) => (
               <Card
                 key={record.MedID}
-                style={{ width: '100%' }}
+                className="health-record-item"
                 hoverable
               >
                 <Row gutter={[16, 8]} align="middle">
                   <Col span={18}>
-                    <div>
-                      <Text strong>วันที่บันทึก:</Text> {formatDate(record.recordDate)}<br />
-                      <Text strong>อาการที่พบ:</Text> {truncateText(record.symptoms)}<br />
-                      <Text strong>การฉีดวัคซีน:</Text> {record.vaccination === 'YES' ? 'ฉีดแล้ว' : 'ยังไม่ฉีด'}<br />
+                    <div className="record-info">
+                      <Text strong style={{ fontFamily: 'Anakotmai-Bold' }}>วันที่บันทึก:</Text> 
+                      <Text style={{ fontFamily: 'Anakotmai-Bold' }}> {formatDate(record.recordDate)}</Text><br />
+                      
+                      <Text strong style={{ fontFamily: 'Anakotmai-Bold' }}>อาการที่พบ:</Text> 
+                      <Text style={{ fontFamily: 'Anakotmai-Bold' }}> {truncateText(record.symptoms)}</Text><br />
+                      
+                      <Text strong style={{ fontFamily: 'Anakotmai-Bold' }}>การฉีดวัคซีน:</Text> 
+                      <Text style={{ fontFamily: 'Anakotmai-Bold' }}> {record.vaccination === 'YES' ? 'ฉีดแล้ว' : 'ยังไม่ฉีด'}</Text><br />
+                      
                       {record.nextAppointment && (
                         <>
-                          <Text strong>นัดหมายครั้งต่อไป:</Text> {formatDate(record.nextAppointment)}
+                          <Text strong style={{ fontFamily: 'Anakotmai-Bold' }}>นัดหมายครั้งต่อไป:</Text> 
+                          <Text style={{ fontFamily: 'Anakotmai-Bold' }}> {formatDate(record.nextAppointment)}</Text>
                         </>
                       )}
                     </div>
                   </Col>
                   <Col span={6} style={{ textAlign: 'right' }}>
-                    <Space direction="vertical" size="small">
+                    <Space>
                       <Button 
                         type="primary" 
                         onClick={() => handleViewHealthRecordDetail(record)}
-                        style={{ width: '100%' }}
+                        style={{ fontFamily: 'Anakotmai-Bold' }}
                       >
                         ดูรายละเอียดเพิ่มเติม
                       </Button>
@@ -209,7 +222,7 @@ const DetailPage: React.FC = () => {
                         icon={<DeleteOutlined />} 
                         onClick={() => handleDeleteHealthRecord(record.MedID)}
                         loading={deleteLoading === record.MedID}
-                        style={{ width: '100%' }}
+                        style={{ fontFamily: 'Anakotmai-Bold' }}
                       >
                         ลบ
                       </Button>
@@ -222,8 +235,13 @@ const DetailPage: React.FC = () => {
         )}
 
         <Space style={{ marginTop: '30px', width: '100%', justifyContent: 'center' }}>
-          <Button type="primary" size="large" onClick={handleAddHealthRecord}>
-            เพิ่มบันทึกสุขภาพใหม่
+          <Button 
+            type="primary" 
+            size="large" 
+            onClick={handleAddHealthRecord}
+            style={{ fontFamily: 'Anakotmai-Bold' }}
+          >
+            เพิ่มบันทึกสุขภาพ
           </Button>
         </Space>
       </Card>
