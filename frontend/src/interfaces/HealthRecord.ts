@@ -1,7 +1,7 @@
 export interface HealthRecord {
-  MedID: number;
-  dogId: number;
-  dogName: string;
+  ID: number;
+  dog_id: number;
+  staff_id: number; // Add this line
   weight: number;
   temperature: number;
   symptoms: string;
@@ -10,6 +10,5 @@ export interface HealthRecord {
   medication: string;
   vaccination: string;
   notes: string;
-  recordDate: string | undefined;
-  nextAppointment: string | undefined;
+  date_record: string | undefined;
 }

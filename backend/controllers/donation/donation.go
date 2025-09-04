@@ -10,6 +10,7 @@ import (
 
 	"example.com/project-sa/configs"
 	"example.com/project-sa/entity"
+
 )
 
 // CombinedDonationPayload struct remains the same
@@ -77,7 +78,7 @@ func CreateDonation(c *gin.Context) {
 		moneyDonation := payload.MoneyDonationDetails
 		moneyDonation.DonationID = donation.ID
 
-		if err := tx.Create(&moneyDonation).Error; err != nil {
+		if err := tx.Create(moneyDonation).Error; err != nil {
 			tx.Rollback()
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create money donation: " + err.Error()})
 			return
