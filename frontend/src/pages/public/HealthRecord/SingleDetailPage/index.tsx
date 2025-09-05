@@ -64,16 +64,16 @@ const SingleDetailPage: React.FC = () => {
   };
 
   const handleBack = () => {
-    if (healthRecord && healthRecord.dogId) {
-      navigate(`/health-record/dog/${healthRecord.dogId}`);
+    if (healthRecord && healthRecord.dog_id) {
+      navigate(`/health-record/dog/${healthRecord.dog_id}`);
     } else {
       navigate(-1);
     }
   };
 
   const handleEdit = () => {
-    if (healthRecord && healthRecord.dogId && healthRecord.MedID) {
-      navigate(`/health-record/dog/${healthRecord.dogId}/edit/${healthRecord.MedID}`);
+    if (healthRecord && healthRecord.dog_id && healthRecord.ID) {
+      navigate(`/health-record/dog/${healthRecord.dog_id}/edit/${healthRecord.ID}`);
     }
   };
 
@@ -85,14 +85,6 @@ const SingleDetailPage: React.FC = () => {
       return dateString;
     }
   };
-
-  const formatValue = (value: any) => {
-    if (value === null || value === undefined || value === '') {
-      return '-';
-    }
-    return value;
-  };
-
   if (loading) {
     return (
       <div style={{ textAlign: 'center', padding: '100px' }}>
@@ -126,8 +118,8 @@ const SingleDetailPage: React.FC = () => {
         >
           ย้อนกลับ
         </Button>
-        
-        <Title level={2} className="page-title">
+
+        <Title level={2} className="page-title" style={{ fontFamily: 'Anakotmai',marginTop: '70px',marginLeft: '30px',color: '#ff6600' }}>
           รายละเอียดบันทึกสุขภาพ
         </Title>
       </div>
@@ -136,9 +128,9 @@ const SingleDetailPage: React.FC = () => {
         {/* Summary Information */}
         <div style={{ marginBottom: '24px' }}>
           <Descriptions title="ข้อมูลทั่วไป" bordered column={2}>
-            <Descriptions.Item label="รหัสประวัติ">{healthRecord.MedID}</Descriptions.Item>
-            <Descriptions.Item label="รหัสสุนัข">{healthRecord.dogId}</Descriptions.Item>
-            <Descriptions.Item label="วันที่บันทึก">{formatDate(healthRecord.recordDate)}</Descriptions.Item>
+            <Descriptions.Item label="รหัสประวัติ">{healthRecord.ID}</Descriptions.Item>
+            <Descriptions.Item label="รหัสสุนัข">{healthRecord.dog_id}</Descriptions.Item>
+            <Descriptions.Item label="วันที่บันทึก">{formatDate(healthRecord.date_record)}</Descriptions.Item>
             <Descriptions.Item label="การฉีดวัคซีน">
               <span style={{ 
                 color: healthRecord.vaccination === 'YES' ? '#52c41a' : '#ff4d4f',
@@ -149,11 +141,6 @@ const SingleDetailPage: React.FC = () => {
             </Descriptions.Item>
             <Descriptions.Item label="น้ำหนัก">{healthRecord.weight} กก.</Descriptions.Item>
             <Descriptions.Item label="อุณหภูมิ">{healthRecord.temperature} °C</Descriptions.Item>
-            {healthRecord.nextAppointment && (
-              <Descriptions.Item label="นัดหมายครั้งต่อไป" span={2}>
-                {formatDate(healthRecord.nextAppointment)}
-              </Descriptions.Item>
-            )}
           </Descriptions>
         </div>
 
@@ -249,7 +236,7 @@ const SingleDetailPage: React.FC = () => {
           </Form.Item>
 
           <Row gutter={16}>
-            <Col xs={24} sm={12}>
+            <Col xs={24} sm={24}>
               <Form.Item
                 name="medication"
                 label="ยาที่ให้"
@@ -259,20 +246,6 @@ const SingleDetailPage: React.FC = () => {
                   readOnly 
                   bordered={false}
                   style={{ backgroundColor: '#fafafa' }}
-                />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12}>
-              <Form.Item
-                name="nextAppointment"
-                label="นัดหมายครั้งต่อไป"
-              >
-                <DatePicker 
-                  style={{ width: '100%' }} 
-                  disabled 
-                  format="DD/MM/YYYY"
-                  bordered={false}
-                  placeholder="ไม่มีการนัดหมาย"
                 />
               </Form.Item>
             </Col>

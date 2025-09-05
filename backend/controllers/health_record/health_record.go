@@ -2,19 +2,25 @@ package health_records
 
 import (
 	"net/http"
-	"time"
 
-	"github.com/gin-gonic/gin"
 	"example.com/project-sa/configs"
 	"example.com/project-sa/entity"
+	"github.com/gin-gonic/gin"
 )
+
+// Payload struct for creating a health record with associated vaccine records
+
+type CreateHealthRecordPayload struct {
+	HealthRecord   *entity.MedicalRecord  `json:"health_record"`
+	VaccineRecords []entity.VaccineRecord `json:"vaccine_records"`
+}
 
 // GetHealthRecordsByDogId retrieves health records for a specific dog
 func GetHealthRecordsByDogId(c *gin.Context) {
 	dogID := c.Param("id")
 	var healthRecords []entity.MedicalRecord
 
-	if err := configs.DB().Where("dog_id = ?", dogID).Find(&healthRecords).Error; err != nil {
+	if err := configs.DB().Preload("VaccineRecords").Where("dog_id = ?", dogID).Find(&healthRecords).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "health records not found for this dog"})
 		return
 	}
@@ -22,28 +28,43 @@ func GetHealthRecordsByDogId(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": healthRecords})
 }
 
-// CreateHealthRecord creates a new health record
+// CreateHealthRecord creates a new health record and optionally its vaccine records
 func CreateHealthRecord(c *gin.Context) {
-	var healthRecord entity.MedicalRecord
+	var payload CreateHealthRecordPayload
 
-	// Bind the incoming JSON to the healthRecord struct
-	if err := c.ShouldBindJSON(&healthRecord); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := c.ShouldBindJSON(&payload); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON format: " + err.Error()})
 		return
 	}
 
-	// Set the record date if not provided (or ensure it's a valid time)
-	if healthRecord.DateRecord.IsZero() {
-		healthRecord.DateRecord = time.Now()
-	}
+	tx := configs.DB().Begin()
 
-	// Save the health record to the database
-	if err := configs.DB().Create(&healthRecord).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// Create the main health record
+	healthRecord := payload.HealthRecord // healthRecord is a pointer
+	if err := tx.Create(healthRecord).Error; err != nil { // Pass the pointer directly
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create health record: " + err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"data": healthRecord})
+	// If vaccine records are provided, create them
+	if len(payload.VaccineRecords) > 0 {
+		for _, vr := range payload.VaccineRecords {
+			vr.MedID = healthRecord.ID // Link to the created health record
+			if err := tx.Create(&vr).Error; err != nil { // vr is a value, so we pass its address
+				tx.Rollback()
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create vaccine record: " + err.Error()})
+				return
+			}
+		}
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Transaction commit failed: " + err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Health record created successfully", "data": healthRecord})
 }
 
 // DeleteHealthRecord deletes a health record by ID

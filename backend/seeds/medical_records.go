@@ -3,8 +3,9 @@ package seeds
 import (
 	"time"
 
-	"example.com/project-sa/entity"
 	"gorm.io/gorm"
+
+	"example.com/project-sa/entity"
 )
 
 func seedMedicalRecords(db *gorm.DB) error {
@@ -49,17 +50,11 @@ func seedMedicalRecords(db *gorm.DB) error {
 	}
 
 	if err := db.FirstOrCreate(&MedRec1).Error; err != nil {
-			return err
+		return err
 	}
 	if err := db.FirstOrCreate(&MedRec2).Error; err != nil {
-			return err
+		return err
 	}
-	// db.FirstOrCreate(&MedRec1, &entity.MedicalRecord{DogID: dog1.ID, DateRecord: time.Date(2023, 2, 1, 0, 0, 0, 0, time.UTC)})
-	// db.FirstOrCreate(&MedRec2, &entity.MedicalRecord{DogID: dog2.ID, DateRecord: time.Date(2023, 3, 10, 0, 0, 0, 0, time.UTC)})
-	// db.First(&MedRec1, "dog_id = ? AND date_record = ?", dog1.DogID, time.Date(2023, 2, 1, 0, 0, 0, 0, time.UTC))
-	// db.First(&MedRec2, "dog_id = ? AND date_record = ?", dog2.DogID, time.Date(2023, 3, 10, 0, 0, 0, 0, time.UTC))
-
-
 
 	return nil
 }

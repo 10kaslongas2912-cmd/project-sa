@@ -92,7 +92,10 @@ export const healthRecordAPI = {
   updateHealthRecord: (recordId: number, data: any) => Put(`/health-records/${recordId}`, data),
   deleteHealthRecord: (recordId: number) => Delete(`/health-records/${recordId}`),
 };
-
+export const vaccineAPI = {
+  getAll:  () => Get("/vaccines"),
+  getById: (id: number) => Get(`/vaccines/${id}`),
+};
 export const api = {
   authAPI,
   userAPI,
@@ -104,4 +107,5 @@ export const api = {
   paymentMethodAPI,
   donationAPI,
   healthRecordAPI,
+  vaccineAPI
 };

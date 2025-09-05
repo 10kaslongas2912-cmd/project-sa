@@ -52,8 +52,8 @@ const DetailPage: React.FC = () => {
   };
 
   const handleViewHealthRecordDetail = (record: HealthRecord) => {
-    if (record.MedID) {
-      navigate(`/health-record/record/${record.MedID}`);
+    if (record.ID) {
+      navigate(`/health-record/record/${record.ID}`);
     } else {
       message.error('ไม่สามารถเปิดรายละเอียดประวัติสุขภาพได้');
     }
@@ -184,7 +184,7 @@ const DetailPage: React.FC = () => {
           <Space direction="vertical" size="middle" style={{ width: '100%' }}>
             {dogHealthRecords.map((record) => (
               <Card
-                key={record.MedID}
+                key={record.ID}
                 className="health-record-item"
                 hoverable
               >
@@ -192,20 +192,13 @@ const DetailPage: React.FC = () => {
                   <Col span={18}>
                     <div className="record-info">
                       <Text strong style={{ fontFamily: 'Anakotmai-Bold' }}>วันที่บันทึก:</Text> 
-                      <Text style={{ fontFamily: 'Anakotmai-Bold' }}> {formatDate(record.recordDate)}</Text><br />
+                      <Text style={{ fontFamily: 'Anakotmai-Bold' }}> {formatDate(record.date_record)}</Text><br />
                       
                       <Text strong style={{ fontFamily: 'Anakotmai-Bold' }}>อาการที่พบ:</Text> 
                       <Text style={{ fontFamily: 'Anakotmai-Bold' }}> {truncateText(record.symptoms)}</Text><br />
                       
                       <Text strong style={{ fontFamily: 'Anakotmai-Bold' }}>การฉีดวัคซีน:</Text> 
                       <Text style={{ fontFamily: 'Anakotmai-Bold' }}> {record.vaccination === 'YES' ? 'ฉีดแล้ว' : 'ยังไม่ฉีด'}</Text><br />
-                      
-                      {record.nextAppointment && (
-                        <>
-                          <Text strong style={{ fontFamily: 'Anakotmai-Bold' }}>นัดหมายครั้งต่อไป:</Text> 
-                          <Text style={{ fontFamily: 'Anakotmai-Bold' }}> {formatDate(record.nextAppointment)}</Text>
-                        </>
-                      )}
                     </div>
                   </Col>
                   <Col span={6} style={{ textAlign: 'right' }}>
@@ -213,15 +206,15 @@ const DetailPage: React.FC = () => {
                       <Button 
                         type="primary" 
                         onClick={() => handleViewHealthRecordDetail(record)}
-                        style={{ fontFamily: 'Anakotmai-Bold' }}
+                        style={{ fontFamily: 'Anakotmai-Bold',marginLeft: '-30px' }}
                       >
                         ดูรายละเอียดเพิ่มเติม
                       </Button>
                       <Button 
                         danger 
                         icon={<DeleteOutlined />} 
-                        onClick={() => handleDeleteHealthRecord(record.MedID)}
-                        loading={deleteLoading === record.MedID}
+                        onClick={() => handleDeleteHealthRecord(record.ID)}
+                        loading={deleteLoading === record.ID}
                         style={{ fontFamily: 'Anakotmai-Bold' }}
                       >
                         ลบ

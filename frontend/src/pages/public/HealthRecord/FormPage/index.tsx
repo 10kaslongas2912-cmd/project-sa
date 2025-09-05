@@ -21,11 +21,13 @@ import {
   CalendarOutlined,
   MedicineBoxOutlined,
   FileTextOutlined,
-  SafetyCertificateOutlined 
+  SafetyCertificateOutlined,
+  PlusOutlined,
+  DeleteOutlined
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import type { HealthRecord } from '../../../../interfaces/HealthRecord';
-import { healthRecordAPI } from '../../../../services/apis';
+import type { vaccineRecord, vaccine } from '../../../../interfaces/HealthRecord';
+import { healthRecordAPI, vaccineAPI } from '../../../../services/apis';
 import "./style.css";
 
 const { Title } = Typography;
@@ -39,6 +41,8 @@ const FormPage: React.FC = () => {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [hasVaccination, setHasVaccination] = useState<string>('NO');
+  const [vaccines, setVaccines] = useState<vaccine[]>([]);
+  const [vaccineRecords, setVaccineRecords] = useState<vaccineRecord[]>([]);
 
   useEffect(() => {
     if (!dogId || isNaN(parseInt(dogId))) {
@@ -46,6 +50,9 @@ const FormPage: React.FC = () => {
       navigate('/health-record/search');
       return;
     }
+
+    // Load vaccines list
+    loadVaccines();
 
     if (recordId && !isNaN(parseInt(recordId))) {
       setIsEditMode(true);
@@ -58,8 +65,19 @@ const FormPage: React.FC = () => {
         hasVaccination: 'NO',
       });
       setHasVaccination('NO');
+      setVaccineRecords([]);
     }
   }, [recordId, dogId, form]);
+
+  const loadVaccines = async () => {
+    try {
+      const response = await vaccineAPI.getAll();
+      setVaccines(response || []);
+    } catch (error) {
+      console.error('Error loading vaccines:', error);
+      message.error('ไม่สามารถโหลดข้อมูลวัคซีนได้');
+    }
+  };
 
   const fetchRecordForEdit = async () => {
     if (!recordId) return;
@@ -68,7 +86,6 @@ const FormPage: React.FC = () => {
     try {
       const record = await healthRecordAPI.getHealthRecordById(parseInt(recordId));
       
-      // Check if vaccination data exists
       const hasVacc = record.vaccination === 'YES' ? 'YES' : 'NO';
       setHasVaccination(hasVacc);
       
@@ -77,11 +94,11 @@ const FormPage: React.FC = () => {
         recordDate: record.recordDate ? dayjs(record.recordDate) : dayjs(),
         nextAppointment: record.nextAppointment ? dayjs(record.nextAppointment) : null,
         hasVaccination: hasVacc,
-        // Add vaccination fields if they exist
-        doseNumber: record.doseNumber || undefined,
-        lotNumber: record.lotNumber || undefined,
-        vaccineNextDueDate: record.vaccineNextDueDate ? dayjs(record.vaccineNextDueDate) : null,
       });
+
+      if (hasVacc === 'YES' && record.vaccine_records && record.vaccine_records.length > 0) {
+        setVaccineRecords(record.vaccine_records);
+      }
     } catch (error) {
       message.error('ไม่สามารถโหลดข้อมูลประวัติสุขภาพสำหรับแก้ไขได้');
       console.error('Fetch record error:', error);
@@ -89,6 +106,43 @@ const FormPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleVaccinationChange = (value: string) => {
+    setHasVaccination(value);
+    if (value === 'NO') {
+      setVaccineRecords([]);
+    } else if (value === 'YES' && vaccineRecords.length === 0) {
+      addVaccineRecord();
+    }
+  };
+
+  const addVaccineRecord = () => {
+    const newRecord: vaccineRecord = {
+      ID: 0, // Default non-existent ID
+      med_id: parseInt(recordId || '0'),
+      vaccine_id: 0,
+      dose_number: 1,
+      lot_number: '',
+      next_due_date: undefined,
+    };
+    setVaccineRecords([...vaccineRecords, newRecord]);
+  };
+
+  const removeVaccineRecord = (index: number) => {
+    if (vaccineRecords.length > 1) {
+      const newRecords = [...vaccineRecords];
+      newRecords.splice(index, 1);
+      setVaccineRecords(newRecords);
+    }
+  };
+
+  const updateVaccineRecord = (index: number, field: keyof vaccineRecord, value: any) => {
+    const newRecords = [...vaccineRecords];
+    const recordToUpdate = { ...newRecords[index] };
+    (recordToUpdate as any)[field] = value;
+    newRecords[index] = recordToUpdate;
+    setVaccineRecords(newRecords);
   };
 
   const handleSubmit = async (values: any) => {
@@ -102,17 +156,27 @@ const FormPage: React.FC = () => {
 
     // Validate vaccination fields if hasVaccination is YES
     if (values.hasVaccination === 'YES') {
-      if (!values.doseNumber || !values.lotNumber || !values.vaccineNextDueDate) {
-        message.error('กรุณากรอกข้อมูลวัคซีนให้ครบถ้วน');
+      if (vaccineRecords.length === 0) {
+        message.error('กรุณาเพิ่มข้อมูลวัคซีนอย่างน้อย 1 รายการ');
+        return;
+      }
+
+      // Validate each vaccine record
+      const isValidVaccineRecords = vaccineRecords.every(record => 
+        record.vaccine_id && record.dose_number && record.lot_number && record.next_due_date
+      );
+
+      if (!isValidVaccineRecords) {
+        message.error('กรุณากรอกข้อมูลวัคซีนให้ครบถ้วนในทุกรายการ');
         return;
       }
     }
 
     setSubmitLoading(true);
 
-    const healthRecord: any = {
-      dogId: parseInt(dogId),
-      staffId: 1, // Assuming staff ID 1 exists for now
+    const healthRecordData = {
+      dog_id: parseInt(dogId),
+      staff_id: 1, // Assuming staff ID 1 exists for now
       weight: parseFloat(values.weight),
       temperature: parseFloat(values.temperature),
       symptoms: values.symptoms?.trim(),
@@ -121,30 +185,24 @@ const FormPage: React.FC = () => {
       medication: values.medication?.trim() || null,
       vaccination: values.hasVaccination,
       notes: values.notes?.trim() || null,
-      recordDate: values.recordDate ? values.recordDate.format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'),
+      date_record: values.recordDate ? values.recordDate.toISOString() : new Date().toISOString(),
     };
 
-    // Add vaccination fields if hasVaccination is YES
-    if (values.hasVaccination === 'YES') {
-      healthRecord.doseNumber = parseInt(values.doseNumber);
-      healthRecord.lotNumber = values.lotNumber.trim();
-      healthRecord.vaccineNextDueDate = values.vaccineNextDueDate.format('YYYY-MM-DD');
-    }
+    const finalVaccineRecords = values.hasVaccination === 'YES' 
+      ? vaccineRecords.map(vr => ({ ...vr, next_due_date: vr.next_due_date ? dayjs(vr.next_due_date).toISOString() : undefined }))
+      : [];
+
+    const payload = {
+      health_record: healthRecordData,
+      vaccine_records: finalVaccineRecords,
+    };
 
     try {
       if (isEditMode && recordId) {
-        await healthRecordAPI.updateHealthRecord(parseInt(recordId), { 
-          ...healthRecord, 
-          MedID: parseInt(recordId), 
-          dogName: '' 
-        });
+        await healthRecordAPI.updateHealthRecord(parseInt(recordId), payload.health_record);
         message.success('อัปเดตข้อมูลสุขภาพเรียบร้อยแล้ว');
       } else {
-        await healthRecordAPI.createHealthRecord({ 
-          ...healthRecord, 
-          MedID: 0, 
-          dogName: '' 
-        });
+        await healthRecordAPI.createHealthRecord(payload);
         message.success('บันทึกข้อมูลสุขภาพเรียบร้อยแล้ว');
       }
       navigate(`/health-record/dog/${dogId}`);
@@ -176,18 +234,6 @@ const FormPage: React.FC = () => {
       return Promise.reject(new Error('น้ำหนักต้องมากกว่า 0 กิโลกรัม'));
     }
     return Promise.resolve();
-  };
-
-  const handleVaccinationChange = (value: string) => {
-    setHasVaccination(value);
-    if (value === 'NO') {
-      // Clear vaccination fields when NO is selected
-      form.setFieldsValue({
-        doseNumber: undefined,
-        lotNumber: undefined,
-        vaccineNextDueDate: null,
-      });
-    }
   };
 
   if (loading) {
@@ -393,57 +439,99 @@ const FormPage: React.FC = () => {
 
             {hasVaccination === 'YES' && (
               <div className="vaccination-fields">
-                <Row gutter={24}>
-                  <Col xs={24} sm={8}>
-                    <Form.Item
-                      name="doseNumber"
-                      label={<div style={{ fontFamily: "Anakotmai", fontSize: "1.2em", width: "100%", marginLeft: "0px", marginTop: "5px" }}>เข็มที่</div>}
-                      rules={[
-                        { required: hasVaccination === 'YES', message: 'กรุณาระบุเข็มที่' }
-                      ]}
-                    >
-                      <InputNumber 
-                        min={1} 
-                        placeholder="1" 
-                        style={{ width: '100%' }}
-                        className="custom-input-number"
-                        rootClassName="ank-num"
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} sm={8}>
-                    <Form.Item
-                      name="lotNumber"
-                      label={<div style={{ fontFamily: "Anakotmai", fontSize: "1.2em", width: "100%", marginLeft: "0px", marginTop: "5px" }}>หมายเลขล็อต</div>}
-                      rules={[
-                        { required: hasVaccination === 'YES', message: 'กรุณาระบุ Lot Number' }
-                      ]}
-                    >
-                      <Input 
-                        placeholder="LOT123456" 
-                        className="custom-input"
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} sm={8}>
-                    <Form.Item
-                      name="vaccineNextDueDate"
-                      label={<div style={{ fontFamily: "Anakotmai", fontSize: "1.2em", width: "100%", marginLeft: "0px", marginTop: "5px" }}>วันนัดหมายครั้งต่อไป</div>}
-                      rules={[
-                        { required: hasVaccination === 'YES', message: 'กรุณาเลือกวันนัดฉีด' }
-                      ]}
-                    >
-                      <DatePicker 
-                        style={{ width: '100%' }} 
-                        format="DD/MM/YYYY"
-                        placeholder="เลือกวันที่"
-                        className="custom-datepicker"
-                        disabledDate={(current) => current && current < dayjs().startOf('day')}
-                        suffixIcon={<CalendarOutlined />}
-                      />
-                    </Form.Item>
-                  </Col>
-                </Row>
+                {vaccineRecords.map((record, index) => (
+                  <Card 
+                    key={index} 
+                    size="small" 
+                    style={{ marginBottom: '16px' }}
+                    title={
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontFamily: 'Anakotmai-Bold' }}>วัคซีนที่ {index + 1}</span>
+                        {vaccineRecords.length > 1 && (
+                          <Button
+                            type="text"
+                            danger
+                            size="small"
+                            icon={<DeleteOutlined />}
+                            onClick={() => removeVaccineRecord(index)}
+                            title="ลบรายการนี้"
+                          >
+                            ลบ
+                          </Button>
+                        )}
+                      </div>
+                    }
+                  >
+                    <Row gutter={16}>
+                      <Col xs={24} sm={6}>
+                        <div style={{ fontFamily: "Anakotmai", fontSize: "1.1em", marginBottom: "8px" }}>ชนิดวัคซีน</div>
+                        <Select
+                          placeholder="เลือกชนิดวัคซีน"
+                          value={record.vaccine_id || undefined}
+                          onChange={(value) => updateVaccineRecord(index, 'vaccine_id', value)}
+                          style={{ width: '100%', fontFamily: 'Anakotmai' }}
+                          className="custom-select"
+                        >
+                          {vaccines.map((vaccine) => (
+                            <Select.Option key={vaccine.ID} value={vaccine.ID}>
+                              {vaccine.name} ({vaccine.manufacturer})
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Col>
+                      <Col xs={24} sm={6}>
+                        <div style={{ fontFamily: "Anakotmai", fontSize: "1.1em", marginBottom: "8px" }}>เข็มที่</div>
+                        <InputNumber 
+                          min={1} 
+                          placeholder="1" 
+                          value={record.dose_number}
+                          onChange={(value) => updateVaccineRecord(index, 'dose_number', value || 1)}
+                          style={{ width: '100%' }}
+                          className="custom-input-number"
+                          rootClassName="ank-num"
+                        />
+                      </Col>
+                      <Col xs={24} sm={6}>
+                        <div style={{ fontFamily: "Anakotmai", fontSize: "1.1em", marginBottom: "8px" }}>หมายเลขลอต</div>
+                        <Input 
+                          placeholder="LOT123456" 
+                          value={record.lot_number}
+                          onChange={(e) => updateVaccineRecord(index, 'lot_number', e.target.value)}
+                          className="custom-input"
+                          style={{ fontFamily: 'Anakotmai' }}
+                        />
+                      </Col>
+                      <Col xs={24} sm={6}>
+                        <div style={{ fontFamily: "Anakotmai", fontSize: "1.1em", marginBottom: "8px" }}>วันนัดหมายครั้งต่อไป</div>
+                        <DatePicker 
+                          placeholder="เลือกวันที่"
+                          value={record.next_due_date ? dayjs(record.next_due_date) : null}
+                          onChange={(date) => updateVaccineRecord(index, 'next_due_date', date?.format('YYYY-MM-DD'))}
+                          style={{ width: '100%' }} 
+                          format="DD/MM/YYYY"
+                          className="custom-datepicker"
+                          disabledDate={(current) => current && current < dayjs().startOf('day')}
+                          suffixIcon={<CalendarOutlined />}
+                        />
+                      </Col>
+                    </Row>
+                  </Card>
+                ))}
+
+                <Button
+                  type="dashed"
+                  onClick={addVaccineRecord}
+                  icon={<PlusOutlined />}
+                  style={{ 
+                    width: '100%', 
+                    marginTop: '16px',
+                    fontFamily: 'Anakotmai-Bold',
+                    borderColor: '#FF6600',
+                    color: '#FF6600'
+                  }}
+                >
+                  เพิ่มรายการวัคซีน
+                </Button>
               </div>
             )}
           </div>
