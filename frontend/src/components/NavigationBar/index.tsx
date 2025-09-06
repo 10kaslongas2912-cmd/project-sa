@@ -4,6 +4,7 @@ import logo from '../../assets/logo.png';
 import './style.css';
 import { useAuthUser } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+
 const NavigationBar: React.FC = () => {
   const [visible, setVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -45,7 +46,8 @@ const NavigationBar: React.FC = () => {
       </nav>
 
       <div className="header-actions">
-        <a href="#adopt" className="btn btn-action adopt-btn">รับเลี้ยง</a>
+        <Link to="/adoption" className="btn btn-action adopt-btn">Samรับเลี้ยง</Link>
+        <a href="/health-record/search" className="btn btn-action adopt-btn">รับเลี้ยง</a>
         <Link to="/sponsor" className="btn btn-action sponsor-btn">อุปถัมภ์</Link>
         <a onClick={handleDonateClick} className="btn btn-action donate-btn">
           <span className="heart-icon">&#x2764;</span> บริจาค

@@ -1,0 +1,227 @@
+/* src/components/style.css */
+.search-page .search-header {
+    position: relative;
+    padding-top: 50px;
+    margin-bottom: 24px;
+}
+
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.65);
+    font-family: 'Anakotmai-Bold';
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.back-button:hover,
+.back-button:focus {
+    background: transparent;
+    color: #ff6600;
+}
+
+.search-page .page-title {
+    margin-bottom: 15px !important;
+    color: #ff6600;
+    font-size: 50px;
+    font-family: 'Anakotmai-Bold';
+    margin-left: 245px;
+}
+
+.search-page .search-container {
+    max-width: 300vh !important;
+    width: 100% !important;
+    margin-left: 250px !important;
+}
+
+.search-page .search-input {
+    border-radius: 30px !important;
+    border-width: 2px;
+}
+
+.search-page .search-input .ant-input {
+    padding: 8px 16px;
+    font-family: 'Anakotmai-Bold' !important;
+}
+
+.search-results {
+    max-width: 1200px !important;
+    margin: 0 auto;
+    font-family: 'Anakotmai-Bold' !important;
+}
+
+.no-results {
+    text-align: center;
+    padding: 40px;
+    color: #888;
+    font-family: 'Anakotmai-Bold' !important;
+}
+
+.dog-silhouette {
+    width: 80px;
+    height: 80px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23cccccc"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-12h2v4h-2zm0 6h2v2h-2z"/></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin: 0 auto 16px;
+    opacity: 0.5;
+}
+
+/* ===== การ์ดสุนัข - แก้ไขปัญหารูปไม่เท่ากัน ===== */
+.dog-result-card {
+    margin-bottom: 16px;
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
+    width: 100%;
+    min-width: 500px;
+    margin-left: -10px;
+    border-radius: 20px !important;
+    overflow: hidden; /* ป้องกันเนื้อหาล้น */
+}
+
+.dog-result-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== บังคับให้ Card Body เป็น Flexbox ===== */
+.dog-result-card .ant-card-body {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 20px !important;
+    padding: 20px !important;
+    min-height: 200px !important;
+}
+
+/* ===== Container รูปภาพ ===== */
+.dog-result-card .dog-image {
+    width: 180px !important;
+    height: 180px !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    flex-shrink: 0 !important; /* ป้องกันไม่ให้หดขนาด */
+    background-color: #f5f5f5; /* สีพื้นหลังสำรอง */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* ===== รูปภาพจริง ===== */
+.dog-result-card .dog-image img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important; /* ครอปรูปให้พอดี */
+    object-position: center !important; /* จัดตำแหน่งรูปให้อยู่กลาง */
+    border-radius: 12px !important;
+    display: block !important;
+}
+
+/* ===== ส่วนข้อมูลสุนัข ===== */
+.dog-result-card .dog-info {
+    flex: 1 !important;
+    min-width: 0 !important; /* ป้องกันไม่ให้ข้อความล้น */
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+}
+
+.dog-result-card .dog-name {
+    margin: 0 0 12px 0 !important;
+    font-size: 28px !important;
+    font-family: 'Anakotmai-Bold' !important;
+    line-height: 1.2 !important;
+}
+
+.dog-result-card .dog-info .ant-typography {
+    margin-bottom: 8px !important;
+    font-family: 'Anakotmai-Bold' !important;
+}
+
+/* ===== Health History (ถ้ามี) ===== */
+.dog-result-card .health-history .history-title {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    font-family: 'Anakotmai-Bold' !important;
+}
+
+.dog-result-card .health-history .history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.dog-result-card .health-history .details-link {
+    padding: 0;
+}
+
+/* ===== Search Container ===== */
+.search-container .ant-input-affix-wrapper {
+    max-width: 1200px !important;
+    width: 100% !important;
+}
+
+/* ===== Title Underline ===== */
+.title-underline {
+    height: 5px;
+    width: 100%;
+    max-width: 1200px;
+    background-color: #253C90;
+    margin-left: 250px;
+    border-radius: 2px;
+    margin-bottom: 20px;
+}
+
+/* ===== รองรับหน้าจอขนาดเล็ก ===== */
+@media (max-width: 768px) {
+    .dog-result-card {
+        min-width: auto;
+        margin-left: 0;
+    }
+    
+    .dog-result-card .ant-card-body {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+    
+    .dog-result-card .dog-image {
+        width: 150px !important;
+        height: 150px !important;
+    }
+}
+
+/* ===== แก้ไขปัญหา Ant Design Override ===== */
+.dog-result-card.ant-card .ant-card-body {
+    display: flex !important;
+}
+
+.dog-result-card .ant-row {
+    display: none !important; /* ซ่อน Row/Col หากยังเหลืออยู่ */
+}
+
+.dog-result-card .ant-col {
+    display: none !important; /* ซ่อน Row/Col หากยังเหลืออยู่ */
+}
+
+.health-form-page .back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.65);
+    font-family: 'Anakotmai-Bold';
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.health-form-page .back-button:hover,
+.health-form-page .back-button:focus {
+    background: transparent;
+    color: #ff6600;
+}

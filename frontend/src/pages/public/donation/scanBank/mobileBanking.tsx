@@ -85,7 +85,7 @@ const MobileBankingPage: React.FC = () => {
         transaction_ref: transactionNumber || generatePaymentNumber(),
       };
 
-      // 5) รวม payload ตามสเปค CreateDonationRequest
+      // 5) รวม payload ตาม CreateDonationRequest
       const payload: CreateDonationRequest = {
         donor_info: donorInfo,                         // <-- เพิ่มข้อมูลผู้บริจาค
         donation_type: donationType,                   // <-- แก้ชื่อ key
@@ -153,9 +153,6 @@ const MobileBankingPage: React.FC = () => {
           {isExpired ? (
             <div className="expired-section">
               <p className="timer-expired">QR Code หมดอายุแล้ว</p>
-              <button onClick={handleRefreshQrCode} className="refresh-button">
-                สร้าง QR Code ใหม่
-              </button>
             </div>
           ) : (
             <>

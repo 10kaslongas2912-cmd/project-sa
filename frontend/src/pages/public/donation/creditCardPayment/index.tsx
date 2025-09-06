@@ -92,7 +92,7 @@ const CreditCardPaymentForm: React.FC = () => {
       const result = await donationAPI.create(payload);
 
       // 7) ตรวจผลลัพธ์
-      const status = (result as any)?.status ?? 200; // รองรับทั้ง AxiosResponse/data
+      const status = (result as any)?.status ?? 200;
       const data = (result as any)?.data ?? result;
 
       if (status === 200) {

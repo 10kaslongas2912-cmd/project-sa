@@ -17,7 +17,7 @@ var (
 const DBFile = "DogShelter.db"
 
 // DSN แบบ URI เปิด FK ด้วย &_fk=1
-const DSN = "file:" + DBFile + "?cache=shared&_fk=1"
+const DSN = "file:" + DBFile + "?_fk=1&_busy_timeout=5000"
 
 func RemoveDBFile() {
 	if _, err := os.Stat(DBFile); err == nil {
@@ -35,6 +35,13 @@ func MustOpenDB() *gorm.DB {
 		if err != nil {
 			log.Fatalf("open db: %v", err)
 		}
+
+		sqlDB, err := gdb.DB()
+		if err != nil {
+			log.Fatalf("failed to get generic db object: %v", err)
+		}
+		sqlDB.SetMaxOpenConns(1)
+
 		// เปิด FK บน SQLite ให้ชัวร์ (เผื่อบาง env ไม่อ่าน &_fk=1)
 		if err := gdb.Exec("PRAGMA foreign_keys = ON").Error; err != nil {
 			log.Printf("warn: enable foreign_keys: %v", err)

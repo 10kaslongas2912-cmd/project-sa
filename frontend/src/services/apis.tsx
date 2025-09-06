@@ -93,6 +93,18 @@ export const sponsorshipAPI = {
   createOneTime:  (data: CreateSponsorshipRequest) => Post("/sponsorships/one-time", data),
 }
 // รวม export เดียว
+export const healthRecordAPI = {
+  searchDogs: (query: string) => Get(`/dogs?name=${query}`),
+  getHealthRecordsByDogId: (dogId: string) => Get(`/health-records/dog/${dogId}`),
+  getHealthRecordById: (recordId: number) => Get(`/health-records/${recordId}`),
+  createHealthRecord: (data: any) => Post(`/health-records`, data),
+  updateHealthRecord: (recordId: number, data: any) => Put(`/health-records/${recordId}`, data),
+  deleteHealthRecord: (recordId: number) => Delete(`/health-records/${recordId}`),
+};
+export const vaccineAPI = {
+  getAll:  () => Get("/vaccines"),
+  getById: (id: number) => Get(`/vaccines/${id}`),
+};
 export const api = {
   authAPI,
   userAPI,
@@ -104,4 +116,6 @@ export const api = {
   paymentMethodAPI,
   donationAPI,
   sponsorshipAPI,
+  healthRecordAPI,
+  vaccineAPI
 };
