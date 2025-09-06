@@ -14,7 +14,7 @@ func seedMoneyDonations(db *gorm.DB) error {
 	if err := db.First(&Donation1,"donor_id = ?", Donor1.ID).Error; err != nil { return err }
 
 	var PaymentBankTransfer entity.PaymentMethod
-	if err := db.Where("name = ?", "โอนเงินผ่านธนาคาร").First(&PaymentBankTransfer).Error; err != nil {
+	if err := db.Where("name = ?", "พร้อมเพย์").First(&PaymentBankTransfer).Error; err != nil {
 		return err
 	}
 

@@ -6,12 +6,12 @@ import (
 )
 
 func seedLookupsBase(db *gorm.DB) error {
-	if err := db.Where("name = ?", "ชาย").
-		FirstOrCreate(&entity.Gender{Name: "ชาย"}).Error; err != nil {
+	if err := db.Where("code = ?", "M").
+		FirstOrCreate(&entity.Gender{Code: "M", Name: "ชาย"}).Error; err != nil {
 		return err
 	}
-	if err := db.Where("name = ?", "หญิง").
-		FirstOrCreate(&entity.Gender{Name: "หญิง"}).Error; err != nil {
+	if err := db.Where("code = ?", "F").
+		FirstOrCreate(&entity.Gender{Code: "F", Name: "หญิง"}).Error; err != nil {
 		return err
 	}
 
@@ -54,18 +54,30 @@ func seedLookupsBase(db *gorm.DB) error {
 	return err
 	}
 
-	if err := db.Where("name = ?", "บัตรเครดิต").
-		FirstOrCreate(&entity.PaymentMethod{Name: "บัตรเครดิต"}).Error; err != nil {
+	personalities := []entity.Personality{
+		{Name: "ชอบผจญภัย"},
+		{Name: "ชอบเรียนรู้สิ่งใหม่ ๆ"},
+		{Name: "มั่นใจในตนเอง"},
+		{Name: "สงบ"},
+		{Name: "เข้ากับคนอื่นง่าย"},
+		{Name: "เป็นมิตร"},
+	}
+
+	for i := range personalities {
+		if err := db.Where("name = ?", personalities[i].Name).FirstOrCreate(&personalities[i]).Error; err != nil {
+			return err
+		}
+	}
+
+	if err := db.Where("code = ?", "credit").
+		FirstOrCreate(&entity.PaymentMethod{Code: "credit", Name: "บัตรเครดิต"}).Error; err != nil {
 		return err
 	}
-	if err := db.Where("name = ?", "โอนเงินผ่านธนาคาร").
-		FirstOrCreate(&entity.PaymentMethod{Name: "โอนเงินผ่านธนาคาร"}).Error; err != nil {
+	if err := db.Where("code = ?", "qr").
+		FirstOrCreate(&entity.PaymentMethod{Code: "qr", Name: "พร้อมเพย์"}).Error; err != nil {
 		return err
 	}
-	if err := db.Where("name = ?", "พร้อมเพย์").
-		FirstOrCreate(&entity.PaymentMethod{Name: "พร้อมเพย์"}).Error; err != nil {
-		return err
-	}
+
 
 	if err := db.Where("name = ?", "Golden Retriever").
 		FirstOrCreate(&entity.Breed{Name: "Golden Retriever", Description: "a medium-to-large, muscular dog breed from Scotland known for its dense, lustrous golden coat, gentle and affectionate nature, and high intelligence"}).Error; err != nil {

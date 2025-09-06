@@ -27,6 +27,7 @@ type DogCreateRequest struct {
 }
 
 type DogUpdateRequest struct {
+	DogID uint	`json:"dog_id"`
 	Name          *string `json:"name,omitempty"`
 	AnimalSexID   *uint   `json:"animal_sex_id,omitempty"`
 	AnimalSizeID  *uint   `json:"animal_size_id,omitempty"`
@@ -58,7 +59,9 @@ func preloadDog(db *gorm.DB) *gorm.DB {
 		Preload("Breed").
 		Preload("Kennel").
 		Preload("AnimalSex").
-		Preload("AnimalSize")
+		Preload("AnimalSize").
+		Preload("DogPersonalities").
+		Preload("DogPersonalities.Personality")
 }
 
 /* ========== CRUD Handlers ========== */
@@ -89,12 +92,12 @@ func CreateDog(c *gin.Context) {
 		return
 	}
 
-	var out entity.Dog
-	if err := preloadDog(configs.DB()).First(&out, dog.ID).Error; err != nil {
+	var res entity.Dog
+	if err := preloadDog(configs.DB()).First(&res, dog.ID).Error; err != nil {
 		c.JSON(http.StatusOK, gin.H{"data": dog}) // fallback ถ้า preload ล้มเหลว
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"data": out})
+	c.JSON(http.StatusCreated,res)
 }
 
 // GetDogByID (R - by ID)
@@ -109,7 +112,7 @@ func GetDogById(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "query failed: " + err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": dog})
+	c.JSON(http.StatusOK, dog)
 }
 
 // GetAllDogs (R - all) + filter (no pagination)

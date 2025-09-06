@@ -9,7 +9,6 @@ const DogInfo: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { dog, loading, error } = useDog(id ? Number(id) : null);
-  console.log(dog);
   if (loading) return <p>กำลังโหลด...</p>;
   if (error) return <p>โหลดไม่ได้: {error}</p>;
   if (!dog) return <p>ไม่พบน้องหมา</p>;
@@ -21,21 +20,22 @@ const DogInfo: React.FC = () => {
 
   const handleSponsorClick = (): void => {
     // Navigate to sponsor page functionality
-    console.log('Navigate to sponsor page');
+    navigate(`../amount`)
     // หรือใช้ React Router navigate('/sponsor')
   };
 
   return (
     <div className="dog-info-container">
       <div className="dog-info-card">
-        {/* Header */}
-        <div className="dog-info-header">
-          <button className="back-button" onClick={handleBackClick}>
-            ← ย้อนกลับ
-          </button>
-          <div className="header-content">
-            <h1 className="dog-name">{dog.name}</h1>
-            <p className="header-subtitle">รู้จักเพื่อนตัวน้อยของเรา</p>
+        <div className="dog-info-header-container">
+          <div className="dog-info-header">
+            <button className="back-button" onClick={handleBackClick}>
+              ← ย้อนกลับ
+            </button>
+            <div className="header-content">
+              <h1 className="dog-name">{dog.name}</h1>
+              <p className="header-subtitle">รู้จักเพื่อนตัวน้อยของเรา</p>
+            </div>
           </div>
         </div>
 
@@ -51,9 +51,7 @@ const DogInfo: React.FC = () => {
                 target.src = 'https://via.placeholder.com/400x300/ff9028/ffffff?text=🐕';
               }}
             />
-            {/* <div className="donation-badge">
-              ค่าใช้จ่าย {dog.donationAmount} ต่อเดือน
-            </div> */}
+              <button className="donation-badge" onClick={handleSponsorClick}> อุปถัมภ์เลย!!</button>
           </div>
         </div>
 
@@ -82,11 +80,15 @@ const DogInfo: React.FC = () => {
           <div className="info-section">
             <h2 className="section-title">บุคลิกภาพ</h2>
             <div className="personality-tags">
-              {/* {petData.personality.map((trait: string, index: number) => (
-                <span key={index} className="personality-tag">
-                  {trait}
-                </span>
-              ))} */}
+              {dog.dog_personalities && dog.dog_personalities.length > 0 ? (
+                dog.dog_personalities.map((dp) => (
+                  <span key={dp.personality.ID} className="personality-tag">
+                    {dp.personality.name}
+                  </span>
+                ))
+                ) : (
+                <span className="muted">-</span>
+              )}
             </div>
           </div>
 

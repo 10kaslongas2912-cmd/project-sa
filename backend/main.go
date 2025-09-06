@@ -11,6 +11,7 @@ import (
 	gender "example.com/project-sa/controllers/gender"
 	health_record "example.com/project-sa/controllers/health_record"
 	payment_method "example.com/project-sa/controllers/payment_method"
+	sponsorship "example.com/project-sa/controllers/sponsorship"
 	user "example.com/project-sa/controllers/user"
 	"example.com/project-sa/middlewares"
 	"example.com/project-sa/migrations"
@@ -48,7 +49,7 @@ func main() {
 	// r.POST("/dogs", dogs.CreateDog)
 	// r.PUT("/dogs/:id", dogs.UpdateDog)
 	// r.DELETE("/dogs/:id", dogs.DeleteDog)
-
+	r.POST("/sponsorships/one-time", sponsorship.CreateOneTimeSponsorship)
 	r.POST("/donations", donation.CreateDonation)
 	r.GET("/genders", gender.GetAll)
 	r.GET("/paymentMethods", payment_method.GetAll)
@@ -66,6 +67,7 @@ func main() {
 		protected.GET("/users", user.GetAllUsers)
 		protected.GET("/users/:id", user.GetUserById)
 		protected.DELETE("/users/:id", user.DeleteUser)
+		protected.POST("/sponsorships/subscription", sponsorship.CreateSubscriptionSponsorship)
 	}
 
 	// health

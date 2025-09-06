@@ -14,8 +14,8 @@ export function useDog(id: number | null) {
     (async () => {
       try {
         setLoading(true);
-        const res = await dogAPI.getById(id); 
-        setDog(res.data);
+        const res = await dogAPI.getById(id);
+        setDog(res);
         setError(null);
       } catch (e: any) {
         setError(e?.message || "โหลดข้อมูลน้องหมาไม่สำเร็จ");

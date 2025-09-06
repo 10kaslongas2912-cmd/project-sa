@@ -24,8 +24,8 @@
 /* Header */
 .sponsor-header {
   padding: 2.5rem;
-  background: linear-gradient(135deg, #ff9028, #ffee52);
-  color: #ffffff;
+  /* background: linear-gradient(135deg, #ff9028, #ffee52); */
+  /* color: #ffffff; */
 }
 
 .back-button {

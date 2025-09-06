@@ -1,13 +1,13 @@
-import React, { useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { CreditCardOutlined, DollarOutlined, SmileOutlined, SolutionOutlined } from '@ant-design/icons';
 import { Steps } from 'antd';
+import { useDog } from '../../../../hooks/useDog';
+import { useSponsorship, useSponsorshipActions } from '../../../../hooks/sponsorship/useSponsorship';
 import './style.css';
 
 type PlanType = 'one-time' | 'subscription';
 type Frequency = 'monthly' | 'quarterly' | 'yearly';
-
-interface Dog { name?: string }
 
 // One-time แนะนำเดิม
 const oneTimeAmounts = [500, 800, 1000, 2000];
@@ -30,34 +30,49 @@ const freqFactor: Record<Frequency, number> = {
 
 const SponsorAmountPage: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const dog = (location.state as Dog) || {};
+  const { id } = useParams();
+  const dogId = id ? Number(id) : null;
 
-  const [planType, setPlanType] = useState<PlanType>('one-time');
-  const [frequency, setFrequency] = useState<Frequency>('monthly');
+  // โหลดข้อมูลน้องไว้แสดงชื่อ
+  const { dog, loading, error } = useDog(dogId);
 
-  const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
+  // ---- Global sponsorship state ----
+  const state = useSponsorship();
+  const { setDog, setPlan, setFrequency, setAmount, validateForFormDraft } = useSponsorshipActions();
+
+  // ---- Local UI states (เริ่มจาก global ถ้ามี) ----
+  const [planType, setPlanType] = useState<PlanType>(state.planType ?? 'one-time');
+  const [frequency, setFrequencyLocal] = useState<Frequency>(state.frequency ?? 'monthly');
+  const [selectedAmount, setSelectedAmount] = useState<number | null>(state.amount ?? null);
   const [customAmount, setCustomAmount] = useState<string>('');
 
+  // sync dogId/dogName เข้า global ทันทีที่รู้
+  useEffect(() => {
+    if (dogId) setDog(dogId, dog?.name);
+  }, [dogId, dog?.name, setDog]);
+
+  // ทุกครั้งที่ local เปลี่ยน → sync เข้า global
+  useEffect(() => { setPlan(planType); }, [planType, setPlan]);
+  useEffect(() => { setFrequency(planType === 'subscription' ? frequency : null); }, [planType, frequency, setFrequency]);
+
+  // ----- helpers -----
   const isSub = planType === 'subscription';
   const suffix = isSub ? periodSuffixMap[frequency] : '';
 
-  // คำนวณรายการจำนวนเงินแนะนำตามความถี่
   const activeAmounts = useMemo(() => {
     if (!isSub) return oneTimeAmounts;
     const k = freqFactor[frequency];
-    return baseMonthlySubAmounts.map((m) => m * k);
+    return baseMonthlySubAmounts.map(m => m * k);
   }, [isSub, frequency]);
 
-  // ขั้นต่ำตามแผน/ความถี่
   const minAmount = useMemo(() => {
     if (!isSub) return 500;
     return baseMinMonthly * freqFactor[frequency];
   }, [isSub, frequency]);
 
   const customPlaceholder = isSub
-    ? `ขั้นต่ำ ${minAmount}฿ ${suffix}`
-    : `ขั้นต่ำ ${minAmount}฿`;
+    ? `ขั้นต่ำ ฿${minAmount} ${suffix}`
+    : `ขั้นต่ำ ฿${minAmount}`;
 
   const handlePlanClick = (type: PlanType) => {
     setPlanType(type);
@@ -66,8 +81,9 @@ const SponsorAmountPage: React.FC = () => {
   };
 
   const handleFrequencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFrequency(e.target.value as Frequency);
-    setSelectedAmount(null); // เคลียร์เพื่อไม่ให้เลือกค่าที่ไม่ตรงความถี่
+    const f = e.target.value as Frequency;
+    setFrequencyLocal(f);
+    setSelectedAmount(null);
   };
 
   const handleAmountClick = (amount: number) => {
@@ -88,31 +104,43 @@ const SponsorAmountPage: React.FC = () => {
   }, [selectedAmount, customAmount]);
 
   const handleNextClick = () => {
+    // 1) ใช้ค่าล่าสุดจาก UI โดยตรง
     const amountToSponsor = amountValue ?? null;
+
+    // 2) ตรวจด้วยค่าท้องถิ่น (ไม่พึ่ง state กลาง)
+    if (!dogId) { alert('ไม่พบรหัสสุนัข'); return; }
     if (!amountToSponsor || isNaN(amountToSponsor) || amountToSponsor < minAmount) {
       alert(`กรุณาเลือกหรือระบุจำนวนเงินให้ถูกต้อง (ขั้นต่ำ ${minAmount}฿)`);
       return;
     }
 
-    navigate('../form', {
-      state: {
-        dogName: dog?.name,
-        amount: amountToSponsor,                // จำนวนเงินตาม “ความถี่ที่เลือก”
-        planType,                               // 'one-time' | 'subscription'
-        frequency: isSub ? frequency : null,    // ส่งความถี่ไป backend
-      },
+    // 3) ตรวจแบบ draft (ไม่ต้องรอ state อัปเดต)
+    const err = validateForFormDraft({
+      dogId,
+      amount: amountToSponsor,
+      planType,
+      frequency: isSub ? frequency : null,
     });
+    if (err) { alert(err); return; }
+
+    // 4) เซ็ตเข้า context แล้วไปต่อได้เลย
+    setAmount(amountToSponsor);
+    navigate(`/sponsor/${dogId}/form`);
   };
+
+  if (loading) return <div className="sponsor-container"><p>กำลังโหลดข้อมูลน้อง...</p></div>;
+  if (error)   return <div className="sponsor-container"><p className="text-red-600">เกิดข้อผิดพลาด: {error}</p></div>;
+  if (!dog)    return <div className="sponsor-container"><p>ไม่พบน้องหมา</p></div>;
 
   return (
     <div className="sponsor-container">
       <div className="sponsor-card">
 
         <div className="sponsor-header">
-          <button className="back-button" onClick={() => navigate('/sponsor')}>
-            ← กลับไปหน้าอุปถัมภ์
+          <button className="back-button" onClick={() => navigate(-1)}>
+            ← ย้อนกลับ
           </button>
-          <h1 className="sponsor-title">อุปถัมภ์น้องหมา</h1>
+          <h1 className="sponsor-title">{`อุปถัมภ์น้อง ${dog.name}`}</h1>
           <p className="sponsor-subtitle">
             ช่วยให้เราดูแลสุนัขได้ดีที่สุด ด้วยการอุปถัมภ์อย่างมีน้ำใจของคุณ
           </p>
@@ -152,7 +180,6 @@ const SponsorAmountPage: React.FC = () => {
               </button>
             </div>
 
-            {/* ความถี่ (สไลด์จากขวา) */}
             <div className={`freq-panel ${isSub ? 'open' : ''}`} aria-hidden={!isSub}>
               <label htmlFor="frequency" className="freq-label">ความถี่</label>
               <select

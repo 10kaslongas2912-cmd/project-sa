@@ -378,7 +378,7 @@ export default function CreditCardForm() {
               <div className="card-input">
                 <label htmlFor="cardCvv" className="card-input__label">CVV</label>
                 <input
-                  type="password"
+                  type="text"
                   id="cardCvv"
                   className="card-input__input"
                   value={cardCvv}

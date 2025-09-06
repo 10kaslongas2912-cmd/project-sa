@@ -7,6 +7,7 @@ import type {
   UpdateUserRequest,
 } from "../interfaces/User";
 import type { CreateDonationRequest } from "../interfaces/Donation";
+import type { CreateSponsorshipRequest } from "../interfaces/Sponsorship";
 
 /** ---------- AUTH ---------- */
 // หมายเหตุ: login/signup ไม่ต้องแนบ token -> ส่ง false ให้ wrapper
@@ -83,6 +84,14 @@ export const donationAPI = {
   // update:  (id: number, data: UpdateDogRequest) => Put(`/dog/${id}`, data),
   // remove:  (id: number) => Delete(`/dog/${id}`),
 };
+
+
+export const sponsorshipAPI = {
+  getAll:  () => Get("/sponsorships"),
+  getById: (id: number) => Get(`/sponsorships/${id}`),
+  createSubscription:  (data: CreateSponsorshipRequest) => Post("/sponsorships/subscription", data),
+  createOneTime:  (data: CreateSponsorshipRequest) => Post("/sponsorships/one-time", data),
+}
 // รวม export เดียว
 export const api = {
   authAPI,
@@ -94,4 +103,5 @@ export const api = {
   roleAPI,
   paymentMethodAPI,
   donationAPI,
+  sponsorshipAPI,
 };

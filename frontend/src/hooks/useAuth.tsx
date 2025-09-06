@@ -29,6 +29,8 @@ export function useAuthUser() {
           first_name: res.first_name,
           last_name: res.last_name,
           photo_url: res.photo_url,
+          email: res.email,
+          phone: res.phone,
         };
   
         setUser(userForApp);

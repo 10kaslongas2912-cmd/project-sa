@@ -17,7 +17,5 @@ type SponsorshipPayment struct {
 	PaymentMethod   *PaymentMethod  `gorm:"foreignKey:PaymentMethodID" json:"payment_method"`
 	
 	Amount     int64           `json:"amount"`
-	Currency        string          `json:"currency"`
 	Status          string          `json:"status"`   // PENDING, SUCCEEDED, FAILED, REFUNDED
-	PaidAt          *string         `json:"paid_at"`
 }

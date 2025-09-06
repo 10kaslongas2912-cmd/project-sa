@@ -1,5 +1,7 @@
 /* DogInfo.css */
-
+body {
+  background-color: #f0f2f5;
+}
 /* Main Container */
 .dog-info-container {
   display: flex;
@@ -9,6 +11,7 @@
   background-color: #f0f2f5;
   padding: 2rem;
   font-family: 'Anakotmai', sans-serif;
+  margin-top:80px; 
 }
 
 .dog-info-card {
@@ -22,8 +25,11 @@
 
 /* Header */
 .dog-info-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   background: linear-gradient(135deg, #ff9028, #ffee52);
-  padding: 2.5rem;
+  padding: 1rem;
   position: relative;
 }
 
@@ -93,6 +99,9 @@
   box-shadow: 0 4px 12px rgba(255, 136, 0, 0.3);
 }
 
+.donation-badge:hover{
+  cursor: pointer;
+}
 /* Content */
 .dog-info-content {
   padding: 2.5rem;
@@ -321,7 +330,7 @@
   }
 
   .donation-badge {
-    font-size: 0.8rem;
+    font-size: 1rem;
     padding: 0.6rem 1.2rem;
   }
 }
