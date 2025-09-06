@@ -11,6 +11,7 @@ export interface HealthRecord {
   vaccination: string;
   notes: string;
   date_record: string | undefined;
+  vaccine_records?: vaccineRecord[];
 }
 
 export interface vaccineRecord {

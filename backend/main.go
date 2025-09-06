@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+
 	"example.com/project-sa/configs"
 	auth "example.com/project-sa/controllers/auth"
 	dog "example.com/project-sa/controllers/dog"
@@ -16,7 +18,6 @@ import (
 	"example.com/project-sa/middlewares"
 	"example.com/project-sa/migrations"
 	"example.com/project-sa/seeds"
-	"github.com/gin-gonic/gin"
 )
 
 const (
@@ -58,6 +59,7 @@ func main() {
 	r.POST("/health-records", health_record.CreateHealthRecord)
 	r.PUT("/health-records/:id", health_record.UpdateHealthRecord)
 	r.DELETE("/health-records/:id", health_record.DeleteHealthRecord)
+	r.GET("/health-records/:id", health_record.GetHealthRecordById)
 
 	// 7) Routes (protected)
 	protected := r.Group("/")

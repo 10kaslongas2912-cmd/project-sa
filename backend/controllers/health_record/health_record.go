@@ -2,56 +2,131 @@ package health_records
 
 import (
 	"net/http"
+	"time"
+
+	"github.com/gin-gonic/gin"
 
 	"example.com/project-sa/configs"
 	"example.com/project-sa/entity"
-	"github.com/gin-gonic/gin"
 )
-
-// Payload struct for creating a health record with associated vaccine records
 
 type CreateHealthRecordPayload struct {
 	HealthRecord   *entity.MedicalRecord  `json:"health_record"`
 	VaccineRecords []entity.VaccineRecord `json:"vaccine_records"`
 }
 
-// GetHealthRecordsByDogId retrieves health records for a specific dog
+var acceptedLayouts = []string{
+	time.RFC3339,
+	"2006-01-02T15:04:05.000Z",
+	"2006-01-02T15:04:05Z",
+	"2006-01-02",
+}
+
+func parseFlexibleTime(s string) (time.Time, error) {
+	for _, layout := range acceptedLayouts {
+		if t, err := time.Parse(layout, s); err == nil {
+			return t, nil
+		}
+	}
+	return time.Time{}, nil // Return zero time and no error if parsing fails, can be adjusted
+}
+
+type vaccineRecordIn struct {
+	ID          uint   `json:"ID"`
+	VaccineID   uint   `json:"vaccine_id"`
+	DoseNumber  int    `json:"dose_number"`
+	LotNumber   string `json:"lot_number"`
+	NextDueDate string `json:"next_due_date"`
+}
+
+type HealthRecordResponse struct {
+	ID             uint                   `json:"ID"`
+	DogID          uint                   `json:"dog_id"`
+	StaffID        *uint                  `json:"staff_id"`
+	Weight         float64                `json:"weight"`
+	Temperature    float64                `json:"temperature"`
+	Symptoms       string                 `json:"symptoms"`
+	Diagnosis      string                 `json:"diagnosis"`
+	Treatment      string                 `json:"treatment"`
+	Medication     string                 `json:"medication"`
+	Vaccination    string                 `json:"vaccination"`
+	Notes          string                 `json:"notes"`
+	DateRecord     string                 `json:"date_record"`
+	VaccineRecords []entity.VaccineRecord `json:"vaccine_records,omitempty"`
+}
+
+func convertToResponse(record entity.MedicalRecord) HealthRecordResponse {
+	var dateString string
+	if !record.DateRecord.IsZero() {
+		dateString = record.DateRecord.Format("2006-01-02T15:04:05.000Z")
+	}
+
+	var staffID *uint
+	if record.StaffID != 0 {
+		staffID = &record.StaffID
+	}
+
+	return HealthRecordResponse{
+		ID:             record.ID,
+		DogID:          record.DogID,
+		StaffID:        staffID,
+		Weight:         record.Weight,
+		Temperature:    record.Temperature,
+		Symptoms:       record.Symptoms,
+		Diagnosis:      record.Diagnosis,
+		Treatment:      record.TreatmentPlan,
+		Medication:     record.Medication,
+		Vaccination:    record.Vaccination,
+		Notes:          record.Notes,
+		DateRecord:     dateString,
+		VaccineRecords: record.VaccineRecords,
+	}
+}
+
+func GetHealthRecordById(c *gin.Context) {
+	id := c.Param("id")
+	var healthRecord entity.MedicalRecord
+	if err := configs.DB().Preload("VaccineRecords").First(&healthRecord, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "health record not found"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": convertToResponse(healthRecord)})
+}
+
 func GetHealthRecordsByDogId(c *gin.Context) {
 	dogID := c.Param("id")
 	var healthRecords []entity.MedicalRecord
-
 	if err := configs.DB().Preload("VaccineRecords").Where("dog_id = ?", dogID).Find(&healthRecords).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "health records not found for this dog"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": healthRecords})
+	var responses []HealthRecordResponse
+	for _, record := range healthRecords {
+		responses = append(responses, convertToResponse(record))
+	}
+	c.JSON(http.StatusOK, gin.H{"data": responses})
 }
 
-// CreateHealthRecord creates a new health record and optionally its vaccine records
 func CreateHealthRecord(c *gin.Context) {
 	var payload CreateHealthRecordPayload
-
 	if err := c.ShouldBindJSON(&payload); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON format: " + err.Error()})
 		return
 	}
 
 	tx := configs.DB().Begin()
-
-	// Create the main health record
-	healthRecord := payload.HealthRecord // healthRecord is a pointer
-	if err := tx.Create(healthRecord).Error; err != nil { // Pass the pointer directly
+	healthRecord := payload.HealthRecord
+	if err := tx.Create(healthRecord).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create health record: " + err.Error()})
 		return
 	}
 
-	// If vaccine records are provided, create them
 	if len(payload.VaccineRecords) > 0 {
 		for _, vr := range payload.VaccineRecords {
-			vr.MedID = healthRecord.ID // Link to the created health record
-			if err := tx.Create(&vr).Error; err != nil { // vr is a value, so we pass its address
+			vr.MedID = healthRecord.ID
+			if err := tx.Create(&vr).Error; err != nil {
 				tx.Rollback()
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create vaccine record: " + err.Error()})
 				return
@@ -63,64 +138,137 @@ func CreateHealthRecord(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Transaction commit failed: " + err.Error()})
 		return
 	}
-
-	c.JSON(http.StatusCreated, gin.H{"message": "Health record created successfully", "data": healthRecord})
+	c.JSON(http.StatusCreated, gin.H{"message": "Health record created successfully", "data": convertToResponse(*healthRecord)})
 }
 
-// DeleteHealthRecord deletes a health record by ID
 func DeleteHealthRecord(c *gin.Context) {
 	id := c.Param("id")
-
-	// Find the health record
-	var healthRecord entity.MedicalRecord
-	if err := configs.DB().First(&healthRecord, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "health record not found"})
-		return
-	}
-
-	// Delete the health record
-	if err := configs.DB().Delete(&healthRecord).Error; err != nil {
+	if err := configs.DB().Delete(&entity.MedicalRecord{}, id).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{"message": "Health record deleted successfully"})
 }
 
-// UpdateHealthRecord updates an existing health record
 func UpdateHealthRecord(c *gin.Context) {
 	id := c.Param("id")
-	var updatedRecord entity.MedicalRecord
+	var updateData struct {
+		DogID          uint              `json:"dog_id"`
+		StaffID        *uint             `json:"staff_id"`
+		Weight         float64           `json:"weight"`
+		Temperature    float64           `json:"temperature"`
+		Symptoms       string            `json:"symptoms"`
+		Diagnosis      string            `json:"diagnosis"`
+		Treatment      string            `json:"treatment"`
+		Medication     string            `json:"medication"`
+		Vaccination    string            `json:"vaccination"`
+		Notes          string            `json:"notes"`
+		DateRecord     string            `json:"date_record"`
+		VaccineRecords []vaccineRecordIn `json:"vaccine_records"`
+	}
 
-	// Bind the incoming JSON to the updatedRecord struct
-	if err := c.ShouldBindJSON(&updatedRecord); err != nil {
+	if err := c.ShouldBindJSON(&updateData); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Find the existing health record
 	var existingRecord entity.MedicalRecord
-	if err := configs.DB().First(&existingRecord, id).Error; err != nil {
+	if err := configs.DB().Preload("VaccineRecords").First(&existingRecord, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "health record not found"})
 		return
 	}
 
-	// Update fields (excluding primary key and DogID which should not change)
-	existingRecord.DateRecord = updatedRecord.DateRecord
-	existingRecord.Weight = updatedRecord.Weight
-	existingRecord.Temperature = updatedRecord.Temperature
-	existingRecord.Symptoms = updatedRecord.Symptoms
-	existingRecord.Diagnosis = updatedRecord.Diagnosis
-	existingRecord.TreatmentPlan = updatedRecord.TreatmentPlan
-	existingRecord.Medication = updatedRecord.Medication
-	existingRecord.Vaccination = updatedRecord.Vaccination
-	existingRecord.Notes = updatedRecord.Notes
+	tx := configs.DB().Begin()
 
-	// Save the updated health record to the database
-	if err := configs.DB().Save(&existingRecord).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if updateData.DateRecord != "" {
+		if t, err := parseFlexibleTime(updateData.DateRecord); err == nil {
+			existingRecord.DateRecord = t
+		}
+	}
+
+	if updateData.DogID != 0 {
+		existingRecord.DogID = updateData.DogID
+	}
+	if updateData.StaffID != nil {
+		existingRecord.StaffID = *updateData.StaffID
+	}
+	existingRecord.Weight = updateData.Weight
+	existingRecord.Temperature = updateData.Temperature
+	existingRecord.Symptoms = updateData.Symptoms
+	existingRecord.Diagnosis = updateData.Diagnosis
+	existingRecord.TreatmentPlan = updateData.Treatment
+	existingRecord.Medication = updateData.Medication
+	existingRecord.Notes = updateData.Notes
+	existingRecord.Vaccination = updateData.Vaccination
+
+	if err := tx.Save(&existingRecord).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update health record: " + err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Health record updated successfully", "data": existingRecord})
+	if existingRecord.Vaccination == "YES" {
+		incomingVaccineMap := make(map[uint]bool)
+		for _, in := range updateData.VaccineRecords {
+			if in.ID != 0 {
+				incomingVaccineMap[in.ID] = true
+			}
+		}
+
+		for _, existingVR := range existingRecord.VaccineRecords {
+			if _, found := incomingVaccineMap[existingVR.ID]; !found {
+				if err := tx.Delete(&existingVR).Error; err != nil {
+					tx.Rollback()
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete old vaccine record: " + err.Error()})
+					return
+				}
+			}
+		}
+
+		for _, in := range updateData.VaccineRecords {
+			nextDueDate, _ := parseFlexibleTime(in.NextDueDate)
+			if in.ID != 0 {
+				var vrToUpdate entity.VaccineRecord
+				if tx.First(&vrToUpdate, in.ID).Error == nil {
+					vrToUpdate.VaccineID = in.VaccineID
+					vrToUpdate.DoseNumber = in.DoseNumber
+					vrToUpdate.LotNumber = in.LotNumber
+					vrToUpdate.NextDueDate = nextDueDate
+					if err := tx.Save(&vrToUpdate).Error; err != nil {
+						tx.Rollback()
+						c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update vaccine record: " + err.Error()})
+						return
+					}
+				}
+			} else {
+				newVR := entity.VaccineRecord{
+					MedID: existingRecord.ID,
+					VaccineID: in.VaccineID,
+					DoseNumber: in.DoseNumber,
+					LotNumber: in.LotNumber,
+					NextDueDate: nextDueDate,
+				}
+				if err := tx.Create(&newVR).Error; err != nil {
+					tx.Rollback()
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create new vaccine record: " + err.Error()})
+					return
+				}
+			}
+		}
+	} else if existingRecord.Vaccination == "NO" {
+		if err := tx.Where("med_id = ?", existingRecord.ID).Delete(&entity.VaccineRecord{}).Error; err != nil {
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to clear vaccine records: " + err.Error()})
+			return
+		}
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Transaction commit failed: " + err.Error()})
+		return
+	}
+
+	var updatedRecord entity.MedicalRecord
+	configs.DB().Preload("VaccineRecords").First(&updatedRecord, id)
+	c.JSON(http.StatusOK, gin.H{"message": "Health record updated successfully", "data": convertToResponse(updatedRecord)})
 }
