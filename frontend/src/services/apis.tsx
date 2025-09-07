@@ -8,6 +8,8 @@ import type {
 } from "../interfaces/User";
 import type { CreateDonationRequest } from "../interfaces/Donation";
 import type { CreateAdoptionRequest, UpdateStatusRequest } from "../interfaces/Adoption";
+import type { CreateSponsorshipRequest } from "../interfaces/Sponsorship";
+
 /** ---------- AUTH ---------- */
 // หมายเหตุ: login/signup ไม่ต้องแนบ token -> ส่ง false ให้ wrapper
 // me/logout แนบ token (default ของ wrapper = แนบให้)
@@ -90,6 +92,14 @@ export const donationAPI = {
   // update:  (id: number, data: UpdateDogRequest) => Put(`/dog/${id}`, data),
   // remove:  (id: number) => Delete(`/dog/${id}`),
 };
+
+
+export const sponsorshipAPI = {
+  getAll:  () => Get("/sponsorships"),
+  getById: (id: number) => Get(`/sponsorships/${id}`),
+  createSubscription:  (data: CreateSponsorshipRequest) => Post("/sponsorships/subscription", data),
+  createOneTime:  (data: CreateSponsorshipRequest) => Post("/sponsorships/one-time", data),
+}
 // รวม export เดียว
 export const healthRecordAPI = {
   searchDogs: (query: string) => Get(`/dogs?name=${query}`),
@@ -99,7 +109,10 @@ export const healthRecordAPI = {
   updateHealthRecord: (recordId: number, data: any) => Put(`/health-records/${recordId}`, data),
   deleteHealthRecord: (recordId: number) => Delete(`/health-records/${recordId}`),
 };
-
+export const vaccineAPI = {
+  getAll:  () => Get("/vaccines"),
+  getById: (id: number) => Get(`/vaccines/${id}`),
+};
 export const api = {
   authAPI,
   userAPI,
@@ -111,5 +124,7 @@ export const api = {
   adopterAPI,
   paymentMethodAPI,
   donationAPI,
+  sponsorshipAPI,
   healthRecordAPI,
+  vaccineAPI
 };

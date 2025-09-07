@@ -10,9 +10,8 @@ import (
 
 	"example.com/project-sa/configs"
 	"example.com/project-sa/entity"
-)
 
-// CombinedDonationPayload struct remains the same
+)
 
 
 type CombinedDonationPayload struct {
@@ -37,8 +36,7 @@ func CreateDonation(c *gin.Context) {
 	incomingDonor := payload.DonorInfo
 
 	if incomingDonor.UserID != nil && *incomingDonor.UserID > 0 {
-		// Case 1: Donor is a logged-in User.
-		// Find existing donor by UserID, or create a new one if not found.
+
 		if err := tx.Where(entity.Donor{UserID: incomingDonor.UserID}).
 			FirstOrCreate(&donorToUse, incomingDonor).Error; err != nil {
 			tx.Rollback()
@@ -47,19 +45,14 @@ func CreateDonation(c *gin.Context) {
 		}
 
 	} else {
-		// Case 2: Donor is a Guest.
-		// Find existing guest donor by Firstname & Lastname, or create if not found.
-		// We must ensure we only match with other guests (UserID IS NULL).
-		if err := tx.Where("firstname = ? AND lastname = ? AND user_id IS NULL", incomingDonor.FirstName, incomingDonor.LastName).
+
+		if err := tx.Where("first_name = ? AND last_name = ? AND user_id IS NULL", incomingDonor.FirstName, incomingDonor.LastName).
 			FirstOrCreate(&donorToUse, incomingDonor).Error; err != nil {
 			tx.Rollback()
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process guest donor: " + err.Error()})
 			return
 		}
 	}
-	// ✅ --- END: NEW DONOR CHECKING LOGIC ---
-
-	// 2. Create Donation record (using the donorToUse we found or created)
 	donation := entity.Donation{
 		DonorID:      donorToUse.ID, // <-- Use ID from the correct donor
 		DonationType: payload.DonationType,
@@ -77,7 +70,7 @@ func CreateDonation(c *gin.Context) {
 		moneyDonation := payload.MoneyDonationDetails
 		moneyDonation.DonationID = donation.ID
 
-		if err := tx.Create(&moneyDonation).Error; err != nil {
+		if err := tx.Create(moneyDonation).Error; err != nil {
 			tx.Rollback()
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create money donation: " + err.Error()})
 			return

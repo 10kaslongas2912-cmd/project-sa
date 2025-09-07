@@ -1,5 +1,6 @@
 export interface GenderInterface {
   ID: number;
+  code: string;
   name: string;
 }
 

@@ -32,4 +32,5 @@ type Dog struct {
 	MedicalRecords []MedicalRecord `gorm:"foreignKey:DogID" json:"medical_records"`
 	Adoptions      []Adoption      `gorm:"foreignKey:DogID" json:"adoptions"`
 	Sponsorships   []Sponsorship   `gorm:"foreignKey:DogID" json:"sponsorships"`
+	DogPersonalities []DogPersonality `gorm:"foreignKey:DogID" json:"dog_personalities"`
 }

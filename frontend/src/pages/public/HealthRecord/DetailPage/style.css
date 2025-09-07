@@ -404,3 +404,7 @@
     background: transparent;
     color: #ff6600;
 }
+.force-top-modal .ant-modal,
+.force-top-modal .ant-modal-mask {
+  z-index: 10000 !important;
+}

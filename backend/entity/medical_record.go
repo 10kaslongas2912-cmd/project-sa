@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"gorm.io/gorm"
+
 )
 
 type MedicalRecord struct {
@@ -19,9 +20,9 @@ type MedicalRecord struct {
 	Notes         string    `json:"notes"`       // Added Notes field
 
 	DogID uint `json:"dog_id"`
-	Dog   *Dog  `gorm:"foreignKey:DogID" json:"dog"`
+	Dog   *Dog `gorm:"foreignKey:DogID" json:"dog"`
 
-	StaffID uint  `json:"staff_id"` // Foreign key for Staff
+	StaffID uint   `json:"staff_id"`                        // Foreign key for Staff
 	Staff   *Staff `gorm:"foreignKey:StaffID" json:"staff"` // Association to Staff
 
 	VaccineRecords []VaccineRecord `gorm:"foreignKey:MedID" json:"vaccine_records"`
