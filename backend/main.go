@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"example.com/project-sa/configs"
+	adopter "example.com/project-sa/controllers/adoption"
 	auth "example.com/project-sa/controllers/auth"
 	dog "example.com/project-sa/controllers/dog"
 	donation "example.com/project-sa/controllers/donation"
@@ -73,6 +74,11 @@ func main() {
 		c.String(http.StatusOK, "API RUNNING... PORT: %s", PORT)
 	})
 
+	// Adoptions
+	r.POST("/adoptions", adopter.CreateAdoption)
+	r.GET("/adoptions", adopter.GetAllAdoptions)            
+  r.PUT("/adoptions/:id/status", adopter.UpdateAdoptionStatus)
+	
 	// 8) Run (แนะนำ bind ทุก iface)
 	if err := r.Run("localhost:" + PORT); err != nil {
 		log.Fatal(err)

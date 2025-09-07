@@ -7,7 +7,7 @@ import type {
   UpdateUserRequest,
 } from "../interfaces/User";
 import type { CreateDonationRequest } from "../interfaces/Donation";
-
+import type { CreateAdoptionRequest, UpdateStatusRequest } from "../interfaces/Adoption";
 /** ---------- AUTH ---------- */
 // หมายเหตุ: login/signup ไม่ต้องแนบ token -> ส่ง false ให้ wrapper
 // me/logout แนบ token (default ของ wrapper = แนบให้)
@@ -30,6 +30,13 @@ export const userAPI = {
   getById: (id: number) => Get(`/users/${id}`),
   update:  (id: number, data: UpdateUserRequest) => Put(`/users/${id}`, data),
   remove:  (id: number) => Delete(`/users/${id}`),
+};
+
+export const adopterAPI = {
+    create: (data: CreateAdoptionRequest) => Post("/adoptions", data),
+    getAll: () => Get("/adoptions"), 
+    updateStatus: (id: number, data: UpdateStatusRequest) => Put(`/adoptions/${id}/status`, data),
+    
 };
 
 /** ---------- DOGS (CRUD) ---------- */
@@ -101,6 +108,7 @@ export const api = {
   breedAPI,
   animalSexAPI,
   roleAPI,
+  adopterAPI,
   paymentMethodAPI,
   donationAPI,
   healthRecordAPI,

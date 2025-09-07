@@ -20,9 +20,7 @@ const Doglist: React.FC = () => {
   };
 
   const handleSponsorClick = (): void => {
-    // Navigate to sponsor page functionality
-    console.log('Navigate to sponsor page');
-    // หรือใช้ React Router navigate('/sponsor')
+  navigate(`/adoption/from/${dog.ID}`);
   };
 
   return (
