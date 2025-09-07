@@ -23,6 +23,8 @@ export interface AppUserInterface {
   photo_url?: string;
   email: string;
   phone: string;
+  gender_id: number;
+  gender: GenderInterface;
 }
 
 export interface LoginUserRequest {

@@ -385,7 +385,7 @@ func CreateSubscriptionSponsorship(c *gin.Context) {
 			SubscriptionID:  &sub.ID,
 			PaymentMethodID: req.PaymentMethodID,
 			Amount:          sp.Amount,
-			Status:          "AUTHORIZED",
+			Status:          "SUCCESSED",
 		}
 		if err := tx.Create(&pmt).Error; err != nil { return err }
 
