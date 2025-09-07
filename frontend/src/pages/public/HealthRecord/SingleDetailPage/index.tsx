@@ -510,9 +510,45 @@ const SingleDetailPage: React.FC = () => {
             </Col>
           </Row>
 
-          {/* Vaccine Records Section */}
+          {/* Vaccine Records Section - View Mode */}
+          {hasVaccination === 'YES' && !editMode && vaccineRecords.length > 0 && (
+            <div style={{ marginBottom: '16px' }}>
+              <Title level={4} style={{ fontFamily: 'Anakotmai', marginBottom: '16px' }}>รายการวัคซีนที่ได้รับ</Title>
+              {vaccineRecords.map((record, index) => {
+                const vaccineInfo = vaccines.find(v => v.ID === record.vaccine_id);
+                return (
+                  <Card 
+                    key={index} 
+                    size="small" 
+                    style={{ marginBottom: '16px' }}
+                    title={
+                      <span style={{ fontFamily: 'Anakotmai' }}>วัคซีนที่ {index + 1}</span>
+                    }
+                  >
+                    <Descriptions column={2} labelStyle={{fontFamily: 'Anakotmai'}} contentStyle={{fontFamily: 'Anakotmai'}}>
+                      <Descriptions.Item label="ชนิดวัคซีน">
+                        {vaccineInfo ? `${vaccineInfo.name} (${vaccineInfo.manufacturer})` : 'ไม่พบข้อมูล'}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="เข็มที่">
+                        {record.dose_number}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="หมายเลขล็อต">
+                        {record.lot_number || '-'}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="วันนัดหมายครั้งต่อไป">
+                        {record.next_due_date ? formatDate(record.next_due_date) : '-'}
+                      </Descriptions.Item>
+                    </Descriptions>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Vaccine Records Section - Edit Mode */}
           {hasVaccination === 'YES' && editMode && (
             <div style={{ marginBottom: '16px' }}>
+              <Title level={4} style={{ fontFamily: 'Anakotmai', marginBottom: '16px' }}>แก้ไขรายการวัคซีน</Title>
               {vaccineRecords.map((record, index) => (
                 <Card 
                   key={index} 

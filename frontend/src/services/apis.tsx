@@ -7,6 +7,7 @@ import type {
   UpdateUserRequest,
 } from "../interfaces/User";
 import type { CreateDonationRequest } from "../interfaces/Donation";
+import type { CreateAdoptionRequest, UpdateStatusRequest } from "../interfaces/Adoption";
 import type { CreateSponsorshipRequest } from "../interfaces/Sponsorship";
 
 /** ---------- AUTH ---------- */
@@ -31,6 +32,13 @@ export const userAPI = {
   getById: (id: number) => Get(`/users/${id}`),
   update:  (id: number, data: UpdateUserRequest) => Put(`/users/${id}`, data),
   remove:  (id: number) => Delete(`/users/${id}`),
+};
+
+export const adopterAPI = {
+    create: (data: CreateAdoptionRequest) => Post("/adoptions", data),
+    getAll: () => Get("/adoptions"), 
+    updateStatus: (id: number, data: UpdateStatusRequest) => Put(`/adoptions/${id}/status`, data),
+    
 };
 
 /** ---------- DOGS (CRUD) ---------- */
@@ -113,6 +121,7 @@ export const api = {
   breedAPI,
   animalSexAPI,
   roleAPI,
+  adopterAPI,
   paymentMethodAPI,
   donationAPI,
   sponsorshipAPI,

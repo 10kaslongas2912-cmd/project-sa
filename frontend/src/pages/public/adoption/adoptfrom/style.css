@@ -1,0 +1,159 @@
+/* --- Main Layout --- */
+.adoption-container {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    max-width: 900px;
+    margin: 2rem auto;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+}
+
+.adoption-header {
+    background-color: #ff9028;
+    color: white;
+    padding: 1.5rem 2rem;
+    text-align: center;
+}
+
+.adoption-header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.adoption-content {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 2rem;
+}
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-size: 1.2rem;
+    color: #555;
+}
+
+/* --- Dog Section (Left Side) --- */
+.dog-section {
+    flex: 1;
+    min-width: 250px;
+    padding-right: 2rem;
+    text-align: center;
+    border-right: 1px solid #f0f0f0;
+}
+
+.dog-photo {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    margin: 0 auto 1.5rem auto;
+    border: 6px solid #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.dog-name {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+
+/* --- Form Section (Right Side) --- */
+.form-section {
+    flex: 2;
+    min-width: 300px;
+    padding-left: 2rem;
+}
+
+.form-title {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: #333;
+    font-size: 1.4rem;
+    font-weight: 600;
+    border-bottom: 2px solid #ff9028;
+    padding-bottom: 0.5rem;
+}
+
+/* --- Form Elements --- */
+.form-row { display: flex; gap: 1.5rem; }
+.three-columns { gap: 1rem; }
+.form-group { flex: 1; margin-bottom: 1.2rem; }
+.form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #555; font-size: 0.9rem; }
+.form-group input {
+    width: 100%;
+    padding: 0.8rem;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-group input:focus {
+    outline: none;
+    border-color: #ff9028;
+    box-shadow: 0 0 0 3px rgba(255, 144, 40, 0.2);
+}
+
+.submit-button {
+    width: 100%;
+    padding: 0.9rem 1rem;
+    margin-top: 1rem;
+    cursor: pointer;
+    background-color: #ff9028;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    transition: background-color 0.2s, transform 0.1s;
+}
+.submit-button:hover:not(:disabled) {
+    background-color: #e67e22;
+    transform: translateY(-2px);
+}
+.submit-button:disabled {
+    background-color: #f3c7a0;
+    cursor: not-allowed;
+}
+
+/* --- Error Message --- */
+.error-message {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 0.8rem;
+    border-radius: 5px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    border: 1px solid #f44336;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+    .adoption-content {
+        flex-direction: column;
+        padding: 1.5rem;
+    }
+    .dog-section {
+        border-right: none;
+        padding-right: 0;
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .form-section {
+        padding-left: 0;
+    }
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+

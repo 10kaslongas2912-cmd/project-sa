@@ -1,16 +1,26 @@
 package entity
 
-import (
-	"gorm.io/gorm"
-)
+import "gorm.io/gorm"
 
+// Adopter model
 type Adopter struct {
 	gorm.Model
-	Address	 string `json:"address"`
-	Job   string `json:"job"`
-	AnnulIncome uint `json:"annual_income"`
-	UserID uint `json:"user_id"`
-	User  *User `gorm:"foreignKey:UserID" json:"user"`
+	FirstName   string  `json:"first_name" gorm:"not null"`
+	LastName    string  `json:"last_name" gorm:"not null"`
+	PhoneNumber string  `json:"phone_number" gorm:"not null"`
+	Address     string  `json:"address" gorm:"not null"`
+	District    string  `json:"district" gorm:"not null"`
+	City        string  `json:"city" gorm:"not null"`
+	Province    string  `json:"province" gorm:"not null"`
+	ZipCode     string  `json:"zip_code" gorm:"not null"`
+	Job         string  `json:"job" gorm:"not null"`
+	Income      float64 `json:"income"`
+	Status      string  `json:"status" gorm:"default:'pending'"` // pending, approved, rejected
 
-	Adoptions []Adoption `gorm:"foreignKey:AdopterID" json:"adoptions"`
+	UserID *uint `json:"user_id,omitempty"`
+	User   *User `json:"user,omitempty" gorm:"foreignKey:UserID"`
+
+	DogID uint `json:"dog_id" gorm:"not null"`
+	Dog   Dog  `json:"dog,omitempty" gorm:"foreignKey:DogID"`
 }
+
