@@ -1,7 +1,5 @@
 body {
   margin: 0;
-  font-family: "Anakotmai", sans-serif;
-  font-size: 16px;
 }
 
 * {
@@ -276,7 +274,7 @@ body {
 .card-item__info {
   color: #fff;
   width: 100%;
-  max-width: calc(100% - 85px);
+  max-width: calc(100% - 120px); /* ลดจาก 85px เป็น 120px เพื่อให้พื้นที่วันหมดอายุมากขึ้น */
   padding: 10px 15px;
   font-weight: 500;
   display: block;
@@ -285,6 +283,7 @@ body {
 @media screen and (max-width: 480px) {
   .card-item__info {
     padding: 10px;
+    max-width: calc(100% - 100px); /* ปรับขนาดสำหรับ mobile */
   }
 }
 .card-item__holder {
@@ -388,7 +387,7 @@ body {
   margin-left: auto;
   padding: 10px;
   display: inline-flex;
-  width: 80px;
+  width: 110px; /* เพิ่มจาก 80px เป็น 110px เพื่อให้มีพื้นที่มากขึ้น */
   white-space: nowrap;
   flex-shrink: 0;
   cursor: pointer;
@@ -396,6 +395,7 @@ body {
 @media screen and (max-width: 480px) {
   .card-item__date {
     font-size: 16px;
+    width: 90px; /* เพิ่มขนาดสำหรับ mobile ด้วย */
   }
 }
 .card-item__dateItem {
@@ -576,5 +576,3 @@ body {
   transform: translateX(-10px) rotate(45deg);
   pointer-events: none;
 }
-
-

@@ -179,7 +179,7 @@ background-color: #e0e0e0;
 /* แถวซ้าย-ขวา: ตัวเลือกแผน + ความถี่ */
 .plan-row {
   display: grid;
-  grid-template-columns: auto 420px; /* ขวาคงที่: ปรับ 380–520 ได้ตามชอบ */
+  grid-template-columns: auto 500px; /* ขวาคงที่: ปรับ 380–520 ได้ตามชอบ */
   align-items: center;
   gap: 12px;
   margin-bottom: 12px;

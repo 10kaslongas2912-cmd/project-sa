@@ -21,6 +21,8 @@ export interface AppUserInterface {
   first_name: string;
   last_name: string;
   photo_url?: string;
+  email: string;
+  phone: string;
 }
 
 export interface LoginUserRequest {

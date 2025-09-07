@@ -27,9 +27,8 @@ function AuthPage() {
   const onFinishLogin = async (values: LoginUserRequest) => {
     try {
       const res = await authAPI.logIn(values);
-      // data รูปแบบ { data: { token, token_type, user } }
       const payload = res.data
-      console.log(payload);
+
       messageApi.success("เข้าสู่ระบบสำเร็จ");
       localStorage.setItem("isLogin", "true");
       localStorage.setItem("token_type", payload.token_type);
@@ -57,6 +56,7 @@ function AuthPage() {
 
       const normalized: GenderInterface[] = list.map((g: any) => ({
         ID: g.ID,
+        code: g.code,
         name: g.name
       }));
       setGenders(normalized);

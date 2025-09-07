@@ -58,7 +58,7 @@ function DogCard({ dog }: DogCardProps) {
 }
 
 /* -------------------- หน้า Sponsor -------------------- */
-const SponsorPage: React.FC = () => {
+const AdoptionPage: React.FC = () => {
   const { dogs, loading, error } = useDogs();
 
   return (
@@ -91,4 +91,4 @@ const SponsorPage: React.FC = () => {
   );
 };
 
-export default SponsorPage;
+export default AdoptionPage;

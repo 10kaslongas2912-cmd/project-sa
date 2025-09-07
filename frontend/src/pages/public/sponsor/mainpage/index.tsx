@@ -13,19 +13,15 @@ type DogCardProps = {
 function DogCard({ dog }: DogCardProps) {
   const navigate = useNavigate();
   const handleClick = () => {
-    navigate(`dog-info/${dog.ID}`);
+    navigate(`${dog.ID}/dog-info`);
   };
 
   return (
     <div className="card info">
       <div className="card img">
         {dog.photo_url ? (
-          <Link to={`dog-info/${dog.ID}`}>
-            <img
-              src={dog.photo_url}
-              alt={`รูปภาพของ ${dog.name}`}
-              className="dog-image"
-            />
+          <Link to={`${dog.ID}/dog-info`}>
+            <img src={dog.photo_url} alt={`รูปภาพของ ${dog.name}`} className="dog-image" loading="lazy" />
           </Link>
         ) : (
           <div className="dog-image-placeholder">
@@ -35,7 +31,7 @@ function DogCard({ dog }: DogCardProps) {
       </div>
 
       <div className="card text">
-        <Link to={`dog-info/${dog.ID}`}>
+        <Link to={`${dog.ID}/dog-info`}>
           <h3 className="dogname">{dog.name}</h3>
         </Link>
         <p className="dog-info">

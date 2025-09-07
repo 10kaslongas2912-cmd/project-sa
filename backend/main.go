@@ -7,12 +7,14 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"example.com/project-sa/configs"
+	adopter "example.com/project-sa/controllers/adoption"
 	auth "example.com/project-sa/controllers/auth"
 	dog "example.com/project-sa/controllers/dog"
 	donation "example.com/project-sa/controllers/donation"
 	gender "example.com/project-sa/controllers/gender"
 	health_record "example.com/project-sa/controllers/health_record"
 	payment_method "example.com/project-sa/controllers/payment_method"
+	sponsorship "example.com/project-sa/controllers/sponsorship"
 	user "example.com/project-sa/controllers/user"
 	vaccine "example.com/project-sa/controllers/vaccine"
 	"example.com/project-sa/middlewares"
@@ -50,7 +52,7 @@ func main() {
 	// r.POST("/dogs", dogs.CreateDog)
 	// r.PUT("/dogs/:id", dogs.UpdateDog)
 	// r.DELETE("/dogs/:id", dogs.DeleteDog)
-
+	r.POST("/sponsorships/one-time", sponsorship.CreateOneTimeSponsorship)
 	r.POST("/donations", donation.CreateDonation)
 	r.GET("/genders", gender.GetAll)
 	r.GET("/vaccines", vaccine.GetAll)
@@ -70,6 +72,7 @@ func main() {
 		protected.GET("/users", user.GetAllUsers)
 		protected.GET("/users/:id", user.GetUserById)
 		protected.DELETE("/users/:id", user.DeleteUser)
+		protected.POST("/sponsorships/subscription", sponsorship.CreateSubscriptionSponsorship)
 	}
 
 	// health
@@ -77,6 +80,11 @@ func main() {
 		c.String(http.StatusOK, "API RUNNING... PORT: %s", PORT)
 	})
 
+	// Adoptions
+	r.POST("/adoptions", adopter.CreateAdoption)
+	r.GET("/adoptions", adopter.GetAllAdoptions)            
+  r.PUT("/adoptions/:id/status", adopter.UpdateAdoptionStatus)
+	
 	// 8) Run (แนะนำ bind ทุก iface)
 	if err := r.Run("localhost:" + PORT); err != nil {
 		log.Fatal(err)

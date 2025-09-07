@@ -7,6 +7,8 @@ import type {
   UpdateUserRequest,
 } from "../interfaces/User";
 import type { CreateDonationRequest } from "../interfaces/Donation";
+import type { CreateAdoptionRequest, UpdateStatusRequest } from "../interfaces/Adoption";
+import type { CreateSponsorshipRequest } from "../interfaces/Sponsorship";
 
 /** ---------- AUTH ---------- */
 // หมายเหตุ: login/signup ไม่ต้องแนบ token -> ส่ง false ให้ wrapper
@@ -30,6 +32,13 @@ export const userAPI = {
   getById: (id: number) => Get(`/users/${id}`),
   update:  (id: number, data: UpdateUserRequest) => Put(`/users/${id}`, data),
   remove:  (id: number) => Delete(`/users/${id}`),
+};
+
+export const adopterAPI = {
+    create: (data: CreateAdoptionRequest) => Post("/adoptions", data),
+    getAll: () => Get("/adoptions"), 
+    updateStatus: (id: number, data: UpdateStatusRequest) => Put(`/adoptions/${id}/status`, data),
+    
 };
 
 /** ---------- DOGS (CRUD) ---------- */
@@ -83,6 +92,14 @@ export const donationAPI = {
   // update:  (id: number, data: UpdateDogRequest) => Put(`/dog/${id}`, data),
   // remove:  (id: number) => Delete(`/dog/${id}`),
 };
+
+
+export const sponsorshipAPI = {
+  getAll:  () => Get("/sponsorships"),
+  getById: (id: number) => Get(`/sponsorships/${id}`),
+  createSubscription:  (data: CreateSponsorshipRequest) => Post("/sponsorships/subscription", data),
+  createOneTime:  (data: CreateSponsorshipRequest) => Post("/sponsorships/one-time", data),
+}
 // รวม export เดียว
 export const healthRecordAPI = {
   searchDogs: (query: string) => Get(`/dogs?name=${query}`),
@@ -104,8 +121,10 @@ export const api = {
   breedAPI,
   animalSexAPI,
   roleAPI,
+  adopterAPI,
   paymentMethodAPI,
   donationAPI,
+  sponsorshipAPI,
   healthRecordAPI,
   vaccineAPI
 };

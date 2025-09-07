@@ -47,6 +47,7 @@ func seedDogs(db *gorm.DB) error {
 		return err
 	}
 
+	
 	dogs := []entity.Dog{
 		{
 			Name:          "Tor",
@@ -111,14 +112,6 @@ func seedDogs(db *gorm.DB) error {
 			IsAdopted:     false,
 			ReadyToAdopt:  true,
 			Character:     "Energetic",
-			// Personality: []string{
-			// 	"ชอบผจญภัย",
-			// 	"ชอบเรียนรู้สิ่งใหม่ ๆ",
-			// 	"มั่นใจในตนเอง",
-			// 	"สงบ",
-			// 	"เข้ากับคนอื่นง่าย",
-			// 	"เป็นมิตร",
-			// },
 			PhotoURL: fmt.Sprintf("%s/static/images/dog/dog6.jpg", PublicBaseURL),
 		},
 	}

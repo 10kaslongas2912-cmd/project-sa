@@ -7,8 +7,7 @@ import Loadable from "../components/third-patry/Loadable";
 import PublicLayout from "../layout/PublicLayout"; // Component ที่ใช้สำหรับ Layout ของหน้านี้ 
 const AdoptionPage = Loadable(lazy(() => import("../pages/public/adoption/homepage")));
 const Doglist = Loadable(lazy(() => import("../pages/public/adoption/doglist")));
-const SponsorAmountPage = Loadable(lazy(() => import("../pages/public/sponsor/sponsoramount")));
-const SponsorFormPage = Loadable(lazy(() => import("../pages/public/sponsor/sponsorform")));
+const AdoptionFormPage = Loadable(lazy(() => import("../pages/public/adoption/adoptfrom")));
 
 const AdoptionRoutes = (): RouteObject => {
 return {
@@ -23,16 +22,9 @@ return {
             path: 'doglist/:id',
             element: <Doglist />
         },
-        {
-            path: 'amount',
-            element: <SponsorAmountPage />
-        },
-        {
-            path: 'form',
-            element: <SponsorFormPage />
-        },
-    
-    ]
+        {          path: 'from/:dogId',
+            element: <AdoptionFormPage />
+        },]
 };
 };
 

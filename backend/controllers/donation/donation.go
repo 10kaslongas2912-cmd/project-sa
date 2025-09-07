@@ -46,7 +46,7 @@ func CreateDonation(c *gin.Context) {
 
 	} else {
 
-		if err := tx.Where("firstname = ? AND lastname = ? AND user_id IS NULL", incomingDonor.FirstName, incomingDonor.LastName).
+		if err := tx.Where("first_name = ? AND last_name = ? AND user_id IS NULL", incomingDonor.FirstName, incomingDonor.LastName).
 			FirstOrCreate(&donorToUse, incomingDonor).Error; err != nil {
 			tx.Rollback()
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process guest donor: " + err.Error()})
