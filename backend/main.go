@@ -17,6 +17,7 @@ import (
 	sponsorship "example.com/project-sa/controllers/sponsorship"
 	user "example.com/project-sa/controllers/user"
 	vaccine "example.com/project-sa/controllers/vaccine"
+	visit "example.com/project-sa/controllers/visit"
 	"example.com/project-sa/middlewares"
 	"example.com/project-sa/migrations"
 	"example.com/project-sa/seeds"
@@ -62,6 +63,7 @@ func main() {
 	r.PUT("/health-records/:id", health_record.UpdateHealthRecord)
 	r.DELETE("/health-records/:id", health_record.DeleteHealthRecord)
 	r.GET("/health-records/:id", health_record.GetHealthRecordById)
+	r.POST("/visits", visit.CreateVisit)
 
 	// 7) Routes (protected)
 	protected := r.Group("/")

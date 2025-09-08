@@ -8,6 +8,7 @@ import DonationRoutes from "./DonationRoutes";
 import HealthRecordRoutes from "./HealthRecordRoutes";
 import AdoptionRoutes from "./AdoptionRoutes";
 import EventRoutes from "./EventRoutes";
+import VisitRoutes from "./VisitRoutes";
 
 // ==============================|| ROUTING RENDER ||============================== //
 
@@ -22,5 +23,6 @@ export default function ThemeRoutes() {
     HealthRecordRoutes(),
     AdoptionRoutes(),
     EventRoutes(),
+    VisitRoutes(),
   ]);
 }
