@@ -39,7 +39,6 @@ const NavigationBar: React.FC = () => {
       <nav className="header-nav">
         <ul>
           <li><Link to="/">หน้าแรก</Link></li>
-          <li><a href="#get-involved">ร่วมเป็นส่วนหนึ่งในการช่วยเหลือสุนัข</a></li>
           <li><a href="#about-us">เกี่ยวกับเรา</a></li>
           <li><a href="/event">กิจกรรม</a></li>
         </ul>

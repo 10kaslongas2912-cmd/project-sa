@@ -11,7 +11,6 @@ import {
   Col,
   Button,
   Space,
-  Divider,
   Tabs,
   Statistic,
   Avatar,
@@ -35,7 +34,6 @@ import { donationAPI } from '../../../services/apis';
 import './style.css';
 
 const { Title, Text, Paragraph } = Typography;
-const { TabPane } = Tabs;
 
 interface DonationWithDetails {
   ID: number;
@@ -43,15 +41,15 @@ interface DonationWithDetails {
   donation_type: 'money' | 'item';
   status: string;
   description?: string;
-  money_donation?: {
+  money_donations?: Array<{
     amount: number;
     payment_type: 'one-time' | 'monthly';
     transaction_ref?: string;
     status?: 'success' | 'complete';
     payment_method?: {
-      method_name: string;
+      name: string;
     };
-  };
+  }>;
   item_donations?: Array<{
     item_name: string;
     quantity: number;
@@ -73,15 +71,18 @@ const MyDonations: React.FC = () => {
     } else if (!authLoading && !isLoggedIn) {
       setDonationsLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedIn, user, authLoading]);
 
   const fetchMyDonations = async () => {
     try {
       setDonationsLoading(true);
       setError(null);
-      const response = await donationAPI.getMyDonations();
-      setDonations(response || []);
+      const response = (await donationAPI.getMyDonations()) as any;
+      if (response && Array.isArray(response)) {
+        setDonations(response);
+      } else {
+        throw new Error('Invalid data structure received from API');
+      }
     } catch (err: any) {
       console.error('Error fetching donations:', err);
       setError('ไม่สามารถโหลดประวัติการบริจาคได้');
@@ -104,16 +105,13 @@ const MyDonations: React.FC = () => {
 
   const getStatusTag = (status: string) => {
     const safe = (status || '').toLowerCase();
-    const map: Record<
-      string,
-      { cls: string; icon: React.ReactNode; text: string }
-    > = {
-      success: { cls: 'tag-success', icon: <CheckCircleOutlined />, text: 'สำเร็จ' },
-      complete: { cls: 'tag-success', icon: <CheckCircleOutlined />, text: 'สำเร็จ' },
-      completed: { cls: 'tag-success', icon: <CheckCircleOutlined />, text: 'สำเร็จ' },
-      pending: { cls: 'tag-pending', icon: <ClockCircleOutlined />, text: 'รอดำเนินการ' },
-      cancelled: { cls: 'tag-failed', icon: <CloseCircleOutlined />, text: 'ยกเลิก' },
-      failed: { cls: 'tag-failed', icon: <CloseCircleOutlined />, text: 'ล้มเหลว' },
+    const map: Record<string, { cls: string; icon: React.ReactNode; text: string }> = {
+      success: { cls: 'tag-success', icon: <CheckCircleOutlined style={{ color: 'green' }} />, text: 'สำเร็จ' },
+      complete: { cls: 'tag-success', icon: <CheckCircleOutlined style={{ color: 'green' }} />, text: 'สำเร็จ' },
+      completed: { cls: 'tag-success', icon: <CheckCircleOutlined style={{ color: 'green' }} />, text: 'สำเร็จ' },
+      pending: { cls: 'tag-pending', icon: <ClockCircleOutlined style={{ color: 'orange' }} />, text: 'รอดำเนินการ' },
+      cancelled: { cls: 'tag-failed', icon: <CloseCircleOutlined style={{ color: 'black' }} />, text: 'ยกเลิก' },
+      failed: { cls: 'tag-failed', icon: <CloseCircleOutlined style={{ color: 'red' }} />, text: 'ล้มเหลว' },
     };
     const cfg = map[safe] || { cls: 'tag-default', icon: null, text: status || 'N/A' };
     return (
@@ -148,7 +146,10 @@ const MyDonations: React.FC = () => {
   const getDonationStats = () => {
     const money = donations.filter((d) => d.donation_type === 'money');
     const items = donations.filter((d) => d.donation_type === 'item');
-    const totalAmount = money.reduce((s, d) => s + (d.money_donation?.amount || 0), 0);
+    const totalAmount = money.reduce(
+      (s, d) => s + (d.money_donations?.reduce((sm, m) => sm + (m.amount || 0), 0) || 0),
+      0
+    );
     const totalItems = items.reduce((s, d) => s + (d.item_donations?.length || 0), 0);
     return {
       total: donations.length,
@@ -162,59 +163,59 @@ const MyDonations: React.FC = () => {
   const stats = getDonationStats();
 
   const renderMoneyDonation = (d: DonationWithDetails) => {
-    if (!d.money_donation) return null;
-    const { amount, payment_type, transaction_ref, payment_method } = d.money_donation;
-    return (
-      <Card size="small" className="mdn-subcard mdn-subcard--money">
-        <Row gutter={[16, 12]}>
-          <Col xs={24} md={12}>
-            <Space direction="vertical" size={4}>
-              <Text className="mdn-label" style={{ fontFamily: 'Anakotmai' }}>จำนวนเงิน</Text>
-              <div className="mdn-amount">{formatAmount(amount)}</div>
-            </Space>
-          </Col>
-          <Col xs={24} md={12}>
-            <Space direction="vertical" size={4}>
-              <Text className="mdn-label" style={{ fontFamily: 'Anakotmai' }}>ประเภทการจ่าย</Text>
-              <Tag className="mdn-pill">
-                <CalendarOutlined /> {payment_type === 'monthly' ? 'รายเดือน' : 'ครั้งเดียว'}
-              </Tag>
-            </Space>
-          </Col>
-
-          {payment_method && (
+    if (!d.money_donations?.length) return null;
+    return d.money_donations.map((m, idx) => {
+      const { amount, payment_type, transaction_ref, payment_method } = m;
+      return (
+        <Card key={idx} size="small" className="mdn-subcard mdn-subcard--money">
+          <Row gutter={[16, 12]}>
             <Col xs={24} md={12}>
               <Space direction="vertical" size={4}>
-                <Text className="mdn-label" style={{ fontFamily: 'Anakotmai' }}>วิธีการจ่าย</Text>
+                <Text className="mdn-label" style={{ fontFamily: 'Anakotmai' }}>จำนวนเงิน</Text>
+                <div className="mdn-amount">{formatAmount(amount)}</div>
+              </Space>
+            </Col>
+            <Col xs={24} md={12}>
+              <Space direction="vertical" size={4}>
+                <Text className="mdn-label" style={{ fontFamily: 'Anakotmai' }}>ประเภทการจ่าย</Text>
                 <Tag className="mdn-pill">
-                  <BankOutlined /> {payment_method.method_name}
+                  <CalendarOutlined /> {payment_type === 'monthly' ? 'รายเดือน' : 'ครั้งเดียว'}
                 </Tag>
               </Space>
             </Col>
-          )}
 
-          {transaction_ref && (
-            <Col xs={24} md={12}>
-              <Space direction="vertical" size={4}>
-                <Text className="mdn-label" style={{ fontFamily: 'Anakotmai' }}>รหัสธุรกรรม</Text>
-                <Text code className="mdn-code">
-                  {transaction_ref}
-                </Text>
-              </Space>
-            </Col>
-          )}
-        </Row>
-      </Card>
-    );
+            {payment_method && (
+              <Col xs={24} md={12}>
+                <Space direction="vertical" size={4}>
+                  <Text className="mdn-label" style={{ fontFamily: 'Anakotmai' }}>วิธีการจ่าย</Text>
+                  <Tag className="mdn-pill">
+                    <BankOutlined /> {payment_method.name}
+                  </Tag>
+                </Space>
+              </Col>
+            )}
+
+            {transaction_ref && (
+              <Col xs={24} md={12}>
+                <Space direction="vertical" size={4}>
+                  <Text className="mdn-label" style={{ fontFamily: 'Anakotmai' }}>รหัสธุรกรรม</Text>
+                  <Text code className="mdn-code">
+                    {transaction_ref}
+                  </Text>
+                </Space>
+              </Col>
+            )}
+          </Row>
+        </Card>
+      );
+    });
   };
 
   const renderItemDonation = (d: DonationWithDetails) => {
     if (!d.item_donations?.length) return null;
     return (
       <Card size="small" className="mdn-subcard mdn-subcard--item">
-        <Title level={5} className="mdn-subtitle">
-          รายการสิ่งของที่บริจาค
-        </Title>
+        <Title level={5} className="mdn-subtitle">รายการสิ่งของที่บริจาค</Title>
         <List
           dataSource={d.item_donations}
           renderItem={(item, idx) => (
@@ -317,7 +318,6 @@ const MyDonations: React.FC = () => {
 
   return (
     <div className="mdn-root" style={{ fontFamily: 'Anakotmai' }}>
-      {/* Header */}
       <div className="mdn-header">
         <Title level={1} className="mdn-title">
           <HeartFilled className="mdn-heart" />
@@ -327,7 +327,6 @@ const MyDonations: React.FC = () => {
           รายการการบริจาคทั้งหมดของ <Text strong>{user?.name}</Text>
         </Paragraph>
         <div className="title-underline" />
-        {/* Stats */}
         <Row gutter={[16, 16]} className="mdn-stats">
           <Col xs={24} sm={8}>
             <Card hoverable className="mdn-statcard">
@@ -365,43 +364,47 @@ const MyDonations: React.FC = () => {
         </Row>
       </div>
 
-      {/* Tabs */}
       <Card className="mdn-tabs">
-        <Tabs activeKey={activeTab} onChange={(k) => setActiveTab(k as any)} size="large" centered>
-          <TabPane
-            tab={
-              <Space>
-                <HistoryOutlined />
-                ประวัติทั้งหมด
-                <Tag className="mdn-tag tag-blue">{stats.total}</Tag>
-              </Space>
-            }
-            key="all"
-          />
-          <TabPane
-            tab={
-              <Space>
-                <WalletOutlined />
-                บริจาคเงิน
-                <Tag className="mdn-tag tag-green">{stats.money}</Tag>
-              </Space>
-            }
-            key="money"
-          />
-          <TabPane
-            tab={
-              <Space>
-                <ShoppingOutlined />
-                <span style={{ fontFamily: 'Anakotmai' }}>บริจาคสิ่งของ</span>
-                <Tag className="mdn-tag tag-orange">{stats.items}</Tag>
-              </Space>
-            }
-            key="items"
-          />
-        </Tabs>
+        <Tabs
+          activeKey={activeTab}
+          onChange={(k) => setActiveTab(k as any)}
+          size="large"
+          centered
+          items={[
+            {
+              key: 'all',
+              label: (
+                <Space>
+                  <HistoryOutlined />
+                  ประวัติทั้งหมด
+                  <Tag className="mdn-tag tag-blue">{stats.total}</Tag>
+                </Space>
+              ),
+            },
+            {
+              key: 'money',
+              label: (
+                <Space>
+                  <WalletOutlined />
+                  บริจาคเงิน
+                  <Tag className="mdn-tag tag-green">{stats.money}</Tag>
+                </Space>
+              ),
+            },
+            {
+              key: 'items',
+              label: (
+                <Space>
+                  <ShoppingOutlined />
+                  <span style={{ fontFamily: 'Anakotmai' }}>บริจาคสิ่งของ</span>
+                  <Tag className="mdn-tag tag-orange">{stats.items}</Tag>
+                </Space>
+              ),
+            },
+          ]}
+        />
       </Card>
 
-      {/* List */}
       {donationsLoading ? (
         <div className="mdn-center">
           <Spin size="large" />
@@ -429,14 +432,6 @@ const MyDonations: React.FC = () => {
             </Col>
           ))}
         </Row>
-      )}
-
-      {donations.length > 0 && (
-        <div className="mdn-footer">
-          <Divider />
-          <Title level={4} className="mdn-thanks" style={{ fontFamily: 'Anakotmai' }}>🙏 ขอบคุณสำหรับความใจดีของคุณ</Title>
-          <Paragraph style={{ fontFamily: 'Anakotmai' }}>การบริจาคของคุณช่วยให้เราสามารถดูแลสุนัขเหล่านี้ได้อย่างดีที่สุด</Paragraph>
-        </div>
       )}
     </div>
   );

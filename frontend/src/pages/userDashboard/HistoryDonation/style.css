@@ -190,3 +190,28 @@
 
 /* Header spacing */
 .mdn-header{ text-align:center; margin-bottom:24px; }
+
+.mdn-tag .anticon { color: currentColor; }
+
+/* โทนหลักของทุกแท็ก (พื้นหลังขาว, ขอบเทา) */
+.mdn-tag{
+  border-radius: 999px;
+  border: 1px solid var(--gray-300);
+  color: #000;
+  background: var(--white);
+}
+
+/* สถานะ (ปรับแค่กรอบ+ตัวอักษร) */
+.mdn-tag.tag-success { border-color: #52c41a; color: #52c41a; }
+.mdn-tag.tag-pending { border-color: #faad14; color: #faad14; }
+.mdn-tag.tag-failed  { border-color: #f5222d; color: #f5222d; }
+.mdn-tag.tag-default { border-color: var(--gray-300); color: #000; }
+
+/* ประเภทบริจาค */
+.mdn-tag.tag-money { border-color: var(--brand-blue);   color: var(--brand-blue); }
+.mdn-tag.tag-item  { border-color: var(--brand-orange); color: var(--brand-orange); }
+
+/* (ถ้าต้องคุมของใน Tabs ด้วย) */
+.mdn-tag.tag-blue   { border-color: var(--brand-blue);   color: var(--brand-blue); }
+.mdn-tag.tag-green  { border-color: #00a854;             color: #00a854; }
+.mdn-tag.tag-orange { border-color: var(--brand-orange); color: var(--brand-orange); }
