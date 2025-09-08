@@ -113,6 +113,9 @@ export const vaccineAPI = {
   getAll:  () => Get("/vaccines"),
   getById: (id: number) => Get(`/vaccines/${id}`),
 };
+
+
+
 export const api = {
   authAPI,
   userAPI,

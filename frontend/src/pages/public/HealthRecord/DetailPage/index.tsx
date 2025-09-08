@@ -40,7 +40,7 @@ const DetailPage: React.FC = () => {
         healthRecordAPI.getHealthRecordsByDogId(dogId),
       ]);
 
-      setSelectedDog(dogDetails.data);
+      setSelectedDog(dogDetails);
       setDogHealthRecords(records.data || []);
     } catch (error) {
       message.error("ไม่สามารถโหลดข้อมูลสุนัขหรือประวัติสุขภาพได้");

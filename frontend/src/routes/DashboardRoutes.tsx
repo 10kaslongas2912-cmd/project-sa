@@ -23,9 +23,11 @@ export const dashboardRoutes: RouteObject = {
   ],
 };
 
-export const dashboardTestRoute: RouteObject = {
-  path: "dashboard-test",
+export const dashboardTestRoute1: RouteObject = {
+  path: "dashboard-test1",
   element: <DashboardTestPage />,
 };
 
-export default [dashboardRoutes, dashboardTestRoute] as RouteObject[];
+
+
+export default [dashboardRoutes, dashboardTestRoute1] as RouteObject[];
