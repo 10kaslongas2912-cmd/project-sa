@@ -11,15 +11,10 @@ export const dashboardRoutes: RouteObject = {
   path: "dashboard",
   element: <DashboardLayout />,
   children: [
-    { index: true, element: <Overview /> },
-    { path: "dogs", element: <Dogs /> },
     {
-      path: "adoption",
-      children: [
-        { path: "requests", element: <AdoptionRequests /> },
-        { path: "matches",  element: <AdoptionMatches />  },
-      ],
-    },
+      index: true,
+      element: <Overview />
+    }
   ],
 };
 
