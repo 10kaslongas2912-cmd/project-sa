@@ -3,17 +3,26 @@ import { lazy } from 'react';
 import Loadable from "../components/third-patry/Loadable";
 
 import PublicLayout from "../layout/PublicLayout"; // Component ที่ใช้สำหรับ Layout ของหน้านี้
-const Visit = Loadable(lazy(() => import("../pages/dashboard/visit/createVisit")));
+const CreateVisit = Loadable(lazy(() => import("../pages/dashboard/visit/createVisit")));
+const UpdateVisit = Loadable(lazy(() => import("../pages/dashboard/visit/updateVisit")));
 
 const VisitRoutes = (): RouteObject => {
 return {
-    path: 'visit',
+    path: '/',
     element: <PublicLayout />,
     children: [
         {
-            index: true,
-            element: <Visit />
+            path: 'create-visit',
+            element: <CreateVisit />
         },
+        {
+            path: 'update-visit',
+            element: <UpdateVisit />
+        },
+        
+        
+        
+
     ]
     
 };
