@@ -53,7 +53,7 @@ const DonationRoutes = (): RouteObject => {
         {
             path: 'thankyou',
             element: <ThankYouPage />
-        }
+        },
     ]
   };
 };

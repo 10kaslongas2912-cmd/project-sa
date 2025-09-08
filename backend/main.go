@@ -73,6 +73,7 @@ func main() {
 		protected.GET("/users/:id", user.GetUserById)
 		protected.DELETE("/users/:id", user.DeleteUser)
 		protected.POST("/sponsorships/subscription", sponsorship.CreateSubscriptionSponsorship)
+		protected.GET("/donations/my", donation.GetMyDonations)
 	}
 
 	// health

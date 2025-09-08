@@ -1,0 +1,192 @@
+@import url('https://fonts.googleapis.com/css2?family=Anakotmai:wght@300;400;500;600;700&display=swap');
+
+:root{
+  --brand-blue:#253C90;
+  --brand-orange:#FF8800;
+  --gray-100:#f5f5f5;
+  --gray-300:#e9e9e9;
+  --gray-600:#666666;
+  --white:#ffffff;
+}
+
+/* Base */
+.mdn-root{
+  font-family: 'Anakotmai', sans-serif !important;
+  padding:24px;
+  max-width:1200px;
+  margin:0 auto;
+  min-height:100vh;
+  background: var(--gray-100);
+}
+
+.mdn-root * {
+  font-family: 'Anakotmai', sans-serif !important;
+}
+
+.mdn-title{
+  color:var(--brand-blue) !important;
+  margin-bottom:8px !important;
+}
+
+.mdn-subtext{
+  font-size:16px;
+  color:var(--gray-600);
+  margin-bottom:16px;
+}
+
+.mdn-heart{
+  color:var(--brand-orange);
+  margin-right:8px;
+}
+
+/* Underline (อ้างอิงหน้าค้นหา) */
+.title-underline{
+  height:5px;
+  width:100%;
+  max-width:1200px;
+  background-color:var(--brand-blue);
+  border-radius:2px;
+  margin:0 auto 20px auto;
+}
+
+/* Center loaders/empties */
+.mdn-center{
+  text-align:center;
+  padding:80px 0;
+}
+.mdn-center__text{
+  margin-top:12px;
+  color:var(--gray-600);
+}
+
+/* Stats */
+.mdn-stats .mdn-statcard{
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  border:1px solid var(--gray-300);
+  background:var(--white);
+}
+.mdn-stats .ant-statistic-title{
+  color:var(--brand-blue);
+}
+.mdn-stats .ant-statistic-content{
+  color:#000;
+}
+.mdn-stats .mdn-muted{
+  display:block;
+  margin-top:4px;
+  color:var(--gray-600);
+  font-size:12px;
+}
+
+/* Tabs */
+.mdn-tabs{
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  border:1px solid var(--gray-300);
+  background:var(--white);
+  margin-bottom:24px;
+}
+
+/* Tag palette (ใช้เฉพาะสีที่กำหนด) */
+.mdn-tag{
+  border-radius:999px;
+  border:1px solid var(--gray-300);
+  color:#000;
+  background:var(--white);
+}
+.mdn-tag.tag-blue{ border-color:var(--brand-blue); color:var(--brand-blue); }
+.mdn-tag.tag-green{ border-color:#666; color:#000; } /* ไม่มีเขียวในพาเลตต์ ใช้ดำ-เทาแทน */
+.mdn-tag.tag-orange{ border-color:var(--brand-orange); color:var(--brand-orange); }
+
+.mdn-tag.tag-money{ border-color:var(--brand-blue); color:var(--brand-blue); }
+.mdn-tag.tag-item{ border-color:var(--brand-orange); color:var(--brand-orange); }
+
+.mdn-tag.tag-success{ border-color:var(--brand-blue); color:var(--brand-blue); }
+.mdn-tag.tag-pending{ border-color:var(--gray-600); color:var(--gray-600); }
+.mdn-tag.tag-failed{ border-color:var(--brand-orange); color:var(--brand-orange); }
+.mdn-tag.tag-default{ border-color:var(--gray-300); color:#000; }
+
+/* Cards: “กล่องมีเงา” สไตล์เดียวกับหน้าค้นหา */
+.mdn-card{
+  border-radius:20px;
+  border:1px solid var(--gray-300);
+  box-shadow:0 10px 24px rgba(0,0,0,0.08);
+  overflow:hidden;
+  background:var(--white);
+}
+
+/* แถบสีบนการ์ดแทน cover gradient */
+.mdn-card__accent{
+  height:8px;
+  width:100%;
+  background:var(--brand-blue);
+  margin:-16px -16px 12px -16px; /* ครอบขอบการ์ด */
+}
+.mdn-card__accent--item{ background:var(--brand-orange); }
+
+/* Subcards (money / items) */
+.mdn-subcard{
+  margin-top:16px;
+  border-radius:14px;
+  border:1px solid var(--gray-300) !important;
+  background:var(--white) !important;
+}
+.mdn-subcard--money{ }
+.mdn-subcard--item{ }
+
+.mdn-label{
+  color:var(--gray-600);
+  font-size:12px;
+}
+.mdn-amount{
+  font-size:1.6rem;
+  font-weight:700;
+  color:#000;
+}
+
+.mdn-pill{
+  background:var(--white);
+  border:1px solid var(--gray-300);
+  border-radius:999px;
+  color:#000;
+}
+
+/* Code chip */
+.mdn-code{
+  font-size:0.9rem;
+}
+
+/* Item donation list */
+.mdn-subtitle{
+  color:var(--brand-orange) !important;
+  margin-bottom:12px !important;
+}
+.mdn-item{
+  padding:8px 0;
+  border-bottom:1px solid var(--gray-300);
+}
+.mdn-item.last{
+  border-bottom:none;
+}
+.mdn-avatar{
+  background:var(--brand-orange);
+}
+.mdn-qty{
+  border:1px solid var(--brand-orange);
+  color:var(--brand-orange);
+  background:var(--white);
+}
+
+/* Footer */
+.mdn-footer .mdn-thanks{
+  color:var(--brand-blue) !important;
+}
+
+/* Empty */
+.mdn-empty-title{
+  color:#999 !important;
+}
+
+/* Header spacing */
+.mdn-header{ text-align:center; margin-bottom:24px; }

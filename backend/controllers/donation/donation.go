@@ -93,3 +93,41 @@ func CreateDonation(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Donation created successfully"})
 }
+
+func GetMyDonations(c *gin.Context) {
+	userIDInterface, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	user_id, ok := userIDInterface.(uint)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID format"})
+		return
+	}
+
+	// Find the donor associated with the user ID
+	var donor entity.Donor
+	if err := configs.DB().Where("user_id = ?", user_id).First(&donor).Error; err != nil {
+		// It's possible a user exists but has never donated, so no donor record.
+		// In this case, return an empty list, not an error.
+		c.JSON(http.StatusOK,[]entity.Donation{})
+		return
+	}
+
+	// Find all donations for that donor, preloading related data for the frontend
+	var donations []entity.Donation
+	if err := configs.DB().
+		Preload("MoneyDonation.PaymentMethod").
+		Preload("ItemDonations").
+		Where("donor_id = ?", donor.ID).
+		Order("donation_date desc").
+		Find(&donations).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not fetch donations: " + err.Error()})
+		return
+	}
+
+	// Return the donations
+	c.JSON(http.StatusOK, donations)
+}
