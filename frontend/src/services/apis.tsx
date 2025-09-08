@@ -7,7 +7,9 @@ import type {
   UpdateUserRequest,
 } from "../interfaces/User";
 import type { CreateDonationRequest } from "../interfaces/Donation";
-
+import type { UpdateZCManagementRequest } from "../interfaces/ZcManagement";
+import axios from "axios";
+import type { CreateVolunteerPayload } from "../interfaces/Volunteer";
 /** ---------- AUTH ---------- */
 // หมายเหตุ: login/signup ไม่ต้องแนบ token -> ส่ง false ให้ wrapper
 // me/logout แนบ token (default ของ wrapper = แนบให้)
@@ -84,6 +86,34 @@ export const donationAPI = {
   // update:  (id: number, data: UpdateDogRequest) => Put(`/dog/${id}`, data),
   // remove:  (id: number) => Delete(`/dog/${id}`),
 };
+
+export const zcManagementAPI = {
+  getAll: () => Get("/zcmanagement"),
+  update: (id: number, data: UpdateZCManagementRequest) => Put(`/zcmanagement/${id}`, data),
+};
+
+export const volunteerAPI = {
+  getAll: () => Get("/volunteers"),
+  getById: (id: number) => Get(`/volunteer/${id}`),
+
+  create: (data: FormData | CreateVolunteerPayload) => {
+    if (typeof FormData !== "undefined" && data instanceof FormData) {
+      // use axios directly for multipart
+      return axios.post("/volunteer", data); // or axiosInstance.post(...)
+    }
+    return Post("/volunteer", data);
+  },
+
+  update: (id: number, data: FormData | CreateVolunteerPayload) => {
+    if (typeof FormData !== "undefined" && data instanceof FormData) {
+      return axios.put(`/volunteer/${id}`, data); // or axiosInstance.put(...)
+    }
+    return Put(`/volunteer/${id}`, data);
+  },
+
+  remove: (id: number) => Delete(`/volunteer/${id}`),
+};
+
 // รวม export เดียว
 export const api = {
   authAPI,
@@ -95,4 +125,6 @@ export const api = {
   roleAPI,
   paymentMethodAPI,
   donationAPI,
+  zcManagementAPI,
+  volunteerAPI,
 };

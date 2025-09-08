@@ -24,7 +24,7 @@ func AutoMigrate(db *gorm.DB) error {
 		&entity.Donor{},
 		&entity.Event{},
 		&entity.ItemDonation{},
-		&entity.KenelManagement{},
+		&entity.KennelManagement{},
 		&entity.MedicalRecord{},
 		&entity.MoneyDonation{},
 		&entity.PaymentMethod{},

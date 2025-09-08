@@ -1,9 +1,10 @@
 package entity
 
 type KennelManagement struct {
-	Kennels uint
-	Kennel  *uint `gorm:"references:KennelID"`
-
-	StaffID uint
-	Staffs  *uint `gorm:"foreignkey:StaffID;"`
+	KennelID uint
+	Kennel   *Kennel `gorm:"foreignKey:KennelID"`
+	DogID    uint
+	Dog      *Dog `gorm:"foreignKey:DogID"`
+	StaffID  uint
+	Staff    *Staff `gorm:"foreignKey:StaffID"`
 }

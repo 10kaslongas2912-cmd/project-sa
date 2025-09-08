@@ -11,7 +11,4 @@ type Kennel struct {
 
 	ZoneID uint  `json:"zone_id"`
 	Zone   *Zone `gorm:"foreignKey:ZoneID"`
-
-	KennelManagements []KennelManagement `gorm:"foreignKey:KennelID"`
-	Dogs              []Dog              `gorm:"foreignKey:KennelID"`
 }

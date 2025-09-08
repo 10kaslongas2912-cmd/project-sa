@@ -1,9 +1,9 @@
 .zone-cage-management-container {
-  background-image: url('../../assets/donate_background.webp');
+  background-image: url('../../../assets/donate_background.webp');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  min-height: 100vh;
+  min-height: 75vh;
   display: flex;
   justify-content: center; /* Changed from 'left' to 'space-between' */
   align-items: center;

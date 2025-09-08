@@ -75,12 +75,17 @@ func SetupDatabase() {
 	db.FirstOrCreate(&BreedPoodle, &entity.Breed{Name: "Poodle"})
 	db.FirstOrCreate(&BreedBulldog, &entity.Breed{Name: "Bulldog"})
 
-	// Seed Kennel
-	KennelA := entity.Kennel{ZoneID: 1, Capacity: 10, Color: "Blue", Note: pointer.P("Quiet area")}
-	KennelB := entity.Kennel{ZoneID: 2, Capacity: 8, Color: "Green", Note: pointer.P("Playful area")}
+	ZoneA := entity.Zone{Name: "A"}
+	ZoneB := entity.Zone{Name: "B"}
 
-	db.FirstOrCreate(&KennelA, &entity.Kennel{ZoneID: 1})
-	db.FirstOrCreate(&KennelB, &entity.Kennel{ZoneID: 2})
+	db.FirstOrCreate(&ZoneA, &entity.Zone{Name: "A"})
+	db.FirstOrCreate(&ZoneB, &entity.Zone{Name: "B"})
+	// Seed Kennel
+	KennelA := entity.Kennel{Name: "A-1", Capacity: 10, Color: "Blue", Note: pointer.P("Quiet area"), ZoneID: ZoneA.ID}
+	KennelB := entity.Kennel{Name: "B-1", Capacity: 8, Color: "Green", Note: pointer.P("Playful area"), ZoneID: ZoneB.ID}
+
+	db.FirstOrCreate(&KennelA, &entity.Kennel{ZoneID: ZoneA.ID})
+	db.FirstOrCreate(&KennelB, &entity.Kennel{ZoneID: ZoneB.ID})
 
 	// Seed Dogs
 	Dog1 := entity.Dog{

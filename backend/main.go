@@ -12,6 +12,8 @@ import (
 	health_record "example.com/project-sa/controllers/health_record"
 	payment_method "example.com/project-sa/controllers/payment_method"
 	user "example.com/project-sa/controllers/user"
+	volunteers "example.com/project-sa/controllers/volunteerRegister"
+	zcmanagement "example.com/project-sa/controllers/zcmanagement"
 	"example.com/project-sa/middlewares"
 	"example.com/project-sa/migrations"
 	"example.com/project-sa/seeds"
@@ -56,6 +58,21 @@ func main() {
 	r.POST("/health-records", health_record.CreateHealthRecord)
 	r.PUT("/health-records/:id", health_record.UpdateHealthRecord)
 	r.DELETE("/health-records/:id", health_record.DeleteHealthRecord)
+
+	r.GET("/zcmanagement", zcmanagement.GetAll)
+	r.GET("/zones", zcmanagement.GetZones)
+	r.GET("/kennels/:zone_id", zcmanagement.GetKennelsByZone)
+	r.GET("/kennel/:kennel_id/dog", zcmanagement.GetDogInKennel)
+	r.PUT("/kennel/:kennel_id/dog", zcmanagement.UpdateDogInKennel)
+	r.DELETE("/kennel/:kennel_id/dog", zcmanagement.DeleteDogFromKennel)
+
+	r.GET("/volunteers", volunteers.GetAllVolunteers)
+	r.GET("/volunteer/:id", volunteers.GetVolunteerByID)
+	r.GET("/volunteers/user/:user_id", volunteers.GetVolunteersByUserID)
+	r.GET("/volunteers/skill/:skill_id", volunteers.GetVolunteersBySkillID)
+	r.POST("/volunteer", volunteers.CreateVolunteer)
+	r.PUT("/volunteer/:id", volunteers.UpdateVolunteer)
+	r.DELETE("/volunteer/:id", volunteers.DeleteVolunteer)
 
 	// 7) Routes (protected)
 	protected := r.Group("/")

@@ -82,7 +82,7 @@ func CreateVolunteer(c *gin.Context) {
 	}
 
 	// Load associations for response
-	config.DB().Preload("Users").Preload("Skills").First(&volunteer, volunteer.VolunteerID)
+	config.DB().Preload("Users").Preload("Skills").First(&volunteer, volunteer.ID)
 
 	c.JSON(http.StatusCreated, gin.H{"data": volunteer})
 }
@@ -124,7 +124,7 @@ func UpdateVolunteer(c *gin.Context) {
 	}
 
 	// Load associations for response
-	config.DB().Preload("Users").Preload("Skills").First(&existingVolunteer, existingVolunteer.VolunteerID)
+	config.DB().Preload("Users").Preload("Skills").First(&existingVolunteer, existingVolunteer.ID)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Volunteer updated successfully", "data": existingVolunteer})
 }

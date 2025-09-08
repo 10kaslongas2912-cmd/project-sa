@@ -320,4 +320,8 @@
   box-sizing: border-box;
   font-family: inherit;
 }
+
+.form-row.form-row-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
 /* End of VolunteerPage Styles */
