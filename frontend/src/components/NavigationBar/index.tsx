@@ -39,7 +39,6 @@ const NavigationBar: React.FC = () => {
       <nav className="header-nav">
         <ul>
           <li><Link to="/">หน้าแรก</Link></li>
-          <li><a href="#get-involved">ร่วมเป็นส่วนหนึ่งในการช่วยเหลือสุนัข</a></li>
           <li><a href="#about-us">เกี่ยวกับเรา</a></li>
           <li><a href="/event">กิจกรรม</a></li>
         </ul>
@@ -91,7 +90,7 @@ const NavigationBar: React.FC = () => {
                   <div className="dropdown-menu">
                     <Link to="/profile" className="dropdown-item"><span className="item-icon">👤</span>โปรไฟล์ของฉัน</Link>
                     <Link to="/my-adoptions" className="dropdown-item"><span className="item-icon">🐕</span>สุนัขที่รับเลี้ยง</Link>
-                    <Link to="/my-donations" className="dropdown-item"><span className="item-icon">💖</span>ประวัติการบริจาค</Link>
+                    <Link to="/donation/history" className="dropdown-item"><span className="item-icon">💖</span>ประวัติการบริจาค</Link>
                     <hr className="dropdown-divider" />
                     <button onClick={logout} className="dropdown-item logout-btn">
                       <span className="item-icon">🚪</span>ออกจากระบบ
