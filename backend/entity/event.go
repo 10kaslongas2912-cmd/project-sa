@@ -18,6 +18,10 @@ type Event struct {
 
 	StaffID uint  `json:"staff_id"` // Foreign key for Staff
 	Staff   *Staff `gorm:"foreignKey:StaffID" json:"staff"` // Association to Staff
+
+	VisitID   uint      `json:"visit_id"` // Foreign key for Visit
+	Visit     *Visit    `gorm:"foreignKey:VisitID" json:"visit"` // Association to Visit
+
 	
 	Attendees   []Attendee `gorm:"foreignKey:EventID" json:"attendees"`
 }

@@ -114,6 +114,9 @@ export const vaccineAPI = {
   getAll:  () => Get("/vaccines"),
   getById: (id: number) => Get(`/vaccines/${id}`),
 };
+export const visitAPI = {
+  createVisit: (data: any) => Post("/visits", data),
+};
 
 
 
@@ -130,5 +133,6 @@ export const api = {
   donationAPI,
   sponsorshipAPI,
   healthRecordAPI,
-  vaccineAPI
+  vaccineAPI,
+  visitAPI,
 };
