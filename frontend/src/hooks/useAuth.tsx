@@ -1,9 +1,7 @@
+import { useEffect, useState, useCallback } from "react";
+import { authAPI } from "../services/apis";
+import type { AppUserInterface } from "../interfaces/User";
 
-  import { useEffect, useState, useCallback } from "react";
-  import { authAPI } from "../services/apis"; // หรือ ../services/apis แล้วแต่ path ของคุณ
-  import type { AppUserInterface } from "../interfaces/User";
-
-// hooks/useAuth.tsx
 export function useAuthUser() {
   const [user, setUser] = useState<AppUserInterface | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -15,11 +13,10 @@ export function useAuthUser() {
   const refresh = useCallback(async () => {
     const hasToken = Boolean(localStorage.getItem("token"));
     if (!hasToken) {
-      // ✅ ต้องปิด loading ด้วย ไม่งั้นหน้าอื่นจะรอ !authLoading ตลอดไป
       setUser(null);
       setIsLoggedIn(false);
       setError(null);
-      setLoading(false);            // <--- สำคัญ
+      setLoading(false);
       return;
     }
 
@@ -36,7 +33,6 @@ export function useAuthUser() {
         photo_url: res.photo_url,
         email: res.email,
         phone: res.phone,
-        // ถ้ามี gender_id มากับ BE ก็เติมไว้
         gender_id: res.gender_id,
         gender: res.gender,
       };
@@ -48,7 +44,11 @@ export function useAuthUser() {
       localStorage.removeItem("token");
       setUser(null);
       setIsLoggedIn(false);
-    }, []);
+      setError(e as Error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     refresh();

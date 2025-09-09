@@ -4,7 +4,7 @@ import { CalendarOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import "./style.css";
 import type { DogInterface } from "../../../../interfaces/Dog";
 import { ageText } from "../../../../utils/date";
-import { useDogs } from "../../../../hooks/useDogs";
+import { useDogs } from "../../../../hooks/useDogs_jia";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
 import { visitAPI } from "../../../../services/apis";
@@ -24,6 +24,7 @@ interface VisitFormData {
 const DogVisitForm: React.FC = () => {
     const [form] = Form.useForm();
     const { dogs, loading, error } = useDogs();
+    console.log("Dogs from useDogs hook:", dogs);
     const [selectedDogs, setSelectedDogs] = useState<DogInterface[]>([]);
     const [submitting, setSubmitting] = useState(false);
     const [searchTerm, setSearchTerm] = useState<string>("");
@@ -162,12 +163,18 @@ const DogVisitForm: React.FC = () => {
             </div>
         );
     }
+    console.log("All Dogs:", dogs);
 
     // กรองหมาตามคำค้นหา
-    const filteredDogs = dogs.filter(dog =>
-        dog.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (dog.breed?.name && dog.breed.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    const filteredDogs = Array.isArray(dogs)
+  ? dogs.filter(dog =>
+      (dog.name ?? "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (dog.breed?.name ?? "").toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  : [];
+
+  console.log("Filtered Dogs:", filteredDogs);
+
 
     return (
   <div className="dog-visit-form-container" style={{ display: "flex", gap: "24px", alignItems: "flex-start" }}>
