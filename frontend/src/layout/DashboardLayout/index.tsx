@@ -130,6 +130,12 @@ const UpdatedDashboard: React.FC = () => {
       path: "/dashboard/dogs",
     },
     {
+      id: "health-records",
+      label: "บันทึกสุขภาพสุนัข",
+      icon: Stethoscope,
+      path: "/dashboard/health-record",
+    },
+    {
       id: "adoption",
       label: "การรับเลี้ยง",
       icon: Heart,
@@ -146,12 +152,6 @@ const UpdatedDashboard: React.FC = () => {
       label: "ตารางการเยี่ยมชม",
       icon: Calendar,
       path: "/dashboard/visits",
-    },
-    {
-      id: "medical",
-      label: "บันทึกการรักษา",
-      icon: Stethoscope,
-      path: "/dashboard/medical",
     },
     {
       id: "support",
