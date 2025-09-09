@@ -4,8 +4,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-
 	"example.com/project-sa/configs"
 	adopter "example.com/project-sa/controllers/adoption"
 	auth "example.com/project-sa/controllers/auth"
@@ -14,14 +12,17 @@ import (
 	gender "example.com/project-sa/controllers/gender"
 	health_record "example.com/project-sa/controllers/health_record"
 	payment_method "example.com/project-sa/controllers/payment_method"
+	personalities "example.com/project-sa/controllers/personality"
 	sponsorship "example.com/project-sa/controllers/sponsorship"
 	user "example.com/project-sa/controllers/user"
+	volunteers "example.com/project-sa/controllers/volunteerRegister"
+	zcmanagement "example.com/project-sa/controllers/zcmanagement"
 	vaccine "example.com/project-sa/controllers/vaccine"
 	visit "example.com/project-sa/controllers/visit"
-	personalities "example.com/project-sa/controllers/personality"
 	"example.com/project-sa/middlewares"
 	"example.com/project-sa/migrations"
 	"example.com/project-sa/seeds"
+	"github.com/gin-gonic/gin"
 )
 
 const (
@@ -62,6 +63,9 @@ func main() {
 	r.GET("/vaccines", vaccine.GetAll)
 	r.GET("/paymentMethods", payment_method.GetAll)
 
+	r.GET("/items", donation.GetAllItems)
+	r.GET("/units", donation.GetAllUnits)
+
 	r.GET("/health-records/dog/:id", health_record.GetHealthRecordsByDogId)
 	r.POST("/health-records", health_record.CreateHealthRecord)
 	r.PUT("/health-records/:id", health_record.UpdateHealthRecord)
@@ -70,9 +74,29 @@ func main() {
 	r.POST("/visits", visit.CreateVisit)
 	r.GET("/animal-sexes",dog.GetAllAnimalSexes)
 	r.GET("/animal-sizes",dog.GetAllAnimalSizes)
+	r.GET("/visits", visit.GetAllVisits)
+	r.GET("/visits/:id", visit.GetVisit)
+	r.PUT("/visits/:id", visit.UpdateVisit)
+	r.DELETE("/visits/:id", visit.DeleteVisit)
+
 	r.GET("/personalities", personalities.GetAllPersonalities)
 	r.GET("/breeds", dog.GetAllBreeds)
 
+	r.GET("/zcmanagement", zcmanagement.GetAll)
+	r.GET("/zones", zcmanagement.GetZones)
+	r.GET("/kennels/:zone_id", zcmanagement.GetKennelsByZone)
+	r.GET("/kennel/:kennel_id/dog", zcmanagement.GetDogInKennel)
+	r.PUT("/kennel/:kennel_id/dog", zcmanagement.UpdateDogInKennel)
+	r.DELETE("/kennel/:kennel_id/dog", zcmanagement.DeleteDogFromKennel)
+
+	r.GET("/volunteers", volunteers.GetAllVolunteers)
+	r.GET("/volunteer/:id", volunteers.GetVolunteerByID)
+	r.GET("/volunteers/user/:user_id", volunteers.GetVolunteersByUserID)
+	r.POST("/volunteer", volunteers.CreateVolunteer)
+	r.PUT("/volunteer/:id", volunteers.UpdateVolunteer)
+	r.DELETE("/volunteer/:id", volunteers.DeleteVolunteer)
+	r.GET("/skills", volunteers.GetAllSkills)     //new
+	r.GET("/statusfv", volunteers.GetAllStatusFV) //new
 	// 7) Routes (protected)
 	protected := r.Group("/")
 	protected.Use(middlewares.Authorizes())
@@ -108,7 +132,7 @@ func main() {
 
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")	
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")

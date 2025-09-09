@@ -1,6 +1,8 @@
+// services/api/index.ts
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // service/api/index.ts
 import { Get, Post, Put, Delete } from "./https";
+import { axiosInstance } from "./https";
 import type { CreateDogRequest, UpdateDogRequest } from "../interfaces/Dog";
 import type {
   LoginUserRequest,
@@ -8,12 +10,19 @@ import type {
   UpdateUserRequest,
 } from "../interfaces/User";
 import type { CreateDonationRequest } from "../interfaces/Donation";
+import type { UpdateZCManagementRequest } from "../interfaces/zcManagement";
+import type { CreateVolunteerPayload } from "../interfaces/Volunteer";
+import type { SkillInterface } from "../interfaces/Skill";
+
+/** ---------- helpers ---------- */
+const isFormData = (v: any): v is FormData =>
+  typeof FormData !== "undefined" && v instanceof FormData;
+
+const mpHeaders = { "Content-Type": "multipart/form-data" };
 import type { CreateAdoptionRequest, UpdateStatusRequest } from "../interfaces/Adoption";
 import type { CreateSponsorshipRequest } from "../interfaces/Sponsorship";
 
 /** ---------- AUTH ---------- */
-// หมายเหตุ: login/signup ไม่ต้องแนบ token -> ส่ง false ให้ wrapper
-// me/logout แนบ token (default ของ wrapper = แนบให้)
 export const authAPI = {
   logIn: (data: LoginUserRequest) =>
     Post("/users/auth", data, false),     // ตาม BE ปัจจุบันของคุณ
@@ -56,7 +65,6 @@ export const dogAPI = {
 };
 
 /** ---------- LOOKUPS ---------- */
-// แนะนำให้ใช้พหูพจน์เป็นฐาน และ /:id สำหรับตัวเดียว
 export const genderAPI = {
   getAll:  () => Get("/genders"),
   getById: (id: number) => Get(`/genders/${id}`),
@@ -67,8 +75,6 @@ export const breedAPI = {
   getById: (id: number) => Get(`/breeds/${id}`),
 };
 
-// คำว่า sexes ปกติสะกดเป็น "animal-sexes"
-// ถ้า BE ปัจจุบันของคุณใช้ "animal-sexs" อยู่ ให้คงตามนั้น หรือตั้ง alias ไว้ช่วงเปลี่ยนผ่าน
 export const animalSexAPI = {
   getAll:  () => Get("/animal-sexes"),        // ← ทางที่แนะนำ
   getById: (id: number) => Get(`/animal-sexes/${id}`),
@@ -89,10 +95,93 @@ export const roleAPI = {
   getById: (id: number) => Get(`/roles/${id}`),
 };
 
-
 export const paymentMethodAPI = {
   getAll: () => Get("/paymentMethods"),
-}
+};
+
+
+/** ---------- ZC MANAGEMENT ---------- */
+export const zcManagementAPI = {
+  getAll: () => Get("/zcmanagement"),
+  update: (id: number, data: UpdateZCManagementRequest) =>
+    Put(`/zcmanagement/${id}`, data),
+};
+
+/** ---------- VOLUNTEERS ---------- */
+type StatusKind = "none" | "pending" | "approved" | "rejected" | "unknown";
+
+export const volunteerAPI = {
+  getAll: () => Get("/volunteers"),
+  getById: (id: number) => Get(`/volunteer/${id}`),
+  getByUser: (userId: number) => Get(`/volunteers/user/${userId}`),
+
+  // NEW: derive user's latest status from BE response
+  getStatusByUser: async (
+    userId: number
+  ): Promise<{ status: StatusKind; latest?: any }> => {
+    try {
+      const res = await axiosInstance.get(`/volunteers/user/${userId}`);
+      const raw = res?.data?.data ?? res?.data ?? res;
+      const arr: any[] = Array.isArray(raw) ? raw : [];
+      if (arr.length === 0) return { status: "none" };
+
+      // pick latest (by created_at fallback to id)
+      const latest = [...arr].sort((a, b) => {
+        const ta = new Date(a.created_at ?? a.CreatedAt ?? 0).getTime();
+        const tb = new Date(b.created_at ?? b.CreatedAt ?? 0).getTime();
+        if (ta && tb) return tb - ta;
+        return Number(b.id ?? b.ID ?? 0) - Number(a.id ?? a.ID ?? 0);
+      })[0];
+
+      const rawStatus =
+        latest?.status_fv?.status ??
+        latest?.StatusFV?.Status ??
+        latest?.status ??
+        "";
+
+      const s = String(rawStatus).toLowerCase();
+      if (s === "pending" || s === "approved" || s === "rejected") {
+        return { status: s as StatusKind, latest };
+      }
+      return { status: "unknown", latest };
+    } catch (err) {
+      console.error("GET /volunteers/user/:id failed:", err);
+      return { status: "unknown" };
+    }
+  },
+
+  create: (data: FormData | CreateVolunteerPayload) =>
+    isFormData(data)
+      ? axiosInstance.post("/volunteer", data, { headers: mpHeaders })
+      : Post("/volunteer", data),
+
+  update: (id: number, data: FormData | CreateVolunteerPayload) =>
+    isFormData(data)
+      ? axiosInstance.put(`/volunteer/${id}`, data, { headers: mpHeaders })
+      : Put(`/volunteer/${id}`, data),
+
+  remove: (id: number) => Delete(`/volunteer/${id}`),
+};
+
+/** ---------- SKILLS ---------- */
+// BE returns { data: [ { ID, Description }, ... ] } (or sometimes just [])
+export const skillsAPI = {
+  getAll: async (): Promise<SkillInterface[]> => {
+    try {
+      const res = await axiosInstance.get("/skills");
+      const raw = res?.data?.data ?? res?.data ?? res;
+      const arr = Array.isArray(raw) ? raw : [];
+      return arr.map((s: any) => ({
+        id: Number(s.id ?? s.ID ?? 0),
+        description: String(s.description ?? s.Description ?? "").trim(),
+      }));
+    } catch (err: any) {
+      console.error("GET /skills failed:", err?.response?.data ?? err);
+      throw err;
+    }
+  },
+};
+
 
 
 export const donationAPI = {
@@ -100,6 +189,11 @@ export const donationAPI = {
   getById: (id: number) => Get(`/donations/${id}`),
   getMyDonations: () => Get("/donations/my"), // สำหรับดึงการบริจาคของผู้ใช้ที่ล็อกอิน
   create:  (data: CreateDonationRequest) => Post("/donations", data),
+  getItemById: (id: number) => Get(`/items/${id}`),
+  getAllItems: () => Get("/items"),
+  getUnitById: (id: number) => Get(`/units/${id}`),
+  getAllUnits: () => Get("/units"),
+  // ถ้า BE มี endpoint สำหรับ update/delete ค่อยเพิ่ม
   // update:  (id: number, data: UpdateDonationRequest) => Put(`/donations/${id}`, data),
   // remove:  (id: number) => Delete(`/donations/${id}`),
 };
@@ -126,10 +220,17 @@ export const vaccineAPI = {
 };
 export const visitAPI = {
   createVisit: (data: any) => Post("/visits", data),
+  getAllVisits: () => Get("/visits"),
+  getVisitById: (id: number) => Get(`/visits/${id}`),
+  updateVisit: (id: number, data: any) => Put(`/visits/${id}`, data),
+  deleteVisit: (id: number) => Delete(`/visits/${id}`),
 };
 
 export const personalityAPI = {
   getAll: () => Get("/personalities"),
+}
+export const staffAPI = {
+  getAll: () => Get("/staffs"),
 }
 
 
@@ -145,8 +246,12 @@ export const api = {
   adopterAPI,
   paymentMethodAPI,
   donationAPI,
+  zcManagementAPI,
+  volunteerAPI,
+  skillsAPI,
   sponsorshipAPI,
   healthRecordAPI,
   vaccineAPI,
   visitAPI,
+  staffAPI,
 };

@@ -51,10 +51,14 @@ interface DonationWithDetails {
     };
   }>;
   item_donations?: Array<{
-    item_name: string;
     quantity: number;
-    unit: string;
     item_ref?: string;
+    item: {
+      name: string;
+    };
+    unit: {
+      name: string;
+    };
   }>;
 }
 
@@ -78,6 +82,9 @@ const MyDonations: React.FC = () => {
       setDonationsLoading(true);
       setError(null);
       const response = (await donationAPI.getMyDonations()) as any;
+      
+      console.log('API Response:', response); // เพิ่ม log เพื่อตรวจสอบ structure
+      
       if (response && Array.isArray(response)) {
         setDonations(response);
       } else {
@@ -213,35 +220,42 @@ const MyDonations: React.FC = () => {
 
   const renderItemDonation = (d: DonationWithDetails) => {
     if (!d.item_donations?.length) return null;
+    
     return (
       <Card size="small" className="mdn-subcard mdn-subcard--item">
         <Title level={5} className="mdn-subtitle">รายการสิ่งของที่บริจาค</Title>
         <List
           dataSource={d.item_donations}
-          renderItem={(item, idx) => (
-            <List.Item className={`mdn-item ${idx === d.item_donations!.length - 1 ? 'last' : ''}`}>
-              <Row align="middle" style={{ width: '100%' }}>
-                <Col flex="auto">
-                  <Space>
-                    <Avatar size="small" icon={<GiftOutlined />} className="mdn-avatar" />
-                    <div>
-                      <Text strong>{item.item_name}</Text>
-                      {item.item_ref && (
-                        <div>
-                          <Text type="secondary" className="mdn-muted" style={{ fontFamily: 'Anakotmai' }}>
-                            รหัส: {item.item_ref}
-                          </Text>
-                        </div>
-                      )}
-                    </div>
-                  </Space>
-                </Col>
-                <Col>
-                  <Tag className="mdn-qty">{item.quantity} {item.unit}</Tag>
-                </Col>
-              </Row>
-            </List.Item>
-          )}
+          renderItem={(item, idx) => {
+            // ใช้ตัวเล็กตามข้อมูลจริงที่ส่งมาจาก backend
+            const itemName = item.item?.name || '[ไม่พบข้อมูลสิ่งของ]';
+            const unitName = item.unit?.name || '';
+            
+            return (
+              <List.Item className={`mdn-item ${idx === d.item_donations!.length - 1 ? 'last' : ''}`}>
+                <Row align="middle" style={{ width: '100%' }}>
+                  <Col flex="auto">
+                    <Space>
+                      <Avatar size="small" icon={<GiftOutlined />} className="mdn-avatar" />
+                      <div>
+                        <Text strong>{itemName}</Text>
+                        {item.item_ref && (
+                          <div>
+                            <Text type="secondary" className="mdn-muted" style={{ fontFamily: 'Anakotmai' }}>
+                              รหัส: {item.item_ref}
+                            </Text>
+                          </div>
+                        )}
+                      </div>
+                    </Space>
+                  </Col>
+                  <Col>
+                    <Tag className="mdn-qty">{item.quantity} {unitName}</Tag>
+                  </Col>
+                </Row>
+              </List.Item>
+            );
+          }}
         />
       </Card>
     );

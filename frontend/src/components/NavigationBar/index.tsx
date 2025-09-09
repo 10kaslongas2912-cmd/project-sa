@@ -22,8 +22,6 @@ const NavigationBar: React.FC = () => {
     }
   };
 
-  
-
   useEffect(() => {
     const controlNavbar = () => {
       setVisible(window.scrollY <= lastScrollY);
@@ -47,12 +45,10 @@ const NavigationBar: React.FC = () => {
       </nav>
 
       <div className="header-actions">
-        <Link to="/adoption" className="btn btn-action adopt-btn">Samรับเลี้ยง</Link>
-        <Link to="/create-visit" className="btn btn-action adopt-btn">การเยี่ยมชม</Link>
-        <a href="/health-record/search" className="btn btn-action adopt-btn">รับเลี้ยง</a>
+        <a href="/adoption" className="btn btn-action adopt-btn">รับเลี้ยง</a>
         <Link to="/sponsor" className="btn btn-action sponsor-btn">อุปถัมภ์</Link>
         <a onClick={handleDonateClick} className="btn btn-action donate-btn">
-          <span className="heart-icon">&#x2764;</span> บริจาค
+          <span className="heart-icon">&#x2764;</span>บริจาค
         </a>
 
         {isLoggedIn ? (

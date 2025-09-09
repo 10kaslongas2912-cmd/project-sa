@@ -103,7 +103,7 @@ func SignUp(c *gin.Context) {
 		return
 	}
 
-	// บันทึก
+	
 	user := entity.User{
 		FirstName:   req.FirstName,
 		LastName:    req.LastName,
@@ -183,7 +183,7 @@ func SignIn(c *gin.Context) {
 		signedToken, err = generateForUser.GenerateTokenForUser(user.ID, user.Username, user.Email)
 	} else {
 		// Fallback: ใช้ของเดิมที่รับ string เดียว (เดิมคุณรับ email; ถ้าของเดิมยังรับ email ให้เปลี่ยนเป็น user.Email)
-		signedToken, err = jwtWrapper.GenerateToken(user.ID,user.Username,user.Email)
+		signedToken, err = jwtWrapper.GenerateToken(user.ID, user.Username, user.Email)
 	}
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "error signing token"})
@@ -196,18 +196,19 @@ func SignIn(c *gin.Context) {
 		out = user
 	}
 
-	resp := LoginResponse{
-        TokenType: "Bearer",
-        Token:     signedToken,
-        User: LoginUserDTO{
-            ID:        out.ID,
-            Username:  out.Username,
-            FirstName: out.FirstName,
-            LastName:  out.LastName,
-            Email:     out.Email,
-            Phone:     out.Phone,
-            Gender:    out.Gender,
-        },
-	}
-	c.JSON(http.StatusOK, resp);
+	c.JSON(http.StatusOK, gin.H{
+		"data": gin.H{
+			"token_type": "Bearer",
+			"token":      signedToken,
+			"user": gin.H{
+				"id":        out.ID, // ใช้ gorm.Model => ฟิลด์ ID ใหญ่
+				"username":  out.Username,
+				"firstname": out.FirstName,
+				"lastname":  out.LastName,
+				"email":     out.Email,
+				"phone":     out.Phone,
+				"gender":    out.Gender, // ถ้า entity.Gender มี json tag ถูก จะ serialize เป็น object
+			},
+		},
+	})
 }

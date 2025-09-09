@@ -1,8 +1,8 @@
 /* Dog Visit Form Styles */
 .dog-visit-form-container {
   max-width: 100%;
-  margin-top: 130px;
-  padding: 24px;
+  margin-top: 0px;
+  padding: 0px;
   
   
 }
@@ -90,7 +90,10 @@ body {
   transition: transform 0.2s, box-shadow 0.2s;
   border-radius: 12px;
   overflow: hidden;
+  height: 220px;
+  width: 260px;
 }
+
 
 .dog-card:hover {
   transform: translateY(-2px);
@@ -135,13 +138,14 @@ body {
 .selected-dogs-grid {
   display: grid; /* เพิ่ม */
   grid-template-columns: repeat(3, 1fr); /* 3 columns เท่ากัน */
-  gap: 16px; /* ระยะห่างระหว่าง card */
+  gap: 5px; /* ระยะห่างระหว่าง card */
   max-height: 500px; /* ปรับได้ตามต้องการ */
   overflow-y: auto; /* scroll ถ้ามีเยอะ */
   padding: 8px;
 }
 .selected-dog-card {
-  height: 180px; /* หรือปรับตามขนาดที่ต้องการ */
+  width: 260px; /* หรือปรับตามขนาดที่ต้องการ */
+  height: 220px; /* หรือปรับตามขนาดที่ต้องการ */
 }
 
 
