@@ -1,5 +1,5 @@
 // src/hooks/useDogs.ts
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { dogAPI } from "../services/apis";
 import type { DogInterface } from "../interfaces/Dog";
 
@@ -8,20 +8,20 @@ export function useDogs() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true);
-        const res = await dogAPI.getAll(); // ควรคืน DogInterface[]
-        setDogs(res);
-        setError(null);
-      } catch (e: any) {
-        setError(e?.message || "โหลดข้อมูลน้องหมาไม่สำเร็จ");
-      } finally {
-        setLoading(false);
-      }
-    })();
+  const refetch = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await dogAPI.getAll(); 
+      setDogs(res || []);
+      setError(null);
+    } catch (e: any) {
+      setError(e?.message || "โหลดข้อมูลน้องหมาไม่สำเร็จ");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  return { dogs, loading, error };
+  useEffect(() => { refetch(); }, [refetch]);
+
+  return { dogs, loading, error, refetch };
 }

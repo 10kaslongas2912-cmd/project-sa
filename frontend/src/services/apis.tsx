@@ -52,7 +52,7 @@ export const dogAPI = {
   getById: (id: number) => Get(`/dogs/${id}`),
   create:  (data: CreateDogRequest) => Post("/dogs", data),
   update:  (id: number, data: UpdateDogRequest) => Put(`/dogs/${id}`, data),
-  remove:  (id: number) => Delete(`/dogs/${id}`),
+  delete:  (id: number) => Delete(`/dogs/${id}`),
 };
 
 /** ---------- LOOKUPS ---------- */
@@ -77,6 +77,12 @@ export const animalSexAPI = {
   // getAll:  () => Get("/animal-sexs"),
   // getById: (id: number) => Get(`/animal-sex/${id}`),
 };
+
+export const animalSizeAPI = {
+  getAll: () => Get("/animal-sizes"),
+  getById: (id: number) => Get(`/animal-sizes/${id}`),
+
+}
 
 export const roleAPI = {
   getAll:  () => Get("/roles"),
@@ -134,6 +140,7 @@ export const api = {
   genderAPI,
   breedAPI,
   animalSexAPI,
+  animalSizeAPI,
   roleAPI,
   adopterAPI,
   paymentMethodAPI,
