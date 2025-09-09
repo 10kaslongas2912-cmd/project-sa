@@ -1,26 +1,43 @@
 import React from 'react';
-import { useParams, useNavigate } from "react-router-dom";
+// 1. นำเข้า useLocation เพิ่มเติม
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useDog } from "../../../../hooks/useDog";
-import { ageText } from "../../../../utils/date"
+import { ageText } from "../../../../utils/date";
+// Hook สำหรับเช็คสถานะ login (มีอยู่แล้ว)
+import { useAuthUser } from "../../../../hooks/useAuth";
 import './style.css';
 
 
 const Doglist: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  // 2. เรียกใช้ useLocation และ useAuthUser
+  const location = useLocation(); // เพื่อจดจำ path ปัจจุบัน
+  const { isLoggedIn } = useAuthUser(); // ดึงสถานะการล็อกอินมาใช้
   const { dog, loading, error } = useDog(id ? Number(id) : null);
-  console.log(dog);
+
   if (loading) return <p>กำลังโหลด...</p>;
   if (error) return <p>โหลดไม่ได้: {error}</p>;
   if (!dog) return <p>ไม่พบน้องหมา</p>;
 
   const handleBackClick = (): void => {
     navigate(-1);
-    // window.history.back(); // หรือใช้ React Router
   };
 
-  const handleSponsorClick = (): void => {
-  navigate(`/adoption/from/${dog.ID}`);
+  // 3. ปรับปรุงฟังก์ชัน handleSponsorClick
+  const handleAdoptClick = (): void => {
+    // ตรวจสอบว่าผู้ใช้ล็อกอินแล้วหรือยัง
+    if (isLoggedIn) {
+      // ถ้าล็อกอินแล้ว: ไปที่หน้าฟอร์มรับเลี้ยงได้เลย
+      navigate(`/adoption/from/${dog.ID}`);
+    } else {
+      // ถ้ายังไม่ล็อกอิน:
+      // 1. พาไปที่หน้า '/login'
+      // 2. ส่ง state 'from' ที่มีค่าเป็น location ปัจจุบันไปด้วย
+      //    เพื่อให้หน้า login รู้ว่าล็อกอินเสร็จแล้วต้องกลับมาที่นี่
+      alert("คุณยังไม่ได้ล็อกอิน โปรดล็อกอินเพื่อรับเลี้ยงสุนัข");
+      navigate('/auth', { state: { from: location } });
+    }
   };
 
   return (
@@ -53,9 +70,6 @@ const Doglist: React.FC = () => {
                 target.src = 'https://via.placeholder.com/400x300/ff9028/ffffff?text=🐕';
               }}
             />
-            {/* <div className="donation-badge">
-              ค่าใช้จ่าย {dog.donationAmount} ต่อเดือน
-            </div> */}
           </div>
         </div>
 
@@ -77,18 +91,6 @@ const Doglist: React.FC = () => {
                 <span className="info-label">อายุ:</span>
                 <span className="info-value">{ageText(dog.date_of_birth)}</span>
               </div>
-            </div>
-          </div>
-
-          {/* Personality */}
-          <div className="info-section">
-            <h2 className="section-title">บุคลิกภาพ</h2>
-            <div className="personality-tags">
-              {/* {petData.personality.map((trait: string, index: number) => (
-                <span key={index} className="personality-tag">
-                  {trait}
-                </span>
-              ))} */}
             </div>
           </div>
 
@@ -133,7 +135,7 @@ const Doglist: React.FC = () => {
           <div className="sponsor-call-to-action">
             <h3>สนใจอยากรับเลี้ยงน้อง {dog.name}</h3>
             <p>กรอกแบบฟรอมเพื่อขอรับเลี้ยงน้อง {dog.name} </p>
-            <button className="sponsor-button" onClick={handleSponsorClick}>
+            <button className="sponsor-button" onClick={handleAdoptClick}>
               รับเลี้ยง
             </button>
           </div>

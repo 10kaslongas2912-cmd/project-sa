@@ -21,7 +21,9 @@ const NavigationBar: React.FC = () => {
       navigate("/donation");
     }
   };
+
   
+
   useEffect(() => {
     const controlNavbar = () => {
       setVisible(window.scrollY <= lastScrollY);

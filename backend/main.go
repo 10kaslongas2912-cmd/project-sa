@@ -73,6 +73,7 @@ func main() {
 		protected.GET("/users/:id", user.GetUserById)
 		protected.DELETE("/users/:id", user.DeleteUser)
 		protected.POST("/sponsorships/subscription", sponsorship.CreateSubscriptionSponsorship)
+		protected.GET("/my-adoptions", adopter.GetMyCurrentAdoptions)
 	}
 
 	// health
@@ -84,7 +85,10 @@ func main() {
 	r.POST("/adoptions", adopter.CreateAdoption)
 	r.GET("/adoptions", adopter.GetAllAdoptions)            
   r.PUT("/adoptions/:id/status", adopter.UpdateAdoptionStatus)
-	
+	r.DELETE("/adoptions/:id", adopter.DeleteAdoption)
+
+
+
 	// 8) Run (แนะนำ bind ทุก iface)
 	if err := r.Run("localhost:" + PORT); err != nil {
 		log.Fatal(err)
