@@ -23,19 +23,19 @@ type LoginRequest struct {
 }
 
 type LoginUserDTO struct {
-	ID        uint              `json:"ID"`
-	Username  string            `json:"username"`
-	FirstName string            `json:"first_name"`
-	LastName  string            `json:"last_name"`
-	Email     string            `json:"email"`
-	Phone     string            `json:"phone"`
-	Gender    *entity.Gender    `json:"gender,omitempty"`
+	ID        uint           `json:"ID"`
+	Username  string         `json:"username"`
+	FirstName string         `json:"first_name"`
+	LastName  string         `json:"last_name"`
+	Email     string         `json:"email"`
+	Phone     string         `json:"phone"`
+	Gender    *entity.Gender `json:"gender,omitempty"`
 }
 
 type LoginResponse struct {
-	TokenType string        `json:"token_type"`
-	Token     string        `json:"token"`
-	User      LoginUserDTO  `json:"user"`
+	TokenType string       `json:"token_type"`
+	Token     string       `json:"token"`
+	User      LoginUserDTO `json:"user"`
 }
 
 type SignUpRequest struct {
@@ -48,7 +48,6 @@ type SignUpRequest struct {
 	Username    string `json:"username"     binding:"required"`
 	Password    string `json:"password"     binding:"required"`
 }
-
 
 /* ===== Helpers ===== */
 
@@ -103,11 +102,6 @@ func SignUp(c *gin.Context) {
 		return
 	}
 
-	dob, err := time.Parse("2006-01-02", req.DateOfBirth)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid date_of_birth (YYYY-MM-DD)"})
-		return
-	}
 	user := entity.User{
 		FirstName:   req.FirstName,
 		LastName:    req.LastName,
@@ -115,7 +109,7 @@ func SignUp(c *gin.Context) {
 		Phone:       req.Phone,
 		Username:    req.Username,
 		Password:    hashed,
-		DateOfBirth: dob, // หาก entity.User ใช้ time.Time ให้แปลงก่อน
+		DateOfBirth: req.DateOfBirth, // หาก entity.User ใช้ time.Time ให้แปลงก่อน
 		GenderID:    req.GenderID,
 	}
 	if err := db.Create(&user).Error; err != nil {
@@ -207,8 +201,8 @@ func SignIn(c *gin.Context) {
 			"user": gin.H{
 				"id":        out.ID, // ใช้ gorm.Model => ฟิลด์ ID ใหญ่
 				"username":  out.Username,
-				"firstname": out.Firstname,
-				"lastname":  out.Lastname,
+				"firstname": out.FirstName,
+				"lastname":  out.LastName,
 				"email":     out.Email,
 				"phone":     out.Phone,
 				"gender":    out.Gender, // ถ้า entity.Gender มี json tag ถูก จะ serialize เป็น object
