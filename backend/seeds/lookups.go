@@ -101,5 +101,43 @@ func seedLookupsBase(db *gorm.DB) error {
 		return err
 	}
 
+	items := []entity.Item{
+		{Name: "ข้าว"},
+		{Name: "อาหารเม็ดสุนัข"},
+		{Name: "อาหารกระป๋อง"},
+		{Name: "เสื้อผ้าสุนัข"},
+		{Name: "ผ้าห่ม"},
+		{Name: "ของเล่น"},
+		{Name: "อุปกรณ์การเรียน"},
+		{Name: "น้ำยาล้างมือ"},
+		{Name: "น้ำยาถูพื้น"},
+		{Name: "ถุงขยะ"},
+	}
+
+	for i := range items {
+		if err := db.Where("name = ?", items[i].Name).FirstOrCreate(&items[i]).Error; err != nil {
+			return err
+		}
+	}
+
+	units := []entity.Unit{
+		{Name: "กิโลกรัม"},
+		{Name: "ชิ้น"},
+		{Name: "กล่อง"},
+		{Name: "ถุง"},
+		{Name: "ขวด"},
+		{Name: "แผ่น"},
+		{Name: "ห่อ"},
+		{Name: "แพ็ค"},
+		{Name: "ลัง"},
+		{Name: "ผืน"},
+	}
+
+	for i := range units {
+		if err := db.Where("name = ?", units[i].Name).FirstOrCreate(&units[i]).Error; err != nil {
+			return err
+		}
+	}
+
 	return nil
 }

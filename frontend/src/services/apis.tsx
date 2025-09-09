@@ -94,6 +94,11 @@ export const donationAPI = {
   getById: (id: number) => Get(`/donations/${id}`),
   getMyDonations: () => Get("/donations/my"), // สำหรับดึงการบริจาคของผู้ใช้ที่ล็อกอิน
   create:  (data: CreateDonationRequest) => Post("/donations", data),
+  getItemById: (id: number) => Get(`/items/${id}`),
+  getAllItems: () => Get("/items"),
+  getUnitById: (id: number) => Get(`/units/${id}`),
+  getAllUnits: () => Get("/units"),
+  // ถ้า BE มี endpoint สำหรับ update/delete ค่อยเพิ่ม
   // update:  (id: number, data: UpdateDonationRequest) => Put(`/donations/${id}`, data),
   // remove:  (id: number) => Delete(`/donations/${id}`),
 };

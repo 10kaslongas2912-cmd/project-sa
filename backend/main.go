@@ -4,8 +4,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-
 	"example.com/project-sa/configs"
 	adopter "example.com/project-sa/controllers/adoption"
 	auth "example.com/project-sa/controllers/auth"
@@ -14,14 +12,15 @@ import (
 	gender "example.com/project-sa/controllers/gender"
 	health_record "example.com/project-sa/controllers/health_record"
 	payment_method "example.com/project-sa/controllers/payment_method"
+	personalities "example.com/project-sa/controllers/personality"
 	sponsorship "example.com/project-sa/controllers/sponsorship"
 	user "example.com/project-sa/controllers/user"
 	vaccine "example.com/project-sa/controllers/vaccine"
 	visit "example.com/project-sa/controllers/visit"
-	personalities "example.com/project-sa/controllers/personality"
 	"example.com/project-sa/middlewares"
 	"example.com/project-sa/migrations"
 	"example.com/project-sa/seeds"
+	"github.com/gin-gonic/gin"
 )
 
 const (
@@ -58,6 +57,9 @@ func main() {
 	r.GET("/genders", gender.GetAll)
 	r.GET("/vaccines", vaccine.GetAll)
 	r.GET("/paymentMethods", payment_method.GetAll)
+
+	r.GET("/items", donation.GetAllItems)
+	r.GET("/units", donation.GetAllUnits)
 
 	r.GET("/health-records/dog/:id", health_record.GetHealthRecordsByDogId)
 	r.POST("/health-records", health_record.CreateHealthRecord)
