@@ -4,7 +4,6 @@ import AuthRoutes from "./AuthRoutes";
 import  RouteObject  from "./DashboardRoutes"; 
 import SponsorRoutes from "./SponsorRoutes";
 import DonationRoutes from "./DonationRoutes";
-import HealthRecordRoutes from "./HealthRecordRoutes";
 import AdoptionRoutes from "./AdoptionRoutes";
 import EventRoutes from "./EventRoutes";
 import MyAdoptionsPage from "./Myadoption";
@@ -20,7 +19,6 @@ export default function ThemeRoutes() {
     ...RouteObject,
     SponsorRoutes(),
     DonationRoutes(),
-    HealthRecordRoutes(),
     AdoptionRoutes(),
     EventRoutes(),
     MyAdoptionsPage(),

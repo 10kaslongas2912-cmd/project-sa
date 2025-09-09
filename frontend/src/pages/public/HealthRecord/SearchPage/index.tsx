@@ -52,7 +52,7 @@ const SearchPage: React.FC = () => {
 
   const handleDogSelect = (dog: DogInterface) => {
     if (dog.ID) {
-      navigate(`/health-record/dog/${dog.ID}`);
+      navigate(`/dashboard/health-record/dog/${dog.ID}`);
     } else {
       message.error('ไม่สามารถเปิดข้อมูลสุนัขได้');
     }
