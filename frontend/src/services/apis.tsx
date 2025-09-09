@@ -116,6 +116,10 @@ export const vaccineAPI = {
 };
 export const visitAPI = {
   createVisit: (data: any) => Post("/visits", data),
+  getAllVisits: () => Get("/visits"),
+  getVisitById: (id: number) => Get(`/visits/${id}`),
+  updateVisit: (id: number, data: any) => Put(`/visits/${id}`, data),
+  deleteVisit: (id: number) => Delete(`/visits/${id}`),
 };
 
 

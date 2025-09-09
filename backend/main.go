@@ -64,6 +64,10 @@ func main() {
 	r.DELETE("/health-records/:id", health_record.DeleteHealthRecord)
 	r.GET("/health-records/:id", health_record.GetHealthRecordById)
 	r.POST("/visits", visit.CreateVisit)
+	r.GET("/visits", visit.GetAllVisits)
+	r.GET("/visits/:id", visit.GetVisit)
+	r.PUT("/visits/:id", visit.UpdateVisit)
+	r.DELETE("/visits/:id", visit.DeleteVisit)
 
 	// 7) Routes (protected)
 	protected := r.Group("/")
