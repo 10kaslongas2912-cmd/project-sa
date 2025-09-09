@@ -133,7 +133,7 @@ const UpdatedDashboard: React.FC = () => {
       id: "adoption",
       label: "การรับเลี้ยง",
       icon: Heart,
-      path: "/dashboard/adoption",
+      path: "/dashboard/my-adoptions",
     },
     {
       id: "donation",
