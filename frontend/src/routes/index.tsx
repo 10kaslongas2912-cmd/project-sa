@@ -9,6 +9,7 @@ import HealthRecordRoutes from "./HealthRecordRoutes";
 import AdoptionRoutes from "./AdoptionRoutes";
 import EventRoutes from "./EventRoutes";
 import { userDashboardRoutes } from "./UserDashboard";
+import VisitRoutes from "./VisitRoutes";
 
 // ==============================|| ROUTING RENDER ||============================== //
 
@@ -23,5 +24,7 @@ export default function ThemeRoutes() {
     AdoptionRoutes(),
     EventRoutes(),
     userDashboardRoutes,
+    VisitRoutes(),
+    
   ]);
 }
