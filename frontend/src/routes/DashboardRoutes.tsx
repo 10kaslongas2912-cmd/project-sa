@@ -32,7 +32,7 @@ export const dashboardRoutes: RouteObject = {
       element: <HealthRecords />
     },
     {
-      path: "health-record/:id",
+      path: "health-record/dog/:id",
       element: <DetailPageHealth />
     },
     {

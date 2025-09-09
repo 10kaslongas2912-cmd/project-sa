@@ -18,6 +18,14 @@
     margin: 0 auto;
     padding: 24px;
     font-family: 'Anakotmai-Bold' !important;
+    z-index: 999 !important;
+}
+.health-detail-page .back-button {
+  position: fixed !important;   /* ลอยอิง viewport */
+  top: 20px !important;
+  left: 20px !important;        /* ถ้ามี sidebar 280px ก็ใช้ left: 300px */
+  z-index: 10010 !important;    /* สูงกว่าการ์ด/ส่วนหัว */
+  pointer-events: auto !important;
 }
 
 .health-detail-page .form-header {
@@ -27,9 +35,9 @@
 }
 
 .health-detail-page .back-button {
-    position: absolute;
-    top: 20px;
-    left: 20px;
+    position: static !important;
+    top: 10px !important;
+    left: 20px !important;
     font-size: 16px;
     color: rgba(0, 0, 0, 0.65);
     font-family: 'Anakotmai-Bold';
@@ -39,15 +47,15 @@
     text-align: center;
     margin-bottom: 15px !important;
     color: #ff6600;
-    font-size: 40px;
+    font-size: clamp(28px, 5vw, 40px);
     font-family: 'Anakotmai-Bold';
 }
 
 /* ===== Title Underline ===== */
 .title-underline {
     height: 5px;
-    width: 100%;
-    max-width: 500px;
+    width: 50% !important;
+    max-width: min(500px, 90vw);
     background-color: #253C90;
     margin: 0 auto;
     border-radius: 2px;
@@ -57,19 +65,19 @@
 /* ===== Health Detail Card ===== */
 .health-detail-card {
     border-radius: 20px !important;
-    padding: 30px !important;
+    padding: clamp(16px, 3vw, 30px) !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     background: #fff;
 }
 
 .health-detail-card .ant-card-body {
-    padding: 20px !important;
+    padding: clamp(12px, 2.5vw, 20px) !important;
 }
 
 /* ===== No Records Section ===== */
 .no-records {
     text-align: center;
-    padding: 40px;
+    padding: clamp(24px, 5vw, 40px);
     color: #888;
 }
 
@@ -87,7 +95,7 @@
 }
 
 .health-record-item .ant-card-body {
-    padding: 20px !important;
+    padding: clamp(12px, 2.5vw, 20px) !important;
 }
 
 .health-record-item .record-info {
@@ -105,20 +113,19 @@
     margin-bottom: 24px;
 }
 
-
-
 .search-page .page-title {
     margin-bottom: 15px !important;
     color: #ff6600;
-    font-size: 50px;
+    font-size: clamp(32px, 6vw, 50px);
     font-family: 'Anakotmai-Bold';
-    margin-left: 245px;
+    text-align: center;
 }
 
 .search-page .search-container {
-    max-width: 300vh !important;
+    max-width: 100% !important;
     width: 100% !important;
-    margin-left: 250px !important;
+    margin: 0 auto !important;
+    padding: 0 20px;
 }
 
 .search-page .search-input {
@@ -127,26 +134,27 @@
 }
 
 .search-page .search-input .ant-input {
-    padding: 8px 16px;
+    padding: clamp(6px, 1.5vw, 8px) clamp(12px, 2vw, 16px);
     font-family: 'Anakotmai-Bold' !important;
 }
 
 .search-results {
-    max-width: 1200px !important;
+    max-width: 100% !important;
     margin: 0 auto;
     font-family: 'Anakotmai-Bold' !important;
+    padding: 0 20px;
 }
 
 .no-results {
     text-align: center;
-    padding: 40px;
+    padding: clamp(24px, 5vw, 40px);
     color: #888;
     font-family: 'Anakotmai-Bold' !important;
 }
 
 .dog-silhouette {
-    width: 80px;
-    height: 80px;
+    width: clamp(60px, 10vw, 80px);
+    height: clamp(60px, 10vw, 80px);
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23cccccc"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-12h2v4h-2zm0 6h2v2h-2z"/></svg>');
     background-size: contain;
     background-repeat: no-repeat;
@@ -154,14 +162,13 @@
     opacity: 0.5;
 }
 
-/* ===== Dog Result Card (Search Page) ===== */
+/* ===== Dog Result Card (Search Page) - Responsive ===== */
 .dog-result-card {
     margin-bottom: 16px;
     cursor: pointer;
     transition: box-shadow 0.3s ease;
     width: 100%;
-    min-width: 500px;
-    margin-left: -10px;
+    max-width: 100%;
     border-radius: 20px !important;
     overflow: hidden;
 }
@@ -170,19 +177,19 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* ===== บังคับให้ Card Body เป็น Flexbox ===== */
+/* ===== บังคับให้ Card Body เป็น Flexbox - Responsive ===== */
 .dog-result-card .ant-card-body {
     display: flex !important;
     align-items: flex-start !important;
-    gap: 20px !important;
-    padding: 20px !important;
-    min-height: 200px !important;
+    gap: clamp(12px, 2.5vw, 20px) !important;
+    padding: clamp(12px, 2.5vw, 20px) !important;
+    min-height: auto !important;
 }
 
-/* ===== Container รูปภาพ ===== */
+/* ===== Container รูปภาพ - Responsive ===== */
 .dog-result-card .dog-image {
-    width: 180px !important;
-    height: 180px !important;
+    width: clamp(120px, 20vw, 180px) !important;
+    height: clamp(120px, 20vw, 180px) !important;
     border-radius: 12px !important;
     overflow: hidden !important;
     flex-shrink: 0 !important;
@@ -192,7 +199,7 @@
     justify-content: center !important;
 }
 
-/* ===== รูปภาพจริง ===== */
+/* ===== รูปภาพจริง - Responsive ===== */
 .dog-result-card .dog-image img {
     width: 100% !important;
     height: 100% !important;
@@ -213,7 +220,7 @@
 
 .dog-result-card .dog-name {
     margin: 0 0 12px 0 !important;
-    font-size: 28px !important;
+    font-size: clamp(20px, 4vw, 28px) !important;
     font-family: 'Anakotmai-Bold' !important;
     line-height: 1.2 !important;
 }
@@ -221,6 +228,7 @@
 .dog-result-card .dog-info .ant-typography {
     margin-bottom: 8px !important;
     font-family: 'Anakotmai-Bold' !important;
+    font-size: clamp(12px, 2.5vw, 14px) !important;
 }
 
 /* ===== Health History (ถ้ามี) ===== */
@@ -229,13 +237,14 @@
     margin-bottom: 8px;
     font-weight: bold;
     font-family: 'Anakotmai-Bold' !important;
+    font-size: clamp(12px, 2.5vw, 14px) !important;
 }
 
 .dog-result-card .health-history .history-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 13px;
+    font-size: clamp(11px, 2vw, 13px) !important;
     margin-bottom: 4px;
 }
 
@@ -245,17 +254,17 @@
 
 /* ===== Search Container ===== */
 .search-container .ant-input-affix-wrapper {
-    max-width: 1200px !important;
+    max-width: 100% !important;
     width: 100% !important;
 }
 
-/* ===== Search Page Title Underline ===== */
+/* ===== Search Page Title Underline - Responsive ===== */
 .search-page .title-underline {
     height: 5px;
     width: 100%;
-    max-width: 1200px;
+    max-width: min(1200px, 90vw);
     background-color: #253C90;
-    margin-left: 250px;
+    margin: 0 auto;
     border-radius: 2px;
     margin-bottom: 20px;
 }
@@ -328,54 +337,8 @@
     font-family: 'Anakotmai-Bold' !important;
 }
 
-/* ===== รองรับหน้าจอขนาดเล็ก ===== */
-@media (max-width: 768px) {
-    .health-detail-page {
-        padding: 16px;
-    }
-    
-    .dog-result-card {
-        min-width: auto;
-        margin-left: 0;
-    }
-    
-    .dog-result-card .ant-card-body {
-        flex-direction: column !important;
-        align-items: center !important;
-        text-align: center !important;
-    }
-    
-    .dog-result-card .dog-image {
-        width: 150px !important;
-        height: 150px !important;
-    }
-    
-    .search-page .page-title {
-        margin-left: 0;
-        text-align: center;
-    }
-    
-    .search-page .search-container {
-        margin-left: 0 !important;
-    }
-    
-    .search-page .title-underline {
-        margin-left: 0;
-    }
-}
-
 /* ===== แก้ไขปัญหา Ant Design Override ===== */
 .dog-result-card.ant-card .ant-card-body {
-    display: flex !important;
-}
-
-.dog-result-card .ant-row {
-    display: none !important;
-}
-
-.dog-result-card .ant-col {
-    display: none !important;
-}d.ant-card .ant-card-body {
     display: flex !important;
 }
 
@@ -404,7 +367,85 @@
     background: transparent;
     color: #ff6600;
 }
+
 .force-top-modal .ant-modal,
 .force-top-modal .ant-modal-mask {
-  z-index: 10000 !important;
+    z-index: 10000 !important;
+}
+
+/* ===== Responsive Media Queries ===== */
+
+/* Mobile First - Extra Small devices (320px and up) */
+@media (max-width: 480px) {
+    .dog-health-record-container {
+        padding: 12px;
+    }
+    
+    .health-detail-page {
+        padding: 12px;
+    }
+    
+    .dog-result-card .ant-card-body {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+    
+    .dog-result-card .dog-image {
+        width: 140px !important;
+        height: 140px !important;
+    }
+    
+    .search-page .search-container,
+    .search-results {
+        padding: 0 12px;
+    }
+}
+
+/* Small devices (576px and up) */
+@media (min-width: 576px) {
+    .dog-result-card .ant-card-body {
+        flex-direction: row !important;
+        align-items: flex-start !important;
+        text-align: left !important;
+    }
+}
+
+/* Medium devices (768px and up) */
+@media (min-width: 768px) {
+    .dog-health-record-container {
+        padding: 20px;
+    }
+    
+    .health-detail-page {
+        padding: 20px;
+    }
+    
+    .search-page .search-container,
+    .search-results {
+        padding: 0 16px;
+    }
+}
+
+/* Large devices (992px and up) */
+@media (min-width: 992px) {
+    .dog-health-record-container {
+        padding: 24px;
+    }
+    
+    .health-detail-page {
+        padding: 24px;
+    }
+    
+    .search-page .search-container,
+    .search-results {
+        padding: 0 20px;
+    }
+}
+
+/* Extra large devices (1200px and up) */
+@media (min-width: 1200px) {
+    .search-results {
+        max-width: 1200px !important;
+    }
 }

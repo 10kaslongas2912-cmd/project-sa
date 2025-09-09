@@ -11,7 +11,7 @@ import "./style.css";
 const { Title, Text } = Typography;
 
 const DetailPage: React.FC = () => {
-  const { dogId } = useParams<{ dogId: string }>();
+  const { id: dogId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [selectedDog, setSelectedDog] = useState<DogInterface | null>(null);
   const [dogHealthRecords, setDogHealthRecords] = useState<HealthRecord[]>([]);
@@ -23,7 +23,7 @@ const DetailPage: React.FC = () => {
       fetchDogAndHealthRecords();
     } else {
       message.error("รหัสสุนัขไม่ถูกต้อง");
-      navigate("/health-record/search");
+      navigate("/dashboard/health-record");
     }
   }, [dogId]);
 
@@ -52,14 +52,14 @@ const DetailPage: React.FC = () => {
 
   const handleViewHealthRecordDetail = (record: HealthRecord) => {
     if (record.ID) {
-      navigate(`/health-record/record/${record.ID}`);
+      navigate(`/dashboard/health-record/record/${record.ID}`);
     } else {
       message.error("ไม่สามารถเปิดรายละเอียดประวัติสุขภาพได้");
     }
   };
 
   const handleAddHealthRecord = () => {
-    navigate(`/health-record/dog/${dogId}/add`);
+    navigate(`/dashboard/health-record/${dogId}/add`);
   };
 
   // ✅ ใช้ตรงจาก Popconfirm → ไม่ต้องใช้ Modal.confirm
@@ -82,7 +82,7 @@ const DetailPage: React.FC = () => {
   };
 
   const handleBack = () => {
-    navigate("/health-record/search");
+    navigate("/dashboard/health-record");
   };
 
   const formatDate = (dateString: string | null | undefined) => {
@@ -120,7 +120,7 @@ const DetailPage: React.FC = () => {
       <div style={{ textAlign: "center", padding: "100px" }}>
         <Text type="secondary">ไม่พบข้อมูลสุนัข</Text>
         <div style={{ marginTop: "16px" }}>
-          <Button onClick={handleBack}>กลับไปค้นหา</Button>
+          <Button onClick={handleBack} style={{ marginLeft: "30px" }}>กลับไปค้นหา</Button>
         </div>
       </div>
     );
@@ -128,12 +128,13 @@ const DetailPage: React.FC = () => {
 
   return (
     <div className="health-detail-page">
-      <div className="form-header">
+      <div className="form-header" style={{ marginBottom: "10px",marginTop: "-90px" }  }>
         <Button
           type="text"
           icon={<ArrowLeftOutlined />}
           onClick={handleBack}
           className="back-button"
+          style={{ marginTop: "-20px",zIndex: 0}}
         >
           ย้อนกลับ
         </Button>
@@ -222,7 +223,7 @@ const DetailPage: React.FC = () => {
                         onClick={() => handleViewHealthRecordDetail(record)}
                         style={{
                           fontFamily: "Anakotmai-Bold",
-                          marginLeft: "-30px",
+                          marginLeft: "-50px",
                         }}
                       >
                         ดูรายละเอียดเพิ่มเติม

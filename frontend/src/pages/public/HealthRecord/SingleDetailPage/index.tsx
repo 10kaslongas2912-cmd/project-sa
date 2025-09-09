@@ -132,7 +132,7 @@ const SingleDetailPage: React.FC = () => {
 
   const handleBack = () => {
     if (healthRecord && healthRecord.dog_id) {
-      navigate(`/health-record/dog/${healthRecord.dog_id}`);
+      navigate(`/dashboard/health-record/dog/${healthRecord.dog_id}`);
     } else {
       navigate(-1);
     }
@@ -318,245 +318,235 @@ const SingleDetailPage: React.FC = () => {
   }
 
   return (
-    <div className="health-form-page">
-      <div className="form-header">
-        <Button 
-          type="text" 
-          icon={<ArrowLeftOutlined />} 
-          onClick={handleBack}
-          className="back-button"
-        >
-          <span style={{ fontFamily: 'Anakotmai' }}>ย้อนกลับ</span>
-        </Button>
+    <><Button
+      type="text"
+      icon={<ArrowLeftOutlined />}
+      onClick={handleBack}
+      className="back-button"
+    >
+      <span style={{ fontFamily: 'Anakotmai' }}>ย้อนกลับ</span>
+    </Button><div className="health-form-page">
+        <div className="form-header">
 
-        <Title level={2} className="page-title" style={{ 
-          fontFamily: 'Anakotmai',
-          marginTop: '70px',
-          marginLeft: '30px',
-          color: '#ff6600' 
-        }}>
-          {editMode ? 'แก้ไขบันทึกสุขภาพ' : 'รายละเอียดบันทึกสุขภาพ'}
-        </Title>
-      </div>
 
-      <Card className="health-form-card">
-        {/* Summary Information */}
-        <div style={{ marginBottom: '24px' }}>
-          <Descriptions 
-            title={<span style={{ fontFamily: 'Anakotmai' }}>ข้อมูลทั่วไป</span>} 
-            bordered 
-            column={2} 
-            labelStyle={{fontFamily: 'Anakotmai'}} 
-            contentStyle={{fontFamily: 'Anakotmai'}}
-          >
-            <Descriptions.Item label="รหัสประวัติ">{healthRecord.ID}</Descriptions.Item>
-            <Descriptions.Item label="รหัสสุนัข">{healthRecord.dog_id}</Descriptions.Item>
-            <Descriptions.Item label="วันที่บันทึก">{formatDate(healthRecord.date_record)}</Descriptions.Item>
-            <Descriptions.Item label="การฉีดวัคซีน">{healthRecord.vaccination === 'YES' ? 'ฉีดแล้ว' : 'ยังไม่ฉีด'}</Descriptions.Item>
-          </Descriptions>
+          <Title level={2} className="page-title" style={{
+            fontFamily: 'Anakotmai',
+            marginTop: '20px',
+            marginLeft: '30px',
+            color: '#ff6600'
+          }}>
+            {editMode ? 'แก้ไขบันทึกสุขภาพ' : 'รายละเอียดบันทึกสุขภาพ'}
+          </Title>
         </div>
 
-        <Divider />
+        <Card className="health-form-card">
+          {/* Summary Information */}
+          <div style={{ marginBottom: '24px' }}>
+            <Descriptions
+              title={<span style={{ fontFamily: 'Anakotmai' }}>ข้อมูลทั่วไป</span>}
+              bordered
+              column={2}
+              labelStyle={{ fontFamily: 'Anakotmai' }}
+              contentStyle={{ fontFamily: 'Anakotmai' }}
+            >
+              <Descriptions.Item label="รหัสประวัติ">{healthRecord.ID}</Descriptions.Item>
+              <Descriptions.Item label="รหัสสุนัข">{healthRecord.dog_id}</Descriptions.Item>
+              <Descriptions.Item label="วันที่บันทึก">{formatDate(healthRecord.date_record)}</Descriptions.Item>
+              <Descriptions.Item label="การฉีดวัคซีน">{healthRecord.vaccination === 'YES' ? 'ฉีดแล้ว' : 'ยังไม่ฉีด'}</Descriptions.Item>
+            </Descriptions>
+          </div>
 
-        {/* Form for editing/viewing */}
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSave}
-          scrollToFirstError
-        >
-          {/* Basic Information */}
-          <Row gutter={16}>
-            <Col xs={24} sm={12} md={8}>
-              <Form.Item
-                name="weight"
-                label={<span style={{ fontFamily: 'Anakotmai' }}>น้ำหนัก (กก.)</span>}
-                rules={editMode ? [
-                  { required: true, message: 'กรุณากรอกน้ำหนัก' },
-                  { validator: validateWeight }
-                ] : []}
-              >
-                <InputNumber 
-                  placeholder="12.5" 
-                  min={0} 
-                  step={0.1} 
-                  style={{ width: '100%', fontFamily: 'Anakotmai' }}
-                  readOnly={!editMode}
-                  precision={1}
-                />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} md={8}>
-              <Form.Item
-                name="temperature"
-                label={<span style={{ fontFamily: 'Anakotmai' }}>อุณหภูมิ (°C)</span>}
-                rules={editMode ? [
-                  { required: true, message: 'กรุณากรอกอุณหภูมิ' },
-                  { validator: validateTemperature }
-                ] : []}
-              >
-                <InputNumber 
-                  placeholder="38.2" 
-                  min={35} 
-                  max={45} 
-                  step={0.1} 
-                  precision={1}
-                  style={{ width: '100%', fontFamily: 'Anakotmai' }}
-                  readOnly={!editMode}
-                />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} md={8}>
-              <Form.Item
-                name="recordDate"
-                label={<span style={{ fontFamily: 'Anakotmai' }}>วันที่บันทึก</span>}
-                rules={editMode ? [{ required: true, message: 'กรุณาเลือกวันที่' }] : []}
-              >
-                <DatePicker 
-                  style={{ width: '100%', fontFamily: 'Anakotmai' }} 
-                  disabled={!editMode}
-                  format="DD/MM/YYYY"
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Form.Item
-            name="symptoms"
-            label={<span style={{ fontFamily: 'Anakotmai' }}>อาการที่พบ</span>}
-            rules={editMode ? [
-              { required: true, message: 'กรุณากรอกอาการที่พบ' },
-              { min: 10, message: 'อาการที่พบควรมีอย่างน้อย 10 ตัวอักษร' }
-            ] : []}
-          >
-            <TextArea 
-              rows={4} 
-              placeholder="ไม่มีข้อมูล"
-              readOnly={!editMode}
-              style={{ fontFamily: 'Anakotmai' }}
-              showCount={editMode}
-              maxLength={editMode ? 500 : undefined}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="diagnosis"
-            label={<span style={{ fontFamily: 'Anakotmai' }}>การวินิจฉัย</span>}
-            rules={editMode ? [
-              { min: 5, message: 'การวินิจฉัยควรมีอย่างน้อย 5 ตัวอักษร' }
-            ] : []}
-          >
-            <TextArea 
-              rows={4} 
-              placeholder="ไม่มีข้อมูล"
-              readOnly={!editMode}
-              style={{ fontFamily: 'Anakotmai' }}
-              showCount={editMode}
-              maxLength={editMode ? 500 : undefined}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="treatment"
-            label={<span style={{ fontFamily: 'Anakotmai' }}>การรักษา</span>}
-            rules={editMode ? [
-              { min: 5, message: 'การรักษาควรมีอย่างน้อย 5 ตัวอักษร' }
-            ] : []}
-          >
-            <TextArea 
-              rows={4} 
-              placeholder="ไม่มีข้อมูล"
-              readOnly={!editMode}
-              style={{ fontFamily: 'Anakotmai' }}
-              showCount={editMode}
-              maxLength={editMode ? 500 : undefined}
-            />
-          </Form.Item>
-
-          <Row gutter={16}>
-            <Col xs={24} sm={24}>
-              <Form.Item
-                name="medication"
-                label={<span style={{ fontFamily: 'Anakotmai' }}>ยาที่ให้</span>}
-              >
-                <Input 
-                  placeholder="ไม่มีข้อมูล" 
-                  readOnly={!editMode}
-                  style={{ fontFamily: 'Anakotmai' }}
-                  maxLength={editMode ? 200 : undefined}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          {/* Vaccination Section */}
           <Divider />
-          <Row gutter={16}>
-            <Col span={24}>
-              <Form.Item
-                name="hasVaccination"
-                label={<span style={{ fontFamily: 'Anakotmai' }}>การฉีดวัคซีน</span>}
-                rules={editMode ? [{ required: true, message: 'กรุณาเลือกสถานะการฉีดวัคซีน' }] : []}
-              >
-                <Select 
-                  placeholder="ไม่มีข้อมูล" 
-                  disabled={!editMode}
-                  onChange={handleVaccinationChange}
-                  style={{ fontFamily: 'Anakotmai' }}
+
+          {/* Form for editing/viewing */}
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleSave}
+            scrollToFirstError
+          >
+            {/* Basic Information */}
+            <Row gutter={16}>
+              <Col xs={24} sm={12} md={8}>
+                <Form.Item
+                  name="weight"
+                  label={<span style={{ fontFamily: 'Anakotmai' }}>น้ำหนัก (กก.)</span>}
+                  rules={editMode ? [
+                    { required: true, message: 'กรุณากรอกน้ำหนัก' },
+                    { validator: validateWeight }
+                  ] : []}
                 >
-                  <Select.Option value="YES" style={{ fontFamily: 'Anakotmai' }}>ฉีดแล้ว</Select.Option>
-                  <Select.Option value="NO" style={{ fontFamily: 'Anakotmai' }}>ยังไม่ฉีด</Select.Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
+                  <InputNumber
+                    placeholder="12.5"
+                    min={0}
+                    step={0.1}
+                    style={{ width: '100%', fontFamily: 'Anakotmai' }}
+                    readOnly={!editMode}
+                    precision={1} />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={12} md={8}>
+                <Form.Item
+                  name="temperature"
+                  label={<span style={{ fontFamily: 'Anakotmai' }}>อุณหภูมิ (°C)</span>}
+                  rules={editMode ? [
+                    { required: true, message: 'กรุณากรอกอุณหภูมิ' },
+                    { validator: validateTemperature }
+                  ] : []}
+                >
+                  <InputNumber
+                    placeholder="38.2"
+                    min={35}
+                    max={45}
+                    step={0.1}
+                    precision={1}
+                    style={{ width: '100%', fontFamily: 'Anakotmai' }}
+                    readOnly={!editMode} />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={12} md={8}>
+                <Form.Item
+                  name="recordDate"
+                  label={<span style={{ fontFamily: 'Anakotmai' }}>วันที่บันทึก</span>}
+                  rules={editMode ? [{ required: true, message: 'กรุณาเลือกวันที่' }] : []}
+                >
+                  <DatePicker
+                    style={{ width: '100%', fontFamily: 'Anakotmai' }}
+                    disabled={!editMode}
+                    format="DD/MM/YYYY" />
+                </Form.Item>
+              </Col>
+            </Row>
 
-          {/* Vaccine Records Section - View Mode */}
-          {hasVaccination === 'YES' && !editMode && vaccineRecords.length > 0 && (
-            <div style={{ marginBottom: '16px' }}>
-              <Title level={4} style={{ fontFamily: 'Anakotmai', marginBottom: '16px' }}>รายการวัคซีนที่ได้รับ</Title>
-              {vaccineRecords.map((record, index) => {
-                const vaccineInfo = vaccines.find(v => v.ID === record.vaccine_id);
-                return (
-                  <Card 
-                    key={index} 
-                    size="small" 
-                    style={{ marginBottom: '16px' }}
-                    title={
-                      <span style={{ fontFamily: 'Anakotmai' }}>วัคซีนที่ {index + 1}</span>
-                    }
+            <Form.Item
+              name="symptoms"
+              label={<span style={{ fontFamily: 'Anakotmai' }}>อาการที่พบ</span>}
+              rules={editMode ? [
+                { required: true, message: 'กรุณากรอกอาการที่พบ' },
+                { min: 10, message: 'อาการที่พบควรมีอย่างน้อย 10 ตัวอักษร' }
+              ] : []}
+            >
+              <TextArea
+                rows={4}
+                placeholder="ไม่มีข้อมูล"
+                readOnly={!editMode}
+                style={{ fontFamily: 'Anakotmai' }}
+                showCount={editMode}
+                maxLength={editMode ? 500 : undefined} />
+            </Form.Item>
+
+            <Form.Item
+              name="diagnosis"
+              label={<span style={{ fontFamily: 'Anakotmai' }}>การวินิจฉัย</span>}
+              rules={editMode ? [
+                { min: 5, message: 'การวินิจฉัยควรมีอย่างน้อย 5 ตัวอักษร' }
+              ] : []}
+            >
+              <TextArea
+                rows={4}
+                placeholder="ไม่มีข้อมูล"
+                readOnly={!editMode}
+                style={{ fontFamily: 'Anakotmai' }}
+                showCount={editMode}
+                maxLength={editMode ? 500 : undefined} />
+            </Form.Item>
+
+            <Form.Item
+              name="treatment"
+              label={<span style={{ fontFamily: 'Anakotmai' }}>การรักษา</span>}
+              rules={editMode ? [
+                { min: 5, message: 'การรักษาควรมีอย่างน้อย 5 ตัวอักษร' }
+              ] : []}
+            >
+              <TextArea
+                rows={4}
+                placeholder="ไม่มีข้อมูล"
+                readOnly={!editMode}
+                style={{ fontFamily: 'Anakotmai' }}
+                showCount={editMode}
+                maxLength={editMode ? 500 : undefined} />
+            </Form.Item>
+
+            <Row gutter={16}>
+              <Col xs={24} sm={24}>
+                <Form.Item
+                  name="medication"
+                  label={<span style={{ fontFamily: 'Anakotmai' }}>ยาที่ให้</span>}
+                >
+                  <Input
+                    placeholder="ไม่มีข้อมูล"
+                    readOnly={!editMode}
+                    style={{ fontFamily: 'Anakotmai' }}
+                    maxLength={editMode ? 200 : undefined} />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            {/* Vaccination Section */}
+            <Divider />
+            <Row gutter={16}>
+              <Col span={24}>
+                <Form.Item
+                  name="hasVaccination"
+                  label={<span style={{ fontFamily: 'Anakotmai' }}>การฉีดวัคซีน</span>}
+                  rules={editMode ? [{ required: true, message: 'กรุณาเลือกสถานะการฉีดวัคซีน' }] : []}
+                >
+                  <Select
+                    placeholder="ไม่มีข้อมูล"
+                    disabled={!editMode}
+                    onChange={handleVaccinationChange}
+                    style={{ fontFamily: 'Anakotmai' }}
                   >
-                    <Descriptions column={2} labelStyle={{fontFamily: 'Anakotmai'}} contentStyle={{fontFamily: 'Anakotmai'}}>
-                      <Descriptions.Item label="ชนิดวัคซีน">
-                        {vaccineInfo ? `${vaccineInfo.name} (${vaccineInfo.manufacturer})` : 'ไม่พบข้อมูล'}
-                      </Descriptions.Item>
-                      <Descriptions.Item label="เข็มที่">
-                        {record.dose_number}
-                      </Descriptions.Item>
-                      <Descriptions.Item label="หมายเลขล็อต">
-                        {record.lot_number || '-'}
-                      </Descriptions.Item>
-                      <Descriptions.Item label="วันนัดหมายครั้งต่อไป">
-                        {record.next_due_date ? formatDate(record.next_due_date) : '-'}
-                      </Descriptions.Item>
-                    </Descriptions>
-                  </Card>
-                );
-              })}
-            </div>
-          )}
+                    <Select.Option value="YES" style={{ fontFamily: 'Anakotmai' }}>ฉีดแล้ว</Select.Option>
+                    <Select.Option value="NO" style={{ fontFamily: 'Anakotmai' }}>ยังไม่ฉีด</Select.Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
 
-          {/* Vaccine Records Section - Edit Mode */}
-          {hasVaccination === 'YES' && editMode && (
-            <div style={{ marginBottom: '16px' }}>
-              <Title level={4} style={{ fontFamily: 'Anakotmai', marginBottom: '16px' }}>แก้ไขรายการวัคซีน</Title>
-              {vaccineRecords.map((record, index) => (
-                <Card 
-                  key={index} 
-                  size="small" 
-                  style={{ marginBottom: '16px' }}
-                  title={
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            {/* Vaccine Records Section - View Mode */}
+            {hasVaccination === 'YES' && !editMode && vaccineRecords.length > 0 && (
+              <div style={{ marginBottom: '16px' }}>
+                <Title level={4} style={{ fontFamily: 'Anakotmai', marginBottom: '16px' }}>รายการวัคซีนที่ได้รับ</Title>
+                {vaccineRecords.map((record, index) => {
+                  const vaccineInfo = vaccines.find(v => v.ID === record.vaccine_id);
+                  return (
+                    <Card
+                      key={index}
+                      size="small"
+                      style={{ marginBottom: '16px' }}
+                      title={<span style={{ fontFamily: 'Anakotmai' }}>วัคซีนที่ {index + 1}</span>}
+                    >
+                      <Descriptions column={2} labelStyle={{ fontFamily: 'Anakotmai' }} contentStyle={{ fontFamily: 'Anakotmai' }}>
+                        <Descriptions.Item label="ชนิดวัคซีน">
+                          {vaccineInfo ? `${vaccineInfo.name} (${vaccineInfo.manufacturer})` : 'ไม่พบข้อมูล'}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="เข็มที่">
+                          {record.dose_number}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="หมายเลขล็อต">
+                          {record.lot_number || '-'}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="วันนัดหมายครั้งต่อไป">
+                          {record.next_due_date ? formatDate(record.next_due_date) : '-'}
+                        </Descriptions.Item>
+                      </Descriptions>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Vaccine Records Section - Edit Mode */}
+            {hasVaccination === 'YES' && editMode && (
+              <div style={{ marginBottom: '16px' }}>
+                <Title level={4} style={{ fontFamily: 'Anakotmai', marginBottom: '16px' }}>แก้ไขรายการวัคซีน</Title>
+                {vaccineRecords.map((record, index) => (
+                  <Card
+                    key={index}
+                    size="small"
+                    style={{ marginBottom: '16px' }}
+                    title={<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontFamily: 'Anakotmai' }}>วัคซีนที่ {index + 1}</span>
                       {vaccineRecords.length > 1 && (
                         <Button
@@ -569,134 +559,129 @@ const SingleDetailPage: React.FC = () => {
                           ลบ
                         </Button>
                       )}
-                    </div>
-                  }
+                    </div>}
+                  >
+                    <Row gutter={16}>
+                      <Col xs={24} sm={6}>
+                        <div style={{ fontFamily: "Anakotmai", fontSize: "1.1em", marginBottom: "8px" }}>ชนิดวัคซีน</div>
+                        <Select
+                          placeholder="เลือกชนิดวัคซีน"
+                          value={record.vaccine_id || undefined}
+                          onChange={(value) => updateVaccineRecord(index, 'vaccine_id', value)}
+                          style={{ width: '100%', fontFamily: 'Anakotmai' }}
+                        >
+                          {vaccines.map((vaccine) => (
+                            <Select.Option key={vaccine.ID} value={vaccine.ID}>
+                              {vaccine.name} ({vaccine.manufacturer})
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Col>
+                      <Col xs={24} sm={6}>
+                        <div style={{ fontFamily: "Anakotmai", fontSize: "1.1em", marginBottom: "8px" }}>เข็มที่</div>
+                        <InputNumber
+                          min={1}
+                          placeholder="1"
+                          value={record.dose_number}
+                          onChange={(value) => updateVaccineRecord(index, 'dose_number', value || 1)}
+                          style={{ width: '100%', fontFamily: 'Anakotmai' }} />
+                      </Col>
+                      <Col xs={24} sm={6}>
+                        <div style={{ fontFamily: "Anakotmai", fontSize: "1.1em", marginBottom: "8px" }}>หมายเลขล็อต</div>
+                        <Input
+                          placeholder="LOT123456"
+                          value={record.lot_number}
+                          onChange={(e) => updateVaccineRecord(index, 'lot_number', e.target.value)}
+                          style={{ fontFamily: 'Anakotmai' }} />
+                      </Col>
+                      <Col xs={24} sm={6}>
+                        <div style={{ fontFamily: "Anakotmai", fontSize: "1.1em", marginBottom: "8px" }}>วันนัดหมายครั้งต่อไป</div>
+                        <DatePicker
+                          placeholder="เลือกวันที่"
+                          value={record.next_due_date ? dayjs(record.next_due_date) : null}
+                          onChange={(date) => updateVaccineRecord(index, 'next_due_date', date?.format('YYYY-MM-DD'))}
+                          style={{ width: '100%', fontFamily: 'Anakotmai' }}
+                          format="DD/MM/YYYY"
+                          disabledDate={(current) => current && current < dayjs().startOf('day')} />
+                      </Col>
+                    </Row>
+                  </Card>
+                ))}
+
+                <Button
+                  type="dashed"
+                  onClick={addVaccineRecord}
+                  icon={<PlusOutlined />}
+                  style={{
+                    width: '100%',
+                    marginTop: '16px',
+                    fontFamily: 'Anakotmai',
+                    borderColor: '#FF6600',
+                    color: '#FF6600'
+                  }}
                 >
-                  <Row gutter={16}>
-                    <Col xs={24} sm={6}>
-                      <div style={{ fontFamily: "Anakotmai", fontSize: "1.1em", marginBottom: "8px" }}>ชนิดวัคซีน</div>
-                      <Select
-                        placeholder="เลือกชนิดวัคซีน"
-                        value={record.vaccine_id || undefined}
-                        onChange={(value) => updateVaccineRecord(index, 'vaccine_id', value)}
-                        style={{ width: '100%', fontFamily: 'Anakotmai' }}
-                      >
-                        {vaccines.map((vaccine) => (
-                          <Select.Option key={vaccine.ID} value={vaccine.ID}>
-                            {vaccine.name} ({vaccine.manufacturer})
-                          </Select.Option>
-                        ))}
-                      </Select>
-                    </Col>
-                    <Col xs={24} sm={6}>
-                      <div style={{ fontFamily: "Anakotmai", fontSize: "1.1em", marginBottom: "8px" }}>เข็มที่</div>
-                      <InputNumber 
-                        min={1} 
-                        placeholder="1" 
-                        value={record.dose_number}
-                        onChange={(value) => updateVaccineRecord(index, 'dose_number', value || 1)}
-                        style={{ width: '100%', fontFamily: 'Anakotmai' }}
-                      />
-                    </Col>
-                    <Col xs={24} sm={6}>
-                      <div style={{ fontFamily: "Anakotmai", fontSize: "1.1em", marginBottom: "8px" }}>หมายเลขล็อต</div>
-                      <Input 
-                        placeholder="LOT123456" 
-                        value={record.lot_number}
-                        onChange={(e) => updateVaccineRecord(index, 'lot_number', e.target.value)}
-                        style={{ fontFamily: 'Anakotmai' }}
-                      />
-                    </Col>
-                    <Col xs={24} sm={6}>
-                      <div style={{ fontFamily: "Anakotmai", fontSize: "1.1em", marginBottom: "8px" }}>วันนัดหมายครั้งต่อไป</div>
-                      <DatePicker 
-                        placeholder="เลือกวันที่"
-                        value={record.next_due_date ? dayjs(record.next_due_date) : null}
-                        onChange={(date) => updateVaccineRecord(index, 'next_due_date', date?.format('YYYY-MM-DD'))}
-                        style={{ width: '100%', fontFamily: 'Anakotmai' }} 
-                        format="DD/MM/YYYY"
-                        disabledDate={(current) => current && current < dayjs().startOf('day')}
-                      />
-                    </Col>
-                  </Row>
-                </Card>
-              ))}
+                  เพิ่มรายการวัคซีน
+                </Button>
+              </div>
+            )}
 
-              <Button
-                type="dashed"
-                onClick={addVaccineRecord}
-                icon={<PlusOutlined />}
-                style={{ 
-                  width: '100%', 
-                  marginTop: '16px',
-                  fontFamily: 'Anakotmai',
-                  borderColor: '#FF6600',
-                  color: '#FF6600'
-                }}
-              >
-                เพิ่มรายการวัคซีน
-              </Button>
-            </div>
-          )}
+            <Form.Item
+              name="notes"
+              label={<span style={{ fontFamily: 'Anakotmai' }}>หมายเหตุเพิ่มเติม</span>}
+            >
+              <TextArea
+                rows={3}
+                placeholder="ไม่มีหมายเหตุเพิ่มเติม"
+                readOnly={!editMode}
+                style={{ fontFamily: 'Anakotmai' }}
+                showCount={editMode}
+                maxLength={editMode ? 300 : undefined} />
+            </Form.Item>
 
-          <Form.Item
-            name="notes"
-            label={<span style={{ fontFamily: 'Anakotmai' }}>หมายเหตุเพิ่มเติม</span>}
-          >
-            <TextArea 
-              rows={3} 
-              placeholder="ไม่มีหมายเหตุเพิ่มเติม"
-              readOnly={!editMode}
-              style={{ fontFamily: 'Anakotmai' }}
-              showCount={editMode}
-              maxLength={editMode ? 300 : undefined}
-            />
-          </Form.Item>
+            {/* Action Buttons */}
+            <Form.Item className="submit-section">
+              <Space size="large">
+                <Button onClick={handleBack} size="large" style={{ fontFamily: 'Anakotmai' }}>
+                  ย้อนกลับ
+                </Button>
 
-          {/* Action Buttons */}
-          <Form.Item className="submit-section">
-            <Space size="large">
-              <Button onClick={handleBack} size="large" style={{ fontFamily: 'Anakotmai' }}>
-                ย้อนกลับ
-              </Button>
-              
-              {editMode ? (
-                <>
-                  <Button 
+                {editMode ? (
+                  <>
+                    <Button
+                      onClick={handleEditToggle}
+                      size="large"
+                      icon={<CloseOutlined />}
+                      style={{ fontFamily: 'Anakotmai' }}
+                    >
+                      ยกเลิก
+                    </Button>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      size="large"
+                      loading={submitLoading}
+                      icon={<SaveOutlined />}
+                      style={{ fontFamily: 'Anakotmai' }}
+                    >
+                      บันทึกการเปลี่ยนแปลง
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    type="primary"
+                    icon={<EditOutlined />}
                     onClick={handleEditToggle}
                     size="large"
-                    icon={<CloseOutlined />}
                     style={{ fontFamily: 'Anakotmai' }}
                   >
-                    ยกเลิก
+                    แก้ไขข้อมูล
                   </Button>
-                  <Button 
-                    type="primary" 
-                    htmlType="submit"
-                    size="large"
-                    loading={submitLoading}
-                    icon={<SaveOutlined />}
-                    style={{ fontFamily: 'Anakotmai' }}
-                  >
-                    บันทึกการเปลี่ยนแปลง
-                  </Button>
-                </>
-              ) : (
-                <Button 
-                  type="primary" 
-                  icon={<EditOutlined />}
-                  onClick={handleEditToggle}
-                  size="large"
-                  style={{ fontFamily: 'Anakotmai' }}
-                >
-                  แก้ไขข้อมูล
-                </Button>
-              )}
-            </Space>
-          </Form.Item>
-        </Form>
-      </Card>
-    </div>
+                )}
+              </Space>
+            </Form.Item>
+          </Form>
+        </Card>
+      </div></>
   );
 };
 
