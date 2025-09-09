@@ -14,7 +14,11 @@ export const dashboardRoutes: RouteObject = {
     {
       index: true,
       element: <Overview />
-    }
+    },
+    {
+      path: "dogs" ,
+      element: <Dogs />
+    },
   ],
 };
 
@@ -24,5 +28,4 @@ export const dashboardTestRoute1: RouteObject = {
 };
 
 
-
-export default [dashboardRoutes, dashboardTestRoute1] as RouteObject[];
+export default [dashboardRoutes, dashboardTestRoute1,] as RouteObject[];

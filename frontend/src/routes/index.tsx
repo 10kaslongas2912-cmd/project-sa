@@ -2,7 +2,7 @@ import { useRoutes } from "react-router-dom";
 
 import PublicRoutes from "./PublicRoutes";
 import AuthRoutes from "./AuthRoutes";
-import { dashboardRoutes, dashboardTestRoute1} from "./DashboardRoutes"; 
+import  RouteObject  from "./DashboardRoutes"; 
 import SponsorRoutes from "./SponsorRoutes";
 import DonationRoutes from "./DonationRoutes";
 import HealthRecordRoutes from "./HealthRecordRoutes";
@@ -16,8 +16,7 @@ export default function ThemeRoutes() {
   return useRoutes([
     AuthRoutes(),
     PublicRoutes(),
-    dashboardRoutes,
-    dashboardTestRoute1,
+    ...RouteObject,
     SponsorRoutes(),
     DonationRoutes(),
     HealthRecordRoutes(),

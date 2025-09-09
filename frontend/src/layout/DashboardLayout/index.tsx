@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./style.css";
-import { Outlet } from "react-router-dom";
+import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
   Home,
   Heart,
@@ -78,15 +78,16 @@ const sampleNotifications: Notification[] = [
 ];
 
 const menuItems = [
-  { id: "dashboard", label: "แดชบอร์ด", icon: Home },
-  { id: "dogs", label: "จัดการข้อมูลสุนัข", icon: PawPrint },
-  { id: "adoption", label: "การรับเลี้ยง", icon: Heart },
-  { id: "donation", label: "การบริจาค", icon: DollarSign },
-  { id: "visits", label: "ตารางการเยี่ยมชม", icon: Calendar },
-  { id: "medical", label: "บันทึกการรักษา", icon: Stethoscope },
-  { id: "support", label: "การอุปถัมภ์สนับสนุน", icon: Shield },
-  { id: "reports", label: "รายงานสถิติ", icon: BarChart3 },
+  { id: "dashboard", label: "แดชบอร์ด", icon: Home,        path: "/dashboard" },
+  { id: "dogs",      label: "จัดการข้อมูลสุนัข", icon: PawPrint,  path: "/dashboard/dogs" },
+  { id: "adoption",  label: "การรับเลี้ยง",     icon: Heart,     path: "/dashboard/adoption" },
+  { id: "donation",  label: "การบริจาค",        icon: DollarSign, path: "/dashboard/donation" },
+  { id: "visits",    label: "ตารางการเยี่ยมชม", icon: Calendar,  path: "/dashboard/visits" },
+  { id: "medical",   label: "บันทึกการรักษา",   icon: Stethoscope,path: "/dashboard/medical" },
+  { id: "support",   label: "การอุปถัมภ์สนับสนุน", icon: Shield, path: "/dashboard/support" },
+  { id: "reports",   label: "รายงานสถิติ",      icon: BarChart3, path: "/dashboard/reports" },
 ];
+
 
 const DashboardLayout: React.FC = () => {
   const [notifications, setNotifications] = useState(sampleNotifications);
@@ -361,22 +362,25 @@ const DashboardLayout: React.FC = () => {
         <div className="sidebar">
           <div className={`sidebar-body ${sidebarOpen ? "open" : "closed"}`}>
             <nav className="sidebar-nav">
-              {menuItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    className={`nav-item ${
-                      activeMenu === item.id ? "active" : ""
-                    }`}
-                    onClick={() => setActiveMenu(item.id)}
-                  >
-                    <Icon size={20} />
-                    {sidebarOpen && <span>{item.label}</span>}
-                  </button>
-                );
-              })}
-            </nav>
+  {menuItems.map((item) => {
+    const Icon = item.icon;
+    return (
+      <NavLink
+        key={item.id}
+        to={item.path}
+        end
+        className={({ isActive }) =>
+          `nav-item ${isActive ? "active" : ""}`
+        }
+        onClick={() => setIsProfileDropdownOpen(false)}
+      >
+        <Icon size={20} />
+        {sidebarOpen && <span>{item.label}</span>}
+      </NavLink>
+    );
+  })}
+</nav>
+
           </div>
         </div>
         <main className="content">
