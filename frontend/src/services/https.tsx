@@ -1,4 +1,4 @@
-// src/services/https
+// src/services/https.ts
 import axios from "axios";
 import type { AxiosResponse, AxiosError } from "axios";
 
@@ -7,7 +7,6 @@ const API_URL = import.meta.env.VITE_API_KEY || "http://localhost:8000";
 const getCookie = (name: string): string | null => {
   const cookies = document.cookie.split("; ");
   const cookie = cookies.find((row) => row.startsWith(`${name}=`));
-
   if (cookie) {
     let AccessToken = decodeURIComponent(cookie.split("=")[1]);
     AccessToken = AccessToken.replace(/\\/g, "").replace(/"/g, "");
@@ -24,7 +23,6 @@ const getToken = (): string | null => {
   );
 };
 
-//------ไม่เหมือน จารย์---------//
 const getTokenType = (): string =>
   localStorage.getItem("token_type") || "Bearer";
 
@@ -33,10 +31,10 @@ const getConfig = () => {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
-  if (token) headers.Authorization = `${getTokenType()} ${token}`; // ✅ มีค่อยใส่
+  if (token) headers.Authorization = `${getTokenType()} ${token}`;
   return { headers };
 };
-//------------------------------//
+
 const getConfigWithoutAuth = () => ({
   headers: {
     "Content-Type": "application/json",
@@ -74,7 +72,7 @@ export const Get = async (
         return error.response;
       }
       if (error?.response?.status === 401) {
-        localStorage.clear(); 
+        localStorage.clear();
         window.location.reload();
       }
       return error.response;
@@ -115,3 +113,7 @@ export const Delete = async (
       return error.response;
     });
 };
+
+export const axiosInstance = axios.create({
+  baseURL: API_URL,
+});

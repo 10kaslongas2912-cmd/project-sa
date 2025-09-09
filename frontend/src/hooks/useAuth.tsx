@@ -1,7 +1,7 @@
 
-import { useEffect, useState, useCallback } from "react";
-import { authAPI } from "../services/apis"; // หรือ ../services/apis แล้วแต่ path ของคุณ
-import type { AppUserInterface } from "../interfaces/User";
+  import { useEffect, useState, useCallback } from "react";
+  import { authAPI } from "../services/apis"; // หรือ ../services/apis แล้วแต่ path ของคุณ
+  import type { AppUserInterface } from "../interfaces/User";
 
 // hooks/useAuth.tsx
 export function useAuthUser() {
@@ -48,11 +48,7 @@ export function useAuthUser() {
       localStorage.removeItem("token");
       setUser(null);
       setIsLoggedIn(false);
-      setError(e as Error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    }, []);
 
   useEffect(() => {
     refresh();

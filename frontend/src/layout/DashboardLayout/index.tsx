@@ -26,6 +26,7 @@ import {
   ChevronLeft,
   Plus,
   MoreVertical,
+  Edit,
 } from "lucide-react";
 import type { JSX } from "react/jsx-runtime";
 
@@ -50,8 +51,9 @@ interface Notification {
 interface MenuItem {
   id: string;
   label: string;
-  icon: any;
-  path: string; // 👈 เพิ่ม path
+  icon?: any;
+  path?: string; // 👈 เพิ่ม path
+  children?: MenuItem[]
 }
 
 interface Course {
@@ -89,6 +91,7 @@ const UpdatedDashboard: React.FC = () => {
   const location = useLocation();
 
   const isActive = (item: MenuItem) => {
+    if (!item.path) return false;
     if (item.id === "dashboard") return location.pathname === item.path;
     return location.pathname.startsWith(item.path);
   };
@@ -123,6 +126,15 @@ const UpdatedDashboard: React.FC = () => {
 
   const menuItems: MenuItem[] = [
     { id: "dashboard", label: "แดชบอร์ด", icon: Home, path: "/dashboard" },
+    {
+    id: "visit",
+    label: "การเยี่ยมชม",
+    icon: Play,
+    children: [
+      { id: "create-visit", label: "สร้างการเยี่ยมชม", icon: Plus, path: "/dashboard/create-visit" },
+      { id: "update-visit", label: "แก้ไขการเยี่ยมชม", icon: Edit, path: "/dashboard/update-visit" },
+    ],
+  },
     {
       id: "dogs",
       label: "จัดการข้อมูลสุนัข",
@@ -546,40 +558,54 @@ const UpdatedDashboard: React.FC = () => {
             </div>
 
             {menuItems.map((item) => {
-              const Icon = item.icon;
-              const active = isActive(item);
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  className={`sidebar-menu-item ${active ? "active" : ""}`}
-                  onClick={() => navigate(item.path)}
-                  aria-current={active ? "page" : undefined}
-                >
-                  <Icon size={20} />
-                  {sidebarOpen && <span>{item.label}</span>}
-                </button>
-              );
-            })}
+  const Icon = item.icon;
+  const hasChildren = !!item.children?.length;
+  const active = isActive(item);
 
-            {/*  
-            <div className="sidebar-section-title">
-              {sidebarOpen ? "FRIENDS" : ""}
-            </div>
+  return (
+    <div key={item.id} className="sidebar-menu-group">
+      <button
+        type="button"
+        className={`sidebar-menu-item ${active ? "active" : ""}`}
+        onClick={() => {
+          if (hasChildren) {
+            setActiveMenu(activeMenu === item.id ? "" : item.id); // toggle dropdown
+          } else {
+            navigate(item.path ?? "/");
+          }
+        }}
+        aria-current={active ? "page" : undefined}
+      >
+        <Icon size={20} />
+        {sidebarOpen && <span>{item.label}</span>}
+      </button>
 
-            {sidebarOpen && (
-              <div className="friends-list">
-                {friends.map((friend, index) => (
-                  <div key={index} className="friend-item">
-                    <div className="friend-avatar">{friend.avatar}</div>
-                    <div className="friend-info">
-                      <div className="friend-name">{friend.name}</div>
-                      <div className="friend-role">{friend.role}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}*/}
+      {/* Dropdown items */}
+      {hasChildren && activeMenu === item.id && sidebarOpen && (
+        <div className="sidebar-submenu">
+          {item.children!.map((child) => {
+            const ChildIcon = child.icon;
+            const childActive = isActive(child);
+            return (
+              <button
+                key={child.id}
+                type="button"
+                className={`sidebar-menu-item submenu-item ${
+                  childActive ? "active" : ""
+                }`}
+                onClick={() => navigate(child.path!)}
+                aria-current={childActive ? "page" : undefined}
+              >
+                <ChildIcon size={16} />
+                <span>{child.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+})}
 
             <div className="sidebar-section-title">
               {sidebarOpen ? "SETTINGS" : ""}

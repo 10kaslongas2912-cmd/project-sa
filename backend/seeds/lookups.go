@@ -51,7 +51,7 @@ func seedLookupsBase(db *gorm.DB) error {
 	}
 	if err := db.Where("name = ?", "ใหญ่").
 		FirstOrCreate(&entity.AnimalSize{Name: "ใหญ่"}).Error; err != nil {
-	return err
+		return err
 	}
 
 	personalities := []entity.Personality{
@@ -92,12 +92,32 @@ func seedLookupsBase(db *gorm.DB) error {
 		return err
 	}
 
+	var zoneA entity.Zone
 	if err := db.Where("name = ?", "A").
-		FirstOrCreate(&entity.Zone{Name: "A"}).Error; err != nil {
+		FirstOrCreate(&zoneA, entity.Zone{Name: "A"}).Error; err != nil {
 		return err
 	}
+
+	var zoneB entity.Zone
 	if err := db.Where("name = ?", "B").
-		FirstOrCreate(&entity.Zone{Name: "B"}).Error; err != nil {
+		FirstOrCreate(&zoneB, entity.Zone{Name: "B"}).Error; err != nil {
+		return err
+	}
+
+	// Create kennels with proper zone associations
+	if err := db.Where("name = ?", "A-1").
+		FirstOrCreate(&entity.Kennel{
+			Name:   "A-1",
+			ZoneID: zoneA.ID,
+		}).Error; err != nil {
+		return err
+	}
+
+	if err := db.Where("name = ?", "B-1").
+		FirstOrCreate(&entity.Kennel{
+			Name:   "B-1",
+			ZoneID: zoneB.ID,
+		}).Error; err != nil {
 		return err
 	}
 
