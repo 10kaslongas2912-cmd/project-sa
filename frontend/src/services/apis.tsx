@@ -10,7 +10,7 @@ import type {
   UpdateUserRequest,
 } from "../interfaces/User";
 import type { CreateDonationRequest } from "../interfaces/Donation";
-import type { UpdateZCManagementRequest } from "../interfaces/ZcManagement";
+import type { UpdateZCManagementRequest } from "../interfaces/zcManagement";
 import type { CreateVolunteerPayload } from "../interfaces/Volunteer";
 import type { SkillInterface } from "../interfaces/Skill";
 
