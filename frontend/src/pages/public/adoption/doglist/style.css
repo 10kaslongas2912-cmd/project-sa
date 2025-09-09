@@ -1,0 +1,327 @@
+/* DogInfo.css */
+
+/* Main Container */
+.dog-info-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  background-color: #f0f2f5;
+  padding: 2rem;
+  font-family: 'Anakotmai', sans-serif;
+}
+
+.dog-info-card {
+  width: 100%;
+  max-width: 900px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Header */
+.dog-info-header {
+  background: linear-gradient(135deg, #ff9028, #ffee52);
+  padding: 2.5rem;
+  position: relative;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem 0;
+  transition: color 0.2s ease;
+}
+
+.back-button:hover {
+  color: #ffffff;
+}
+
+.header-content {
+  text-align: center;
+}
+
+.dog-name {
+  font-size: 3rem;
+  font-weight: bold;
+  color: white;
+  margin: 0 0 0.5rem 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-subtitle {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+}
+
+/* Dog Image Section */
+.dog-image-section {
+  padding: 2rem 2.5rem 0;
+}
+
+.dog-image-container {
+  position: relative;
+  text-align: center;
+}
+
+.dog-image {
+  width: 100%;
+  max-width: 400px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.donation-badge {
+  position: absolute;
+  bottom: -10px;
+  right: 50%;
+  transform: translateX(50%);
+  background-color: #ff8800;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 12px rgba(255, 136, 0, 0.3);
+}
+
+/* Content */
+.dog-info-content {
+  padding: 2.5rem;
+}
+
+.info-section {
+  margin-bottom: 2.5rem;
+}
+
+.section-title {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #2c2c2c;
+  margin-bottom: 1.2rem;
+  border-bottom: 2px solid #ff8800;
+  padding-bottom: 0.5rem;
+  display: inline-block;
+}
+
+/* Basic Info */
+.basic-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.info-item {
+  background-color: #fffaf5;
+  padding: 1.2rem;
+  border-radius: 8px;
+  border-left: 4px solid #ff8800;
+  transition: transform 0.2s ease;
+}
+
+.info-item:hover {
+  transform: translateY(-2px);
+}
+
+.info-label {
+  font-weight: bold;
+  color: #4a4a4a;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.info-value {
+  color: #2c2c2c;
+  font-size: 1.1rem;
+}
+
+/* Personality Tags */
+.personality-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.personality-tag {
+  background: linear-gradient(135deg, #ff9028, #ffaa52);
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(255, 136, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.personality-tag:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 136, 0, 0.3);
+}
+
+/* Care Info */
+.care-info {
+  background-color: #ffe2e2;
+  padding: 1.8rem;
+  border-radius: 12px;
+  border: 1px solid #ff7a7a;
+}
+
+.care-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.care-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.care-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #d97706;
+  margin: 0;
+}
+
+.care-description {
+  color: #4a4a4a;
+  line-height: 1.6;
+  margin: 0;
+  font-style: italic;
+}
+
+/* Story Content */
+.story-content {
+  background-color: #f9fafb;
+  padding: 2rem;
+  border-radius: 12px;
+  border-left: 4px solid #ff8800;
+}
+
+.story-content p {
+  line-height: 1.7;
+  color: #4a4a4a;
+  margin-bottom: 1.2rem;
+}
+
+.story-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Footer */
+.dog-info-footer {
+  padding: 2.5rem;
+  background-color: #fffaf5;
+  border-top: 1px solid #ffe4cc;
+}
+
+.sponsor-call-to-action {
+  text-align: center;
+}
+
+.sponsor-call-to-action h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2c2c2c;
+  margin-bottom: 0.8rem;
+}
+
+.sponsor-call-to-action p {
+  color: #4a4a4a;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.sponsor-button {
+  background: linear-gradient(135deg, #ff8800, #ff9028);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 1.2rem 3rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 136, 0, 0.3);
+}
+
+.sponsor-button:hover {
+  background: linear-gradient(135deg, #e67d00, #ff8800);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(255, 136, 0, 0.4);
+}
+
+.sponsor-button:active {
+  transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dog-info-container {
+    padding: 1rem;
+  }
+
+  .dog-info-header {
+    padding: 2rem 1.5rem;
+  }
+
+  .dog-name {
+    font-size: 2.2rem;
+  }
+
+  .dog-image-section {
+    padding: 1.5rem;
+  }
+
+  .dog-info-content {
+    padding: 1.5rem;
+  }
+
+  .dog-info-footer {
+    padding: 1.5rem;
+  }
+
+  .basic-info-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .personality-tags {
+    justify-content: center;
+  }
+
+  .sponsor-button {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dog-name {
+    font-size: 1.8rem;
+  }
+
+  .header-subtitle {
+    font-size: 1rem;
+  }
+
+  .section-title {
+    font-size: 1.2rem;
+  }
+
+  .donation-badge {
+    font-size: 0.8rem;
+    padding: 0.6rem 1.2rem;
+  }
+}

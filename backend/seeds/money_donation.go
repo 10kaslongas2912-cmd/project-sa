@@ -7,14 +7,14 @@ import (
 
 func seedMoneyDonations(db *gorm.DB) error {
 	var Donor1 entity.Donor
-	if err := db.Where("firstname = ? AND lastname = ?", "John", "Doe").First(&Donor1).Error; err != nil {
+	if err := db.Where("first_name = ? AND last_name = ?", "John", "Doe").First(&Donor1).Error; err != nil {
 		return err
 	}
 	var Donation1 entity.Donation
 	if err := db.First(&Donation1,"donor_id = ?", Donor1.ID).Error; err != nil { return err }
 
 	var PaymentBankTransfer entity.PaymentMethod
-	if err := db.Where("name = ?", "โอนเงินผ่านธนาคาร").First(&PaymentBankTransfer).Error; err != nil {
+	if err := db.Where("name = ?", "พร้อมเพย์").First(&PaymentBankTransfer).Error; err != nil {
 		return err
 	}
 

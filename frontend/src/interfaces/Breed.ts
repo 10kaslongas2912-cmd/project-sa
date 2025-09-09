@@ -1,5 +1,5 @@
 export interface BreedInterface{
-    id: number;
+    ID: number;
     name: string;
     description: string;
 }

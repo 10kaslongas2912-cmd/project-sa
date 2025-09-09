@@ -7,5 +7,5 @@ type Breed struct {
 	Name   string `json:"name"`
 	Description string `json:"description"`
 
-	Dog []Dog `gorm:"foreignKey:BreedID"`
+	Dogs []Dog `gorm:"foreignKey:BreedID" json:"dogs"`
 }

@@ -20,8 +20,8 @@ const InformationDonors: React.FC = () => {
   const initialData = getInitialFormData();
 
   // สร้าง State สำหรับเก็บค่าของแต่ละ Input
-  const [firstName, setFirstName] = useState(initialData.firstname || '');
-  const [lastName, setLastName] = useState(initialData.lastname || '');
+  const [firstName, setFirstName] = useState(initialData.first_name || '');
+  const [lastName, setLastName] = useState(initialData.last_name || '');
   const [phone, setPhone] = useState(initialData.phone || '');
   const [email, setEmail] = useState(initialData.email || '');
 
@@ -32,8 +32,8 @@ const InformationDonors: React.FC = () => {
       try {
         const parsedPrefillData = JSON.parse(prefillData);
         console.log("InformationDonors: Parsed prefillData:", parsedPrefillData); // Log parsed data
-        setFirstName(parsedPrefillData.firstname || '');
-        setLastName(parsedPrefillData.lastname || '');
+        setFirstName(parsedPrefillData.first_name || '');
+        setLastName(parsedPrefillData.last_name || '');
         setPhone(parsedPrefillData.phone || '');
         setEmail(parsedPrefillData.email || '');
         sessionStorage.removeItem('prefillUserData'); // Clear after use
@@ -45,15 +45,15 @@ const InformationDonors: React.FC = () => {
   }, []); // Run only once on mount
 
   useEffect(() => {
-    const formData = { firstname: firstName, lastname: lastName, phone, email };
+    const formData = { first_name: firstName, last_name: lastName, phone, email };
     sessionStorage.setItem('donationInfoFormData', JSON.stringify(formData));
   }, [firstName, lastName, phone, email]); // Dependencies array
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault(); // ป้องกันการรีเฟรชหน้าเมื่อกดส่งฟอร์ม
     const formData: DonorInterface = { // Cast to DonorsInterface
-      firstname: firstName,
-      lastname: lastName,
+      first_name: firstName,
+      last_name: lastName,
       phone: phone,
       email: email,
     };

@@ -22,9 +22,25 @@ type LoginRequest struct {
 	Password string `json:"password" binding:"required"`
 }
 
+type LoginUserDTO struct {
+	ID        uint              `json:"ID"`
+	Username  string            `json:"username"`
+	FirstName string            `json:"first_name"`
+	LastName  string            `json:"last_name"`
+	Email     string            `json:"email"`
+	Phone     string            `json:"phone"`
+	Gender    *entity.Gender    `json:"gender,omitempty"`
+}
+
+type LoginResponse struct {
+	TokenType string        `json:"token_type"`
+	Token     string        `json:"token"`
+	User      LoginUserDTO  `json:"user"`
+}
+
 type SignUpRequest struct {
-	Firstname   string `json:"firstname"    binding:"required"`
-	Lastname    string `json:"lastname"     binding:"required"`
+	FirstName   string `json:"first_name"    binding:"required"`
+	LastName    string `json:"last_name"     binding:"required"`
 	Email       string `json:"email"        binding:"required,email"`
 	Phone       string `json:"phone"`
 	DateOfBirth string `json:"date_of_birth" binding:"required"` // "YYYY-MM-DD"
@@ -32,6 +48,7 @@ type SignUpRequest struct {
 	Username    string `json:"username"     binding:"required"`
 	Password    string `json:"password"     binding:"required"`
 }
+
 
 /* ===== Helpers ===== */
 
@@ -92,8 +109,8 @@ func SignUp(c *gin.Context) {
 		return
 	}
 	user := entity.User{
-		Firstname:   req.Firstname,
-		Lastname:    req.Lastname,
+		FirstName:   req.FirstName,
+		LastName:    req.LastName,
 		Email:       req.Email,
 		Phone:       req.Phone,
 		Username:    req.Username,

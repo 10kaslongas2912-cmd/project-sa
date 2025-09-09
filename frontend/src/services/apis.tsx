@@ -1,4 +1,6 @@
 // services/api/index.ts
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// service/api/index.ts
 import { Get, Post, Put, Delete } from "./https";
 import { axiosInstance } from "./https";
 import type { CreateDogRequest, UpdateDogRequest } from "../interfaces/Dog";
@@ -17,63 +19,80 @@ const isFormData = (v: any): v is FormData =>
   typeof FormData !== "undefined" && v instanceof FormData;
 
 const mpHeaders = { "Content-Type": "multipart/form-data" };
+import type { CreateAdoptionRequest, UpdateStatusRequest } from "../interfaces/Adoption";
+import type { CreateSponsorshipRequest } from "../interfaces/Sponsorship";
 
 /** ---------- AUTH ---------- */
 export const authAPI = {
-  logIn: (data: LoginUserRequest) => Post("/user/auth", data, false),
-  signUp: (data: CreateUserRequest) => Post("/user/signup", data, false),
-  me: () => Get("/user/me"),
+  logIn: (data: LoginUserRequest) =>
+    Post("/users/auth", data, false),     // ตาม BE ปัจจุบันของคุณ
+  signUp: (data: CreateUserRequest) =>
+    Post("/users/signup", data, false),
+
+  // ถ้า BE ใช้ /auth/me ให้เปลี่ยน path ตรงนี้ที่เดียว
+  me: () => Get("/users/me"),
+
+  // ถ้า BE ไม่มี endpoint นี้ ลบออกได้
   logout: () => Post("/user/logout", {}),
 };
 
-/** ---------- USERS ---------- */
+// ฐานพหูพจน์ + /:id
 export const userAPI = {
-  getAll: () => Get("/users"),
-  getById: (id: number) => Get(`/user/${id}`),
-  update: (id: number, data: UpdateUserRequest) => Put(`/user/${id}`, data),
-  remove: (id: number) => Delete(`/user/${id}`),
+  getAll:  () => Get("/users"),
+  getById: (id: number) => Get(`/users/${id}`),
+  update:  (id: number, data: UpdateUserRequest) => Put(`/users/${id}`, data),
+  remove:  (id: number) => Delete(`/users/${id}`),
 };
 
-/** ---------- DOGS ---------- */
+/** ---------- ADOPTERS (CRUD) ---------- */
+export const adopterAPI = {
+    create: (data: CreateAdoptionRequest) => Post("/adoptions", data),
+    getAll: () => Get("/adoptions"),
+    updateStatus: (id: number, data: UpdateStatusRequest) => Put(`/adoptions/${id}/status`, data), 
+    remove: (id: number) => Delete(`/adoptions/${id}`),
+    getMyCurrentAdoptions: () => Get("/my-adoptions", true), 
+};
+
+
+/** ---------- DOGS (CRUD) ---------- */
+// แก้ให้สม่ำเสมอทุกเมธอดอยู่ใต้ /dogs
 export const dogAPI = {
-  getAll: () => Get("/dogs"),
+  getAll:  () => Get("/dogs"),
   getById: (id: number) => Get(`/dogs/${id}`),
-  create: (data: CreateDogRequest) => Post("/dogs", data),
-  update: (id: number, data: UpdateDogRequest) => Put(`/dogs/${id}`, data),
-  remove: (id: number) => Delete(`/dogs/${id}`),
+  create:  (data: CreateDogRequest) => Post("/dogs", data),
+  update:  (id: number, data: UpdateDogRequest) => Put(`/dogs/${id}`, data),
+  remove:  (id: number) => Delete(`/dogs/${id}`),
 };
 
 /** ---------- LOOKUPS ---------- */
 export const genderAPI = {
-  getAll: () => Get("/genders"),
-  getById: (id: number) => Get(`/gender/${id}`),
+  getAll:  () => Get("/genders"),
+  getById: (id: number) => Get(`/genders/${id}`),
 };
 
 export const breedAPI = {
-  getAll: () => Get("/breeds"),
-  getById: (id: number) => Get(`/breed/${id}`),
+  getAll:  () => Get("/breeds"),
+  getById: (id: number) => Get(`/breeds/${id}`),
 };
 
 export const animalSexAPI = {
-  getAll: () => Get("/animal-sexes"),
-  getById: (id: number) => Get(`/animal-sex/${id}`),
+  getAll:  () => Get("/animal-sexes"),        // ← ทางที่แนะนำ
+  getById: (id: number) => Get(`/animal-sexes/${id}`),
+
+  // --- ถ้าต้องรองรับของเก่า ชั่วคราวใช้แบบนี้ ---
+  // getAll:  () => Get("/animal-sexs"),
+  // getById: (id: number) => Get(`/animal-sex/${id}`),
 };
 
 export const roleAPI = {
-  getAll: () => Get("/roles"),
-  getById: (id: number) => Get(`/role/${id}`),
+  getAll:  () => Get("/roles"),
+  getById: (id: number) => Get(`/roles/${id}`),
 };
 
 export const paymentMethodAPI = {
   getAll: () => Get("/paymentMethods"),
 };
 
-/** ---------- DONATIONS ---------- */
-export const donationAPI = {
-  getAll: () => Get("/donations"),
-  getById: (id: number) => Get(`/donation/${id}`),
-  create: (data: CreateDonationRequest) => Post("/donations", data),
-};
 
 /** ---------- ZC MANAGEMENT ---------- */
 export const zcManagementAPI = {
@@ -157,6 +176,46 @@ export const skillsAPI = {
   },
 };
 
+
+
+export const donationAPI = {
+  getAll:  () => Get("/donations"),
+  getById: (id: number) => Get(`/donations/${id}`),
+  getMyDonations: () => Get("/donations/my"), // สำหรับดึงการบริจาคของผู้ใช้ที่ล็อกอิน
+  create:  (data: CreateDonationRequest) => Post("/donations", data),
+  // update:  (id: number, data: UpdateDonationRequest) => Put(`/donations/${id}`, data),
+  // remove:  (id: number) => Delete(`/donations/${id}`),
+};
+
+
+export const sponsorshipAPI = {
+  getAll:  () => Get("/sponsorships"),
+  getById: (id: number) => Get(`/sponsorships/${id}`),
+  createSubscription:  (data: CreateSponsorshipRequest) => Post("/sponsorships/subscription", data),
+  createOneTime:  (data: CreateSponsorshipRequest) => Post("/sponsorships/one-time", data),
+}
+// รวม export เดียว
+export const healthRecordAPI = {
+  searchDogs: (query: string) => Get(`/dogs?name=${query}`),
+  getHealthRecordsByDogId: (dogId: string) => Get(`/health-records/dog/${dogId}`),
+  getHealthRecordById: (recordId: number) => Get(`/health-records/${recordId}`),
+  createHealthRecord: (data: any) => Post(`/health-records`, data),
+  updateHealthRecord: (recordId: number, data: any) => Put(`/health-records/${recordId}`, data),
+  deleteHealthRecord: (recordId: number) => Delete(`/health-records/${recordId}`),
+};
+export const vaccineAPI = {
+  getAll:  () => Get("/vaccines"),
+  getById: (id: number) => Get(`/vaccines/${id}`),
+};
+export const visitAPI = {
+  createVisit: (data: any) => Post("/visits", data),
+};
+
+export const personalityAPI = {
+  getAll: () => Get("/personalities"),
+}
+
+
 export const api = {
   authAPI,
   userAPI,
@@ -165,9 +224,14 @@ export const api = {
   breedAPI,
   animalSexAPI,
   roleAPI,
+  adopterAPI,
   paymentMethodAPI,
   donationAPI,
   zcManagementAPI,
   volunteerAPI,
   skillsAPI,
+  sponsorshipAPI,
+  healthRecordAPI,
+  vaccineAPI,
+  visitAPI,
 };

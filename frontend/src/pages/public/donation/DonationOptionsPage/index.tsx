@@ -8,9 +8,9 @@ const DonationOptionsPage: React.FC = () => {
   const navigate = useNavigate();
   const { user, isLoggedIn } = useAuthUser();
   const prefillUser = async () => {
-  if (!isLoggedIn || !user?.id) return;
+  if (!isLoggedIn || !user?.ID) return;
   try {
-    const userData = await userAPI.getById(user.id);
+    const userData = await userAPI.getById(user.ID);
     if (userData) {
       sessionStorage.setItem("prefillUserData", JSON.stringify(userData));
     }

@@ -7,17 +7,20 @@ import (
 
 type Event struct {
 	gorm.Model
-	Name        string     `gorm:"size:100;not null" json:"name"` 
-	Description *string    `gorm:"type:text" json:"description,omitempty"`
-	StartAt     time.Time  `gorm:"not null" json:"start_at"`
-	EndAt       time.Time  `gorm:"not null" json:"end_at"`
-	Location    *string    `gorm:"size:255" json:"location,omitempty"`
-	Organizer   *string    `gorm:"size:100" json:"organizer,omitempty"`
-	ContactInfo *string    `gorm:"size:100" json:"contact_info,omitempty"`
-	Capacity    *int       `gorm:"" json:"capacity,omitempty"`
+	Name        string     `json:"name"` 
+	Description *string    `json:"description"`
+	StartAt     time.Time  `json:"start_at"`
+	EndAt       time.Time  `json:"end_at"`
+	Location    *string    `json:"location"`
+	Organizer   *string    `json:"organizer"`
+	ContactInfo *string    `json:"contact_info"`
+	Capacity    *int       `json:"capacity,"`
 
 	StaffID uint  `json:"staff_id"` // Foreign key for Staff
-	Staff   *Staff `gorm:"foreignKey:StaffID"` // Association to Staff
+	Staff   *Staff `gorm:"foreignKey:StaffID" json:"staff"` // Association to Staff
+
+	VisitID   uint      `json:"visit_id"` // Foreign key for Visit
+	Visit     *Visit    `gorm:"foreignKey:VisitID" json:"visit"` // Association to Visit
+
 	
-	Attendees   []Attendee `gorm:"foreignKey:EventID" json:"attendees,omitempty"`
 }

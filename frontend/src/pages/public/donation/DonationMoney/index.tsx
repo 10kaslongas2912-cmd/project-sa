@@ -111,8 +111,8 @@ const fetchPaymentMethods = async () => {
       if (donorInfoString) {
         const donorInfo = JSON.parse(donorInfoString);
         const signupPrefillData = {
-          firstname: donorInfo.firstname,
-          lastname: donorInfo.lastname,
+          first_name: donorInfo.first_name,
+          last_name: donorInfo.last_name,
           email: donorInfo.email,
           phone: donorInfo.phone,
         };

@@ -10,5 +10,8 @@ type Kennel struct {
 	Note     *string `json:"note"`
 
 	ZoneID uint  `json:"zone_id"`
-	Zone   *Zone `gorm:"foreignKey:ZoneID"`
+	Zone   *Zone `gorm:"foreignKey:ZoneID" json:"zone"`
+
+	KennelManagements []KennelManagement `gorm:"foreignKey:KennelID" json:"kennel_managements"`
+	Dogs []Dog `gorm:"foreignKey:KennelID" json:"dogs"`
 }

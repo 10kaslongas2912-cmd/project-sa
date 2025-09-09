@@ -1,0 +1,94 @@
+
+
+:root{
+  --blue:#253C90;
+  --orange:#FF8800;
+  --white:#fff;
+  --gray-50:#fafafa;
+  --gray-100:#f5f5f5;
+  --gray-200:#eeeeee;
+  --gray-400:#bdbdbd;
+  --text:#222;
+}
+
+.db-root{
+  font-family:'Anakotmai' !important;
+  min-height:100vh;
+  background:var(--gray-50);
+}
+
+/* Sider */
+.db-sider{
+  background:var(--white) !important;
+  border-right:1px solid var(--gray-200);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  font-family:'Anakotmai' !important;
+}
+.db-brand{
+  height:64px;
+  display:flex; align-items:center; gap:10px;
+  padding:0 16px;
+  font-weight:700; color:var(--blue);
+}
+.db-logo-dot{
+  width:14px; height:14px; border-radius:50%;
+  background: linear-gradient(135deg, var(--blue), var(--orange));
+}
+.db-menu{
+  border-right:0;
+}
+.db-menu .ant-menu-item{
+  margin:4px 8px;
+  border-radius:10px;
+}
+.db-menu .ant-menu-item-selected{
+  background: rgba(37,60,144,0.09) !important;
+  color: var(--blue) !important;
+}
+
+/* Main */
+.db-main{ background:var(--gray-50); }
+.db-header{
+  background:var(--white);
+  border-bottom:1px solid var(--gray-200);
+  padding:16px 24px;
+}
+.db-header-title{
+  margin:0 !important;
+  color:var(--blue) !important;
+}
+
+/* Page title block */
+.db-page-title{
+  text-align:left;
+  margin-bottom:16px;
+  font-family:'Anakotmai' !important;
+}
+.db-title{ color:var(--blue) !important; margin-bottom:6px !important; }
+.db-sub{ color:#666; margin-bottom:8px; }
+.db-underline{
+  height:4px; width:100%;
+  background:var(--blue); border-radius:2px;
+}
+
+/* Content */
+.db-content{
+  padding:24px;
+}
+
+/* Cards = กล่องมีเงา */
+.db-card{
+  border:1px solid var(--gray-200);
+  border-radius:16px;
+  background:var(--white);
+  box-shadow:0 10px 24px rgba(0,0,0,0.06);
+}
+
+/* antd tabs adjust (ให้เข้ากับโทน) */
+.ant-tabs-top > .ant-tabs-nav{
+  margin:0 0 12px 0;
+}
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn{
+  color:var(--blue) !important;
+}
+.ant-tabs-ink-bar{ background:var(--orange) !important; }

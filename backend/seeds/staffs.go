@@ -42,8 +42,8 @@ func seedStaffs(db *gorm.DB) error {
 
 	staffs := []entity.Staff{
 		{
-			Firstname:   "Pongsak",
-			Lastname:    "Suwan",
+			FirstName:   "Pongsak",
+			LastName:    "Suwan",
 			Username:    "manager1",
 			Password:    pw, // bcrypt
 			GenderID:    male.ID,
@@ -56,8 +56,8 @@ func seedStaffs(db *gorm.DB) error {
 			ZoneID:      zoneA.ID,
 		},
 		{
-			Firstname:   "Nattaya",
-			Lastname:    "Chaiyasit",
+			FirstName:   "Nattaya",
+			LastName:    "Chaiyasit",
 			Username:    "manager2",
 			Password:    pw,
 			GenderID:    female.ID,

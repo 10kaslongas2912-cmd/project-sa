@@ -5,13 +5,13 @@ import { lazy } from 'react';
 import Loadable from "../components/third-patry/Loadable";
 
 import PublicLayout from "../layout/PublicLayout"; // Component ที่ใช้สำหรับ Layout ของหน้านี้ 
+import SponsorshipLayout from "../layout/PublicLayout/SponsorshipLayout"
 const SponsorPage = Loadable(lazy(() => import("../pages/public/sponsor/mainpage")));
 const DogInfoPage = Loadable(lazy(() => import("../pages/public/sponsor/doginfo")));
-const SponsorAmountPage = Loadable(lazy(() => import("../pages/public/sponsor/sponsoramount")));
-const SponsorFormPage = Loadable(lazy(() => import("../pages/public/sponsor/sponsorform")));
-const SponsorPaymentPage = Loadable(lazy(() => import("../pages/public/sponsor/sponsorpayment")));
-const SponsorThankyouPage = Loadable(lazy(() => import("../pages/public/sponsor/sponsorthankyou")));
-const SponsorPaymentCreditCardPage = Loadable(lazy(() => import("../components/Payment/Creditcard")));
+const SponsorAmountPage = Loadable(lazy(() => import("../pages/public/sponsor/SponsorAmount")));
+const SponsorFormPage = Loadable(lazy(() => import("../pages/public/sponsor/SponsorForm")));
+const SponsorPaymentPage = Loadable(lazy(() => import("../pages/public/sponsor/SponsorPayment")));
+const SponsorThankyouPage = Loadable(lazy(() => import("../pages/public/sponsor/SponsorThankyou")));
 const SponsorRoutes = (): RouteObject => {
   return {
     path: 'sponsor', 
@@ -22,40 +22,30 @@ const SponsorRoutes = (): RouteObject => {
             element: <SponsorPage />
         },
         {
-            path: 'dog-info',
-            element: <DogInfoPage />
-        },
-        {
-            path: 'amount',
-            element: <SponsorAmountPage />
-        },
-        {
-            path: 'form',
-            element: <SponsorFormPage />
-        },
-        {
-            path: 'payment',
+            path: ':id',
+            element: <SponsorshipLayout />,
             children: [
                 {
-                    index: true,
+                    path: 'dog-info',
+                    element: <DogInfoPage />
+                },
+                
+                {
+                    path: 'amount',
+                    element: <SponsorAmountPage />
+                },
+                {
+                    path: 'form',
+                    element: <SponsorFormPage />
+                },
+                {
+                    path: 'payment',
                     element: <SponsorPaymentPage />
                 },
                 {
-                    path: 'creditcard',
-                    element: <SponsorPaymentCreditCardPage />,
-                },
-                {
-                    path: 'banktransfer',
-                    element: <SponsorPaymentPage />,
-                },
-                {
-                    path: 'promptpay',
-                    element: <SponsorPaymentPage />,
-                },
-                {
-                    path: 'thankyou',
+                    path: 'thank-you',
                     element: <SponsorThankyouPage />
-                },  
+                }
             ]
         },
     ]

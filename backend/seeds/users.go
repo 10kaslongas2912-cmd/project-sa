@@ -21,9 +21,9 @@ func seedUsers(db *gorm.DB) error {
 
 	users := []entity.User{
 		{
-			Firstname:   "ศิริเดช",
-			Lastname:    "สุภาพ",
-			DateOfBirth: time.Date(1990, 1, 1, 0, 0, 0, 0, time.UTC),
+			FirstName:   "ศิริเดช",
+			LastName:    "สุภาพ",
+			DateOfBirth: "1990-01-01",
 			Email:       "nam@example.com",
 			Phone:       "0800000000",
 			Username:    "Nam",
@@ -32,9 +32,9 @@ func seedUsers(db *gorm.DB) error {
 			PhotoURL:    pointer.P(fmt.Sprintf("%s/static/images/user_profile/profile1.jpg", PublicBaseURL)),
 		},
 		{
-			Firstname:   "รับเช็ค",
-			Lastname:    "อึ่งชัยภูมิ",
-			DateOfBirth: time.Date(1995, 9, 20, 0, 0, 0, 0, time.UTC),
+			FirstName:   "รับเช็ค",
+			LastName:    "อึ่งชัยภูมิ",
+			DateOfBirth: "1995-09-20",
 			Email:       "ta@example.com",
 			Phone:       "0898765432",
 			Username:    "Ta",
@@ -42,6 +42,7 @@ func seedUsers(db *gorm.DB) error {
 			GenderID:    male.ID,
 			PhotoURL:    pointer.P(fmt.Sprintf("%s/static/images/user_profile/profile2.jpg", PublicBaseURL)),
 		},
+
 	}
 
 	for i := range users {

@@ -25,7 +25,6 @@ export interface AppUserInterface {
   phone: string;
   gender_id: number;
   gender: GenderInterface;
-  date_of_birth: string;
 }
 
 export interface LoginUserRequest {

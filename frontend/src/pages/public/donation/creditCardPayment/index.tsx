@@ -44,7 +44,7 @@ const CreditCardPaymentForm: React.FC = () => {
 
       // 2) enrich donorInfo จากสถานะ login (ถ้าต้องการ)
       const token = localStorage.getItem("token");
-      const userId = localStorage.getItem("id");
+      const userId = localStorage.getItem("ID");
       donorInfo.donor_type = token ? "user" : "guest";
       if (token && userId) {
         donorInfo.user_id = parseInt(userId, 10);
@@ -92,7 +92,7 @@ const CreditCardPaymentForm: React.FC = () => {
       const result = await donationAPI.create(payload);
 
       // 7) ตรวจผลลัพธ์
-      const status = (result as any)?.status ?? 200; // รองรับทั้ง AxiosResponse/data
+      const status = (result as any)?.status ?? 200;
       const data = (result as any)?.data ?? result;
 
       if (status === 200) {

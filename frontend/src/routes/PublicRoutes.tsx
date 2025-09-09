@@ -7,7 +7,6 @@ import PublicLayout from "../layout/PublicLayout";
 
 const MainPages = Loadable(lazy(() => import("../pages/public/firstpage")));
 
-
 const PublicRoutes = (): RouteObject => {
     return {
 
@@ -20,7 +19,6 @@ const PublicRoutes = (): RouteObject => {
                     index: true,    
                     element: <MainPages/>,
                 },
-    
             ],
     };
 };

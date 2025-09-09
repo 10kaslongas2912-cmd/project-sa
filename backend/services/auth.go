@@ -5,7 +5,6 @@ package services
 import (
 	"errors"
 	"time"
-
 	jwt "github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -29,7 +28,7 @@ type JwtWrapper struct {
 
 // JwtClaim adds email as a claim to the token
 type JwtClaim struct {
-	ID uint `json:"id"`
+	ID uint `json:"ID"`
 	Username string `json:"username"`
 	Email string `json:"email"`
 	jwt.StandardClaims

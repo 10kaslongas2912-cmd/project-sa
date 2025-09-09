@@ -1,7 +1,7 @@
 export interface DonorInterface {
-    id?: number;
-    firstname?: string;
-    lastname?: string;
+    ID?: number;
+    first_name?: string;
+    last_name?: string;
     phone?: string;
     email?: string;
     donor_type?: "user" | "guest";
@@ -10,7 +10,7 @@ export interface DonorInterface {
 
 
 export interface DonationInterface {
-    id?: number;
+    ID?: number;
     donation_date?: Date;
     donation_type?: string;
     status?: string;
@@ -21,7 +21,7 @@ export interface DonationInterface {
 
 
 export interface MoneyDonationInterface {
-    id?: number
+    ID?: number
     amount?: number;
     payment_type?: "one-time" | "monthly";
     next_payment_date?: Date | string;
@@ -33,7 +33,7 @@ export interface MoneyDonationInterface {
 }
 
 export interface ItemDonationInterface {
-    id?: number;
+    ID?: number;
     item_name?: string;
     quantity?: number;
     unit?: string;

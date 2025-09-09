@@ -4,6 +4,7 @@ import logo from '../../assets/logo.png';
 import './style.css';
 import { useAuthUser } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+
 const NavigationBar: React.FC = () => {
   const [visible, setVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -14,13 +15,15 @@ const NavigationBar: React.FC = () => {
   const handleDonateClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
 
-    if (isLoggedIn && user?.id) {
+    if (isLoggedIn && user?.ID) {
       navigate("/donation/options");
     } else {
       navigate("/donation");
     }
   };
+
   
+
   useEffect(() => {
     const controlNavbar = () => {
       setVisible(window.scrollY <= lastScrollY);
@@ -38,14 +41,15 @@ const NavigationBar: React.FC = () => {
       <nav className="header-nav">
         <ul>
           <li><Link to="/">หน้าแรก</Link></li>
-          <li><a href="#get-involved">ร่วมเป็นส่วนหนึ่งในการช่วยเหลือสุนัข</a></li>
           <li><a href="#about-us">เกี่ยวกับเรา</a></li>
-          <li><a href="#shop">กิจกรรม</a></li>
+          <li><a href="/event">กิจกรรม</a></li>
         </ul>
       </nav>
 
       <div className="header-actions">
-        <a href="#adopt" className="btn btn-action adopt-btn">รับเลี้ยง</a>
+        <Link to="/adoption" className="btn btn-action adopt-btn">Samรับเลี้ยง</Link>
+        <Link to="/create-visit" className="btn btn-action adopt-btn">การเยี่ยมชม</Link>
+        <a href="/health-record/search" className="btn btn-action adopt-btn">รับเลี้ยง</a>
         <Link to="/sponsor" className="btn btn-action sponsor-btn">อุปถัมภ์</Link>
         <a onClick={handleDonateClick} className="btn btn-action donate-btn">
           <span className="heart-icon">&#x2764;</span> บริจาค
@@ -88,8 +92,8 @@ const NavigationBar: React.FC = () => {
 
                   <div className="dropdown-menu">
                     <Link to="/profile" className="dropdown-item"><span className="item-icon">👤</span>โปรไฟล์ของฉัน</Link>
-                    <Link to="/my-adoptions" className="dropdown-item"><span className="item-icon">🐕</span>สุนัขที่รับเลี้ยง</Link>
-                    <Link to="/my-donations" className="dropdown-item"><span className="item-icon">💖</span>ประวัติการบริจาค</Link>
+                    <Link to="/user-dashboard" className="dropdown-item"><span className="item-icon">🐕</span>สุนัขที่รับเลี้ยง</Link>
+                    <Link to="/user-dashboard" className="dropdown-item"><span className="item-icon">💖</span>ประวัติการบริจาค</Link>
                     <hr className="dropdown-divider" />
                     <button onClick={logout} className="dropdown-item logout-btn">
                       <span className="item-icon">🚪</span>ออกจากระบบ

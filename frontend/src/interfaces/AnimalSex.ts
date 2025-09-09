@@ -1,4 +1,4 @@
 export interface AnimalSexInterface{
-    id: number;
+    ID: number;
     name: string;
 }

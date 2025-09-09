@@ -4,6 +4,7 @@ import "gorm.io/gorm"
 
 type PaymentMethod struct {
 	gorm.Model
+	Code string `json:"code"`
 	Name string `json:"name"`
 
 	MoneyDonations []MoneyDonation `gorm:"foreignKey:PaymentMethodID" json:"money_donations"`

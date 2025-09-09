@@ -13,7 +13,7 @@ type Donation struct {
 	Status       string    `json:"status"`
 	Description  string    `json:"description"`
 	DonorID      uint      `json:"donor_id"`
-	Donor        *Donor    `gorm:"foreignKey:DonorID"`
-	ItemDonations []ItemDonation `gorm:"foreignKey:DonationID"`
-	MoneyDonations []MoneyDonation `gorm:"foreignKey:DonationID"`
+	Donor        *Donor    `gorm:"foreignKey:DonorID" json:"donor"`
+	ItemDonations []ItemDonation `gorm:"foreignKey:DonationID" json:"item_donations"`
+	MoneyDonations []MoneyDonation `gorm:"foreignKey:DonationID" json:"money_donations"`
 }

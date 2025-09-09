@@ -8,5 +8,5 @@ type AnimalSex struct {
 	gorm.Model
 	Name string `json:"name"`
 
-	Dogs []Dog `gorm:"foreignKey:AnimalSexID"`
+	Dogs []Dog `gorm:"foreignKey:AnimalSexID" json:"dogs"`
 }

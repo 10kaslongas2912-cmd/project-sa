@@ -1,0 +1,313 @@
+/* Dog Visit Form Styles */
+.dog-visit-form-container {
+  max-width: 100%;
+  margin-top: 130px;
+  padding: 24px;
+  
+  
+}
+body {
+  background-color: #e7e7e7;
+}
+
+.visit-form-card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  border: none;
+  
+}
+
+.form-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  text-align: center;
+  justify-content: center;
+}
+
+.header-icon {
+  font-size: 24px;
+  color: #ff6b6b;
+}
+
+.form-header h2 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.visit-form {
+  margin-top: 24px;
+}
+
+/* Dog Selection Styles */
+.dog-select .ant-select-selector {
+  border-radius: 8px;
+  padding: 8px 12px;
+  min-height: 48px;
+}
+
+/* Dog Grid */
+.dogs-grid-container {
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 8px;
+  
+}
+
+.dogs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 คอลัมน์ */
+  gap: 16px; /* ระยะห่างระหว่าง card */
+}
+
+@media (max-width: 992px) {
+  .dogs-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 คอลัมน์ */
+  }
+}
+
+@media (max-width: 576px) {
+  .dogs-grid {
+    grid-template-columns: 1fr; /* 1 คอลัมน์บนมือถือ */
+  }
+}
+@media (max-width: 992px) {
+  .selected-dogs-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .selected-dogs-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+.dog-card {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.dog-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dog-card.selected {
+  border: 2px solid #f5a507;
+  box-shadow: 0 0 10px rgba(255, 183, 0, 0.3);
+}
+
+.dog-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.dog-avatar {
+  flex-shrink: 0;
+}
+
+.dog-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dog-details {
+  font-size: 12px;
+}
+
+/* Selected Dog Card */
+.selected-dog-card {
+  margin: 16px 0;
+  background: linear-gradient(135deg, #f8f9ff 0%, #f1f3ff 100%);
+  border: 1px solid #e6f0ff;
+  border-radius: 12px;
+}
+/* Selected Dogs Grid - 3 columns */
+.selected-dogs-grid {
+  display: grid; /* เพิ่ม */
+  grid-template-columns: repeat(3, 1fr); /* 3 columns เท่ากัน */
+  gap: 16px; /* ระยะห่างระหว่าง card */
+  max-height: 500px; /* ปรับได้ตามต้องการ */
+  overflow-y: auto; /* scroll ถ้ามีเยอะ */
+  padding: 8px;
+}
+.selected-dog-card {
+  height: 180px; /* หรือปรับตามขนาดที่ต้องการ */
+}
+
+
+.selected-dog-info {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.selected-dog-avatar {
+  flex-shrink: 0;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.selected-dog-details {
+  flex: 1;
+}
+
+.selected-dog-details h4 {
+  margin-bottom: 8px;
+  color: #2c3e50;
+}
+
+.dog-character {
+  display: block;
+  margin-top: 8px;
+  font-style: italic;
+}
+
+/* Form Input Styles */
+.visit-name-input {
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+}
+
+.visit-name-input:focus {
+  border-color: #ff6b6b;
+  box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+}
+
+.visit-description {
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.visit-description:focus {
+  border-color: #ff6b6b;
+  box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+}
+
+/* Form Actions */
+.form-actions {
+  margin-top: 32px;
+  text-align: center;
+}
+
+.submit-button {
+  background: linear-gradient(135deg, #f89956 0%, #fcba40 100%);
+  border: none;
+  border-radius: 8px;
+  padding: 0 32px;
+  height: 48px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+  transition: all 0.3s ease;
+}
+
+
+
+
+/* Error Card */
+.error-card {
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: center;
+  border: 1px solid #ffccc7;
+  background-color: #fff2f0;
+}
+
+/* Form Labels */
+.ant-form-item-label > label {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 14px;
+}
+
+.ant-form-item-label > label.ant-form-item-required::before {
+  color: #ff6b6b;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .dog-visit-form-container {
+    padding: 24px 16px;
+  }
+
+  .visit-form-card {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dog-visit-form-container {
+    padding: 16px;
+  }
+
+  .visit-form-card {
+    padding: 16px;
+  }
+
+  .selected-dogs-section {
+    margin-top: 24px;
+    padding: 20px;
+  }
+
+  .selected-dog-info {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+
+  .selected-dog-avatar {
+    align-self: center;
+  }
+
+  .form-actions {
+    margin-top: 32px;
+    text-align: center;
+  }
+
+  .form-actions .ant-space {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+
+  .selected-dogs-grid {
+    max-height: 300px;
+  }
+}
+
+/* Loading States */
+.ant-checkbox-loading .ant-checkbox-inner::after {
+  border-color: #ff6b6b;
+}
+
+/* Scrollbar for dogs grid */
+.dogs-grid-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dogs-grid-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.dogs-grid-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.dogs-grid-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import type { CreateUserRequest,LoginUserRequest, UpdateUserRequest } from "../../interfaces/User"; // แยกเป็น Request ชัดเจน
 import type { GenderInterface } from "../../interfaces/Gender";
 
-import { api } from "../../services/apis"; // <- ใช้รวม API ที่ไฟล์เดียว
+import { authAPI, genderAPI } from "../../services/apis"; // <- ใช้รวม API ที่ไฟล์เดียว
 import "./style.css";
 import logo from "../../assets/logo.png";
 
@@ -26,21 +26,24 @@ function AuthPage() {
   // ---- LOGIN ----
   const onFinishLogin = async (values: LoginUserRequest) => {
     try {
-      const res = await api.authAPI.logIn(values);
-      // data รูปแบบ { data: { token, token_type, user } }
-      const payload = res.data.data
+      const res = await authAPI.logIn(values);
+      const payload = res.data;
+
       messageApi.success("เข้าสู่ระบบสำเร็จ");
       localStorage.setItem("isLogin", "true");
       localStorage.setItem("token_type", payload.token_type);
       localStorage.setItem("token", payload.token);
-      if (payload.user?.id) localStorage.setItem("id", String(payload.user.id));
+      if (payload.user?.ID) localStorage.setItem("ID", String(payload.user.ID));
 
-      const returnTo = sessionStorage.getItem("returnTo");
+      // ดึง returnTo จาก sessionStorage ก่อน → ถ้าไม่มีค่อยไปดู localStorage
+      let returnTo = sessionStorage.getItem("returnTo") || localStorage.getItem("returnTo");
+
       if (returnTo) {
         sessionStorage.removeItem("returnTo");
-        navigate(returnTo);
+        localStorage.removeItem("returnTo");
+        navigate(returnTo, { replace: true });
       } else {
-        navigate("/");
+        navigate("/", { replace: true });
       }
     } catch (e: any) {
       const err = e?.response?.data?.error ?? "เข้าสู่ระบบไม่สำเร็จ";
@@ -51,11 +54,12 @@ function AuthPage() {
   // ---- LOAD GENDERS ----
   const onGetGender = async () => {
     try {
-      const res = await api.genderAPI.getAll(); 
+      const res = await genderAPI.getAll(); 
       const list = Array.isArray(res) ? res : [];
 
       const normalized: GenderInterface[] = list.map((g: any) => ({
-        id: g.id ?? g.ID,
+        ID: g.ID,
+        code: g.code,
         name: g.name
       }));
       setGenders(normalized);
@@ -67,19 +71,19 @@ function AuthPage() {
   // ---- REGISTER ----
   const onFinishRegister = async (values: any) => {
     // แปลงค่า form -> payload ที่ BE ต้องการ
-    const payload: CreateUserRequest = {
-      username: values.username ?? values.email, // ถ้าไม่มีช่อง username ใช้อีเมลแทน
-      password: values.password,
-      firstname: values.first_name,
-      lastname: values.last_name,
-      date_of_birth: values.birthday?.format?.("YYYY-MM-DD") ?? values.birthday, // DatePicker (dayjs)
-      email: values.email,
-      phone: values.phone_number,
-      gender_id: values.gender_id,
-    };
+  const payload: CreateUserRequest = {
+    username: values.username, // 
+    password: values.password,
+    first_name: values.first_name,
+    last_name: values.last_name,
+    date_of_birth: values.birthday?.format?.("YYYY-MM-DD") ?? values.birthday,
+    email: values.email,
+    phone: values.phone_number,
+    gender_id: values.gender_id,
+  };
 
     try {
-      await api.authAPI.signUp(payload);
+      await authAPI.signUp(payload);
       messageApi.success("สมัครสมาชิกสำเร็จ, กำลังเข้าสู่ระบบ...");
 
       // Automatically log the user in after successful registration
@@ -103,8 +107,8 @@ function AuthPage() {
         const prefillData = JSON.parse(prefillDataString);
         
         registerForm.setFieldsValue({
-          first_name: prefillData.firstname,
-          last_name: prefillData.lastname,
+          first_name: prefillData.first_name,
+          last_name: prefillData.last_name,
           email: prefillData.email,
           phone_number: prefillData.phone,
         });
@@ -161,7 +165,7 @@ function AuthPage() {
                 >
                   <Select placeholder="เพศ">
                     {genders.map((gender) => (
-                      <Select.Option value={gender.id} key={gender.id}>
+                      <Select.Option value={gender.ID} key={gender.ID}>
                         {gender.name}
                       </Select.Option>
                     ))}
@@ -189,7 +193,21 @@ function AuthPage() {
                 </Form.Item>
               </div>
             </div>
-
+            <div className="username">
+              <Form.Item
+                label="ชื่อผู้ใช้ (Username)"
+                name="username"
+                rules={[
+                  { required: true, message: "กรุณากรอกชื่อผู้ใช้!" },
+                  { min: 4, message: "อย่างน้อย 4 ตัวอักษร" },
+                  { pattern: /^[a-zA-Z0-9._-]+$/, message: "ใช้ได้เฉพาะ a-z, 0-9, จุด, ขีดกลาง, ขีดล่าง" },
+                ]}
+                normalize={(v) => (typeof v === "string" ? v.trim() : v)}
+                hasFeedback
+              >
+                <Input placeholder="ชื่อผู้ใช้" autoComplete="username" />
+              </Form.Item>
+            </div>
             <div className="mail">
               <Form.Item
                 label="อีเมล"

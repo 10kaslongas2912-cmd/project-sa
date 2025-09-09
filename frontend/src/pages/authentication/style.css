@@ -75,6 +75,7 @@
 .name,
 .tel-birth-gender,
 .mail,
+.username,
 .password {
   width: 100%;
   display: flex;

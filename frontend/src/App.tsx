@@ -12,7 +12,7 @@ const App: React.FC = () => {
     <Router>
 
       <ConfigRoutes />
-
+      
     </Router>
 
   );

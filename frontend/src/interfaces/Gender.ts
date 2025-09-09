@@ -1,15 +1,16 @@
 export interface GenderInterface {
-  id: number;
+  ID: number;
+  code: string;
   name: string;
 }
 
 
 export interface UpdateGenderRequest {
-  id?: number;
+  ID?: number;
   name?: string;
 }
 
 export interface CreateGenderRequest {
-  id: number;
+  ID: number;
   name: string;
 }

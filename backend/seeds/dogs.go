@@ -48,6 +48,7 @@ func seedDogs(db *gorm.DB) error {
 		return err
 	}
 
+	
 	dogs := []entity.Dog{
 		{
 			Name:          "Tor",
@@ -112,7 +113,7 @@ func seedDogs(db *gorm.DB) error {
 			IsAdopted:     false,
 			ReadyToAdopt:  true,
 			Character:     "Energetic",
-			PhotoURL:      fmt.Sprintf("%s/static/images/dog/dog6.jpg", PublicBaseURL),
+			PhotoURL: fmt.Sprintf("%s/static/images/dog/dog6.jpg", PublicBaseURL),
 		},
 	}
 

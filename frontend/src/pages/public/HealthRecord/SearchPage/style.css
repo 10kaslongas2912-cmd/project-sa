@@ -1,0 +1,161 @@
+/* ==== Header / Title / Search container แบบไม่ฟิกซ์ === */
+.search-page .page-title {
+  margin: 0 auto 15px !important;        
+  color: #ff6600;
+  font-size: clamp(28px, 5vw, 50px);      
+  font-family: 'Anakotmai-Bold';
+  max-width: 1200px;                       
+  padding: 0 16px;                         
+}
+
+.search-page .search-container {
+  max-width: 1200px !important;            
+  width: 100% !important;
+  margin: 0 auto !important;               
+  padding: 0 16px;                          
+}
+
+/* เส้นใต้หัวเรื่องให้ยืดหยุ่นและกึ่งกลาง */
+.title-underline {
+  height: 5px;
+  width: 100%;
+  max-width: 1200px;
+  background-color: #253C90;
+  margin: 0 auto 20px;                      
+  border-radius: 2px;
+}
+
+.search-page .search-results {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* ==== การ์ดผลลัพธ์สุนัข: ปรับให้เล็กลง === */
+.dog-result-card {
+  margin-bottom: 12px !important;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+  width: 100%;
+  border-radius: 12px !important;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+  margin-top: 15px;
+}
+
+.dog-result-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important;
+}
+
+.dog-result-card .ant-card-body {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 16px !important;
+}
+
+/* กล่องรูป: ลดขนาดลง */
+.dog-result-card .dog-image {
+  width: 80px !important;
+  height: 80px !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
+  background-color: #f5f5f5;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* รูปจริง: เติมพื้นที่อย่างยืดหยุ่น */
+.dog-result-card .dog-image img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  border-radius: 8px !important;
+  display: block !important;
+}
+
+/* ส่วนข้อมูล: ให้ยืดกินพื้นที่ที่เหลือ */
+.dog-result-card .dog-info {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;  
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 4px !important;
+}
+
+/* ชื่อหมาให้เล็กลง */
+.dog-result-card .dog-name {
+  margin: 0 !important;
+  font-size: 18px !important;
+  font-family: 'Anakotmai-Bold' !important;
+  line-height: 1.3 !important;
+  color: #333 !important;
+}
+
+/* ข้อมูลเพิ่มเติม */
+.dog-result-card .dog-info .ant-typography {
+  font-size: 14px !important;
+  margin: 0 !important;
+  line-height: 1.4 !important;
+}
+
+/* ช่องค้นหา AntD ให้ยืดเต็มที่ของคอนเทนเนอร์ */
+.search-container .ant-input-affix-wrapper {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+/* ปรับ No results section */
+.search-page .no-results {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.search-page .no-results .dog-silhouette {
+  width: 60px;
+  height: 60px;
+  background-color: #d9d9d9;
+  border-radius: 50%;
+  margin: 0 auto 16px;
+}
+
+/* ===== รองรับหน้าจอเล็ก ===== */
+@media (max-width: 768px) {
+  .dog-result-card .ant-card-body {
+    padding: 12px !important;
+    gap: 12px !important;
+  }
+  
+  .dog-result-card .dog-image {
+    width: 60px !important;
+    height: 60px !important;
+  }
+  
+  .dog-result-card .dog-name {
+    font-size: 16px !important;
+  }
+  
+  .dog-result-card .dog-info .ant-typography {
+    font-size: 13px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-page .page-title {
+    font-size: clamp(24px, 6vw, 32px) !important;
+  }
+  
+  .dog-result-card .ant-card-body {
+    padding: 10px !important;
+    gap: 10px !important;
+  }
+  
+  .dog-result-card .dog-image {
+    width: 50px !important;
+    height: 50px !important;
+  }
+}
