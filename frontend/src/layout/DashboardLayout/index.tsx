@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import "./style.css";
-import { Outlet } from "react-router-dom";
+import "./style.css"; // Import CSS file
 import {
   Home,
   Heart,
@@ -13,10 +12,31 @@ import {
   BarChart3,
   Menu,
   X,
+  Search,
+  Bell,
+  Mail,
+  BookOpen,
+  CheckSquare,
+  Settings,
+  LogOut,
+  Play,
+  Eye,
+  ChevronRight,
+  ChevronLeft,
+  Plus,
+  MoreVertical
 } from "lucide-react";
-import logo from "../../assets/logo.png";
+import type { JSX } from "react/jsx-runtime";
 
 // Types
+interface Staff {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  avatar?: string;
+}
+
 interface Notification {
   id: string;
   title: string;
@@ -26,114 +46,146 @@ interface Notification {
   type: "info" | "warning" | "success" | "error";
 }
 
-interface Staff {
+interface MenuItem {
   id: string;
-  name: string;
-  email: string;
-  role: string;
-  avatar?: string;
+  label: string;
+  icon: any;
 }
 
-const sampleStaff: Staff = {
-  id: "1",
-  name: "สมชาย ใจดี",
-  email: "somchai@company.com",
-  role: "Senior Manager",
-  avatar: "", // Leave empty to show initials
-};
+interface Course {
+  title: string;
+  category: string;
+  mentor: string;
+  image: string;
+}
 
-const sampleNotifications: Notification[] = [
-  {
-    id: "1",
-    title: "งานใหม่เข้าระบบ",
-    message: "มีงานใหม่ที่ต้องการการอนุมัติจากคุณ",
-    time: "5 นาทีที่แล้ว",
-    isRead: false,
-    type: "info" as const,
-  },
-  {
-    id: "2",
-    title: "เตือนการประชุม",
-    message: "การประชุมทีมจะเริ่มในอีก 15 นาที",
-    time: "10 นาทีที่แล้ว",
-    isRead: false,
-    type: "warning" as const,
-  },
-  {
-    id: "3",
-    title: "อัพเดตสถานะงาน",
-    message: "งาน #12345 ได้รับการอนุมัติเรียบร้อย",
-    time: "30 นาทีที่แล้ว",
-    isRead: true,
-    type: "success" as const,
-  },
-  {
-    id: "4",
-    title: "ข้อผิดพลาดในระบบ",
-    message: "พบข้อผิดพลาดในการประมวลผลข้อมูล",
-    time: "1 ชั่วโมงที่แล้ว",
-    isRead: true,
-    type: "error" as const,
-  },
-];
+interface Friend {
+  name: string;
+  role: string;
+  avatar: string;
+}
 
-const menuItems = [
-  { id: "dashboard", label: "แดชบอร์ด", icon: Home },
-  { id: "dogs", label: "จัดการข้อมูลสุนัข", icon: PawPrint },
-  { id: "adoption", label: "การรับเลี้ยง", icon: Heart },
-  { id: "donation", label: "การบริจาค", icon: DollarSign },
-  { id: "visits", label: "ตารางการเยี่ยมชม", icon: Calendar },
-  { id: "medical", label: "บันทึกการรักษา", icon: Stethoscope },
-  { id: "support", label: "การอุปถัมภ์สนับสนุน", icon: Shield },
-  { id: "reports", label: "รายงานสถิติ", icon: BarChart3 },
-];
+interface Mentor {
+  name: string;
+  role: string;
+  avatar: string;
+}
 
-const DashboardLayout: React.FC = () => {
-  const [notifications, setNotifications] = useState(sampleNotifications);
-  const [activeMenu, setActiveMenu] = useState("dashboard");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] =
-    useState(false);
+const UpdatedDashboard: React.FC = () => {
+  // State management
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
+  const [activeMenu, setActiveMenu] = useState<string>("dashboard");
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState<boolean>(false);
+  const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState<boolean>(false);
+  
+  // Refs for dropdown handling
   const profileRef = useRef<HTMLDivElement>(null);
   const notificationRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdowns when clicking outside
+  // Sample data
+  const sampleStaff: Staff = {
+    id: "1",
+    name: "Jason Ranti",
+    email: "jason@company.com",
+    role: "Student",
+    avatar: "", 
+  };
+
+  const sampleNotifications: Notification[] = [
+    {
+      id: "1",
+      title: "งานใหม่เข้าระบบ",
+      message: "มีงานใหม่ที่ต้องการการอนุมัติจากคุณ",
+      time: "5 นาทีที่แล้ว",
+      isRead: false,
+      type: "info",
+    },
+    {
+      id: "2",
+      title: "เตือนการประชุม",
+      message: "การประชุมทีมจะเริ่มในอีก 15 นาที",
+      time: "10 นาทีที่แล้ว",
+      isRead: false,
+      type: "warning",
+    }
+  ];
+
+  const menuItems: MenuItem[] = [
+    { id: "dashboard", label: "แดชบอร์ด", icon: Home },
+    { id: "dogs", label: "จัดการข้อมูลสุนัข", icon: PawPrint },
+    { id: "adoption", label: "การรับเลี้ยง", icon: Heart },
+    { id: "donation", label: "การบริจาค", icon: DollarSign },
+    { id: "visits", label: "ตารางการเยี่ยมชม", icon: Calendar },
+    { id: "medical", label: "บันทึกการรักษา", icon: Stethoscope },
+    { id: "support", label: "การอุปถัมภ์สนับสนุน", icon: Shield },
+    { id: "reports", label: "รายงานสถิติ", icon: BarChart3 },
+  ];
+
+  const friends: Friend[] = [
+    { name: "Bagas Mahpie", role: "Friend", avatar: "BM" },
+    { name: "Sir Dandy", role: "Old Friend", avatar: "SD" },
+    { name: "Jhon Tosan", role: "Friend", avatar: "JT" }
+  ];
+
+  const courses: Course[] = [
+    {
+      title: "Beginner's Guide to Becoming a Professional Front-End Developer",
+      category: "FRONT-END",
+      mentor: "Leonardo Samuel",
+      image: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=200&fit=crop"
+    },
+    {
+      title: "Optimizing User Experience with the Best UI/UX Design",
+      category: "UI/UX DESIGN",
+      mentor: "Bayu Saito",
+      image: "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=400&h=200&fit=crop"
+    },
+    {
+      title: "Reviving and Refreshing Your Company Image",
+      category: "BRANDING", 
+      mentor: "Padhang Satrio",
+      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=200&fit=crop"
+    }
+  ];
+
+  const mentors: Mentor[] = [
+    { name: "Padhang Satrio", role: "Mentor", avatar: "PS" },
+    { name: "Zakir Horizontal", role: "Mentor", avatar: "ZH" },
+    { name: "Leonardo Samuel", role: "Mentor", avatar: "LS" }
+  ];
+
+  const progressData = [
+    { title: "UI/UX Design", progress: "2/8 watched", color: "#8b5cf6" },
+    { title: "Branding", progress: "3/8 watched", color: "#f59e0b" },
+    { title: "Front End", progress: "6/8 watched", color: "#06b6d4" }
+  ];
+
+  const chartData = [20, 45, 30, 60, 25, 40, 55];
+
+  // Event handlers
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        profileRef.current &&
-        !profileRef.current.contains(event.target as Node)
-      ) {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
         setIsProfileDropdownOpen(false);
       }
-      if (
-        notificationRef.current &&
-        !notificationRef.current.contains(event.target as Node)
-      ) {
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
         setIsNotificationDropdownOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
-
-  const handleProfileClick = () => {
-    setIsProfileDropdownOpen(!isProfileDropdownOpen);
-    setIsNotificationDropdownOpen(false);
+  const getInitials = (name: string): string => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
   };
 
-  const handleNotificationClick = () => {
-    setIsNotificationDropdownOpen(!isNotificationDropdownOpen);
-    setIsProfileDropdownOpen(false);
-  };
-
-  const handleProfileMenuClick = (action: string) => {
-    console.log("Profile menu action:", action);
-
+  const handleProfileMenuClick = (action: string): void => {
     switch (action) {
       case "profile":
         alert("เปิดหน้าข้อมูลส่วนตัว");
@@ -155,236 +207,357 @@ const DashboardLayout: React.FC = () => {
     setIsProfileDropdownOpen(false);
   };
 
-  const handleNotificationItemClick = (notification: Notification) => {
-    console.log("Notification clicked:", notification);
+  const renderDashboardContent = (): JSX.Element => {
+    return (
+      <>
+        {/* Hero Section */}
+        <div className="hero-section">
+          <div className="hero-badge">ONLINE COURSE</div>
+          <div className="hero-content">
+            <h1 className="hero-title">
+              Sharpen Your Skills with Professional Online Courses
+            </h1>
+            <button className="hero-button">
+              Join Now <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
 
-    // Mark as read when clicked
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === notification.id ? { ...n, isRead: true } : n))
+        {/* Course Progress Cards */}
+        <div className="course-progress-grid">
+          {progressData.map((course, index) => (
+            <div key={index} className="progress-card">
+              <div 
+                className="progress-icon" 
+                style={{ background: course.color }}
+              ></div>
+              <div className="progress-text">{course.progress}</div>
+              <h3 className="progress-title">{course.title}</h3>
+            </div>
+          ))}
+        </div>
+
+        <div className="main-grid">
+          {/* Continue Watching */}
+          <div>
+            <div className="section-header">
+              <h2 className="section-title">Continue Watching</h2>
+              <div className="nav-buttons">
+                <button className="nav-button">
+                  <ChevronLeft size={16} />
+                </button>
+                <button className="nav-button active">
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            </div>
+
+            <div className="courses-grid">
+              {courses.map((course, index) => (
+                <div key={index} className="course-card">
+                  <div 
+                    className="course-image"
+                    style={{ backgroundImage: `url(${course.image})` }}
+                  >
+                    <button className="favorite-button">
+                      <Heart size={14} />
+                    </button>
+                  </div>
+                  <div className="course-content">
+                    <div className="course-category">
+                      📚 {course.category}
+                    </div>
+                    <h4 className="course-title">{course.title}</h4>
+                    <div className="mentor-info">
+                      <div className="mentor-avatar">
+                        {course.mentor.split(' ').map(n => n[0]).join('')}
+                      </div>
+                      <div className="mentor-details">
+                        <div className="mentor-name">{course.mentor}</div>
+                        <div className="mentor-role">Mentor</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Sidebar */}
+          <div>
+            {/* Statistics */}
+            <div className="sidebar-panel">
+              <div className="panel-header">
+                <h3 className="panel-title">Statistic</h3>
+                <MoreVertical size={16} color="#6b7280" />
+              </div>
+
+              <div className="greeting-section">
+                <div className="greeting-avatar">JR</div>
+                <div className="greeting-text">
+                  <div className="greeting-title">Good Morning Jason 👋</div>
+                  <div className="greeting-subtitle">Continue your learning to reach your target!</div>
+                </div>
+              </div>
+
+              {/* Chart */}
+              <div className="chart-container">
+                {chartData.map((height, index) => (
+                  <div
+                    key={index}
+                    className={`chart-bar ${index === 5 ? 'active' : ''}`}
+                    style={{ height: `${height}%` }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Your Mentor */}
+            <div className="sidebar-panel">
+              <div className="panel-header">
+                <h3 className="panel-title">Your mentor</h3>
+                <Plus size={16} color="#6b7280" />
+              </div>
+
+              <div className="mentor-list">
+                {mentors.map((mentor, index) => (
+                  <div key={index} className="mentor-item">
+                    <div className="mentor-info-section">
+                      <div className="mentor-avatar-large">
+                        {mentor.avatar}
+                      </div>
+                      <div className="mentor-details-large">
+                        <div className="mentor-name">{mentor.name}</div>
+                        <div className="mentor-role">{mentor.role}</div>
+                      </div>
+                    </div>
+                    <button className="follow-button">Follow</button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
     );
-
-    alert(`คลิกการแจ้งเตือน: ${notification.title}`);
   };
 
-  const handleMarkAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-    console.log("Marked all notifications as read");
+  const renderDevelopmentMessage = (): JSX.Element => {
+    const currentMenu = menuItems.find(item => item.id === activeMenu);
+    return (
+      <div className="development-message">
+        <div className="development-icon">
+          {currentMenu && <currentMenu.icon size={32} color="#6b7280" />}
+        </div>
+        <h2 className="development-title">
+          {currentMenu?.label || "หน้านี้"}
+        </h2>
+        <p className="development-subtitle">
+          กำลังพัฒนา... รอติดตามในเร็วๆ นี้
+        </p>
+      </div>
+    );
   };
 
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case "warning":
-        return "⚠️";
-      case "success":
-        return "✅";
-      case "error":
-        return "❌";
-      default:
-        return "ℹ️";
+  const renderMainContent = (): JSX.Element => {
+    if (activeMenu === "dashboard") {
+      return renderDashboardContent();
+    } else {
+      return renderDevelopmentMessage();
     }
   };
 
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
   return (
-    <div className="container">
-      <header className="header-bar">
-        <div className="header-content">
-          <div className="header-left">
-            <div className="sidebar-header">
-              <div className="logo">
-                <img src={logo} alt="logo" />
-              </div>
-              <button
-                className="toggle-btn"
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-              >
-                {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
-              </button>
-            </div>
+    <div className="dashboard-container">
+      {/* Header */}
+      <header className="dashboard-header">
+        <div className="header-left">
+          <button
+            className="sidebar-toggle-btn"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
+            {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+          <div className="logo-section">
+            <div className="logo-icon">C</div>
+            <span className="logo-text">Course</span>
           </div>
-          <div className="header-right">
-            {/* Notification Bell */}
-            <div className="notification-container" ref={notificationRef}>
-              <button
-                className="notification-btn"
-                onClick={handleNotificationClick}
-                aria-label="Notifications"
-              >
-                <div className="bell-icon">
-                  🔔
-                  {unreadCount > 0 && (
-                    <span className="notification-badge">{unreadCount}</span>
-                  )}
-                </div>
-              </button>
+        </div>
 
-              {isNotificationDropdownOpen && (
-                <div className="notification-dropdown">
-                  <div className="dropdown-header">
-                    <h3>การแจ้งเตือน</h3>
-                    {unreadCount > 0 && (
-                      <button
-                        className="mark-all-read-btn"
-                        onClick={handleMarkAllAsRead}
-                      >
-                        ทำเครื่องหมายอ่านทั้งหมด
-                      </button>
-                    )}
-                  </div>
-                  <div className="notification-list">
-                    {notifications.length === 0 ? (
-                      <div className="no-notifications">ไม่มีการแจ้งเตือน</div>
-                    ) : (
-                      notifications.map((notification) => (
-                        <div
-                          key={notification.id}
-                          className={`notification-item ${
-                            !notification.isRead ? "unread" : ""
-                          }`}
-                          onClick={() =>
-                            handleNotificationItemClick(notification)
-                          }
-                        >
-                          <div className="notification-icon">
-                            {getNotificationIcon(notification.type)}
-                          </div>
-                          <div className="notification-content">
-                            <h4>{notification.title}</h4>
-                            <p>{notification.message}</p>
-                            <span className="notification-time">
-                              {notification.time}
-                            </span>
-                          </div>
-                          {!notification.isRead && (
-                            <div className="unread-dot"></div>
-                          )}
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
+        <div className="header-right">
+          <div className="search-container">
+            <Search size={18} className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search your course..."
+              className="search-input"
+            />
+          </div>
+          
+          <button className="icon-button">
+            <Mail size={20} color="#6b7280" />
+          </button>
+          
+          <div ref={notificationRef} style={{ position: "relative" }}>
+            <button 
+              className="icon-button"
+              onClick={() => setIsNotificationDropdownOpen(!isNotificationDropdownOpen)}
+            >
+              <Bell size={20} color="#6b7280" />
+              <div className="notification-badge">2</div>
+            </button>
 
-            {/* Profile Section */}
-            <div className="profile-container" ref={profileRef}>
-              <button
-                className="profile-btn"
-                onClick={handleProfileClick}
-                aria-label="Profile menu"
-              >
-                <div className="profile-info">
-                  <span className="staff-name">{sampleStaff.name}</span>
-                  <span className="staff-role">{sampleStaff.role}</span>
+            {isNotificationDropdownOpen && (
+              <div className="dropdown notification-dropdown">
+                <div className="dropdown-header">
+                  <h3>การแจ้งเตือน</h3>
+                  <button className="mark-all-read-btn">
+                    ทำเครื่องหมายอ่านทั้งหมด
+                  </button>
                 </div>
-                <div className="profile-avatar">
-                  {sampleStaff.avatar ? (
-                    <img src={sampleStaff.avatar} alt={sampleStaff.name} />
-                  ) : (
-                    <div className="avatar-placeholder">
+                <div>
+                  {sampleNotifications.map((notification) => (
+                    <div key={notification.id} className="notification-item">
+                      <h4>{notification.title}</h4>
+                      <p>{notification.message}</p>
+                      <span>{notification.time}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div ref={profileRef} style={{ position: "relative" }}>
+            <button
+              className="profile-button"
+              onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+            >
+              <div className="profile-avatar">
+                {getInitials(sampleStaff.name)}
+              </div>
+              <span className="profile-name">{sampleStaff.name}</span>
+            </button>
+
+            {isProfileDropdownOpen && (
+              <div className="dropdown profile-dropdown">
+                <div className="profile-dropdown-header">
+                  <div className="profile-dropdown-info">
+                    <div className="profile-dropdown-avatar">
                       {getInitials(sampleStaff.name)}
                     </div>
-                  )}
-                </div>
-                <div className="dropdown-arrow">▼</div>
-              </button>
-
-              {isProfileDropdownOpen && (
-                <div className="profile-dropdown">
-                  <div className="dropdown-header">
-                    <div className="profile-details">
-                      <div className="profile-avatar-large">
-                        {sampleStaff.avatar ? (
-                          <img
-                            src={sampleStaff.avatar}
-                            alt={sampleStaff.name}
-                          />
-                        ) : (
-                          <div className="avatar-placeholder">
-                            {getInitials(sampleStaff.name)}
-                          </div>
-                        )}
-                      </div>
-                      <div className="profile-text">
-                        <h3>{sampleStaff.name}</h3>
-                        <p>{sampleStaff.email}</p>
-                        <span className="role-badge">{sampleStaff.role}</span>
-                      </div>
+                    <div className="profile-dropdown-details">
+                      <div className="profile-name">{sampleStaff.name}</div>
+                      <div className="profile-email">{sampleStaff.email}</div>
+                      <div className="profile-role-badge">{sampleStaff.role}</div>
                     </div>
                   </div>
-                  <div className="dropdown-menu">
-                    <button
-                      className="menu-item"
-                      onClick={() => handleProfileMenuClick("profile")}
-                    >
-                      <span className="menu-icon">👤</span>
-                      ข้อมูลส่วนตัว
-                    </button>
-                    <button
-                      className="menu-item"
-                      onClick={() => handleProfileMenuClick("settings")}
-                    >
-                      <span className="menu-icon">⚙️</span>
-                      การตั้งค่า
-                    </button>
-                    <button
-                      className="menu-item"
-                      onClick={() => handleProfileMenuClick("help")}
-                    >
-                      <span className="menu-icon">❓</span>
-                      ความช่วยเหลือ
-                    </button>
-                    <div className="menu-divider"></div>
-                    <button
-                      className="menu-item logout"
-                      onClick={() => handleProfileMenuClick("logout")}
-                    >
-                      <span className="menu-icon">🚪</span>
-                      ออกจากระบบ
-                    </button>
-                  </div>
                 </div>
-              )}
-            </div>
+                <div className="dropdown-menu">
+                  <button
+                    className="dropdown-menu-item"
+                    onClick={() => handleProfileMenuClick("profile")}
+                  >
+                    <span>👤</span>
+                    ข้อมูลส่วนตัว
+                  </button>
+                  <button
+                    className="dropdown-menu-item"
+                    onClick={() => handleProfileMenuClick("settings")}
+                  >
+                    <span>⚙️</span>
+                    การตั้งค่า
+                  </button>
+                  <button
+                    className="dropdown-menu-item"
+                    onClick={() => handleProfileMenuClick("help")}
+                  >
+                    <span>❓</span>
+                    ความช่วยเหลือ
+                  </button>
+                  <div className="menu-divider"></div>
+                  <button
+                    className="dropdown-menu-item logout"
+                    onClick={() => handleProfileMenuClick("logout")}
+                  >
+                    <span>🚪</span>
+                    ออกจากระบบ
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </header>
-      <div className={`main ${sidebarOpen ? "sidebar-open" : "sidebar-closed"}`}>
-        <div className="sidebar">
-          <div className={`sidebar-body ${sidebarOpen ? "open" : "closed"}`}>
-            <nav className="sidebar-nav">
-              {menuItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    className={`nav-item ${
-                      activeMenu === item.id ? "active" : ""
-                    }`}
-                    onClick={() => setActiveMenu(item.id)}
-                  >
-                    <Icon size={20} />
-                    {sidebarOpen && <span>{item.label}</span>}
-                  </button>
-                );
-              })}
-            </nav>
+
+      {/* Main Content Area */}
+      <div className="main-content-area">
+        {/* Sidebar */}
+        <div className={`sidebar ${!sidebarOpen ? 'collapsed' : ''}`}>
+          <div className="sidebar-content">
+            <div className="sidebar-section-title">
+              {sidebarOpen ? "OVERVIEW" : ""}
+            </div>
+            
+            {menuItems.slice(0, 5).map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  className={`sidebar-menu-item ${activeMenu === item.id ? 'active' : ''}`}
+                  onClick={() => setActiveMenu(item.id)}
+                >
+                  <Icon size={20} />
+                  {sidebarOpen && <span>{item.label}</span>}
+                </button>
+              );
+            })}
+
+            <div className="sidebar-section-title">
+              {sidebarOpen ? "FRIENDS" : ""}
+            </div>
+
+            {/* Friends List */}
+            {sidebarOpen && (
+              <div className="friends-list">
+                {friends.map((friend, index) => (
+                  <div key={index} className="friend-item">
+                    <div className="friend-avatar">{friend.avatar}</div>
+                    <div className="friend-info">
+                      <div className="friend-name">{friend.name}</div>
+                      <div className="friend-role">{friend.role}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="sidebar-section-title">
+              {sidebarOpen ? "SETTINGS" : ""}
+            </div>
+
+            <button className="sidebar-menu-item">
+              <Settings size={20} />
+              {sidebarOpen && <span>Setting</span>}
+            </button>
+
+            <button
+              className="sidebar-menu-item logout-button"
+              onClick={() => handleProfileMenuClick("logout")}
+            >
+              <LogOut size={20} />
+              {sidebarOpen && <span>Logout</span>}
+            </button>
           </div>
         </div>
-        <main className="content">
-          <Outlet />
-        </main>
+
+        {/* Main Content */}
+        <div className="main-content">
+          {renderMainContent()}
+        </div>
       </div>
     </div>
   );
 };
 
-export default DashboardLayout;
+export default UpdatedDashboard;
