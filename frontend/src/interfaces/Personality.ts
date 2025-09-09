@@ -5,4 +5,4 @@ export interface PersonalityInterface{
 
 export interface DogPersonalityInterface{
     personality: PersonalityInterface
-}
+}   

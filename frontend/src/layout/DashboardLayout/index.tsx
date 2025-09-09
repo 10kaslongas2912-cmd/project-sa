@@ -167,11 +167,7 @@ const UpdatedDashboard: React.FC = () => {
     },
   ];
 
-  const friends: Friend[] = [
-    { name: "Bagas Mahpie", role: "Friend", avatar: "BM" },
-    { name: "Sir Dandy", role: "Old Friend", avatar: "SD" },
-    { name: "Jhon Tosan", role: "Friend", avatar: "JT" },
-  ];
+
 
   const courses: Course[] = [
     {
@@ -413,14 +409,6 @@ const UpdatedDashboard: React.FC = () => {
     );
   };
 
-  const renderMainContent = (): JSX.Element => {
-    if (activeMenu === "dashboard") {
-      return renderDashboardContent();
-    } else {
-      return renderDevelopmentMessage();
-    }
-  };
-
   return (
     <div className="dashboard-container">
       {/* Header */}
@@ -557,7 +545,7 @@ const UpdatedDashboard: React.FC = () => {
               {sidebarOpen ? "OVERVIEW" : ""}
             </div>
 
-            {menuItems.slice(0, 5).map((item) => {
+            {menuItems.map((item) => {
               const Icon = item.icon;
               const active = isActive(item);
               return (
