@@ -2,3 +2,9 @@
   font-family: 'Anakotmai-Bold', sans-serif !important;
   font-weight: 700 !important;
 }
+.back-button {
+  position: static !important;   /* ยึดกับ viewport เสมอ */
+  top: 90px !important;                    /* ตรึงบน */
+  left: 300px !important;                   /* ตรึงซ้าย */       /* กัน margin ขยับ */
+  z-index: 9999 !important;     /* ลอยอยู่บนสุด */
+}

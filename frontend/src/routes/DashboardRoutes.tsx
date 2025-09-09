@@ -48,6 +48,18 @@ export const dashboardRoutes: RouteObject = {
         }
       ]
     },
+    {
+      path: "health-record/dog/:id",
+      element: <DetailPageHealth />
+    },
+    {
+      path: "health-record/:id/add",
+      element: <FormPageHealth />
+    },
+    {
+      path: "health-record/record/:recordId",
+      element: <SingleDetailPageHealth />
+    }
   ],
 };
 
