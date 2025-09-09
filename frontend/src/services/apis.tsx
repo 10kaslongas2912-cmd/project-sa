@@ -10,6 +10,7 @@ import type {
 import type { CreateDonationRequest } from "../interfaces/Donation";
 import type { CreateAdoptionRequest, UpdateStatusRequest } from "../interfaces/Adoption";
 import type { CreateSponsorshipRequest } from "../interfaces/Sponsorship";
+import { s } from "framer-motion/client";
 
 /** ---------- AUTH ---------- */
 // หมายเหตุ: login/signup ไม่ต้องแนบ token -> ส่ง false ให้ wrapper
@@ -129,6 +130,9 @@ export const visitAPI = {
 export const personalityAPI = {
   getAll: () => Get("/personalities"),
 }
+export const staffAPI = {
+  getAll: () => Get("/staffs"),
+}
 
 
 export const api = {
@@ -146,4 +150,5 @@ export const api = {
   healthRecordAPI,
   vaccineAPI,
   visitAPI,
+  staffAPI,
 };
