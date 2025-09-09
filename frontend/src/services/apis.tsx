@@ -91,10 +91,11 @@ export const paymentMethodAPI = {
 
 export const donationAPI = {
   getAll:  () => Get("/donations"),
-  getById: (id: number) => Get(`/donation/${id}`),
+  getById: (id: number) => Get(`/donations/${id}`),
+  getMyDonations: () => Get("/donations/my"), // สำหรับดึงการบริจาคของผู้ใช้ที่ล็อกอิน
   create:  (data: CreateDonationRequest) => Post("/donations", data),
-  // update:  (id: number, data: UpdateDogRequest) => Put(`/dog/${id}`, data),
-  // remove:  (id: number) => Delete(`/dog/${id}`),
+  // update:  (id: number, data: UpdateDonationRequest) => Put(`/donations/${id}`, data),
+  // remove:  (id: number) => Delete(`/donations/${id}`),
 };
 
 
@@ -117,6 +118,12 @@ export const vaccineAPI = {
   getAll:  () => Get("/vaccines"),
   getById: (id: number) => Get(`/vaccines/${id}`),
 };
+export const visitAPI = {
+  createVisit: (data: any) => Post("/visits", data),
+};
+
+
+
 export const api = {
   authAPI,
   userAPI,
@@ -130,5 +137,6 @@ export const api = {
   donationAPI,
   sponsorshipAPI,
   healthRecordAPI,
-  vaccineAPI
+  vaccineAPI,
+  visitAPI,
 };

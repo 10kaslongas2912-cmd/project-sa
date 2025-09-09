@@ -11,21 +11,21 @@ export const dashboardRoutes: RouteObject = {
   path: "dashboard",
   element: <DashboardLayout />,
   children: [
-    { index: true, element: <Overview /> },
-    { path: "dogs", element: <Dogs /> },
     {
-      path: "adoption",
-      children: [
-        { path: "requests", element: <AdoptionRequests /> },
-        { path: "matches",  element: <AdoptionMatches />  },
-      ],
+      index: true,
+      element: <Overview />
+    },
+    {
+      path: "dogs" ,
+      element: <Dogs />
     },
   ],
 };
 
-export const dashboardTestRoute: RouteObject = {
-  path: "dashboard-test",
+export const dashboardTestRoute1: RouteObject = {
+  path: "dashboard-test1",
   element: <DashboardTestPage />,
 };
 
-export default [dashboardRoutes, dashboardTestRoute] as RouteObject[];
+
+export default [dashboardRoutes, dashboardTestRoute1,] as RouteObject[];

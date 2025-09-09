@@ -27,7 +27,7 @@ function AuthPage() {
   const onFinishLogin = async (values: LoginUserRequest) => {
     try {
       const res = await authAPI.logIn(values);
-      const payload = res.data
+      const payload = res.data;
 
       messageApi.success("เข้าสู่ระบบสำเร็จ");
       localStorage.setItem("isLogin", "true");
@@ -35,12 +35,15 @@ function AuthPage() {
       localStorage.setItem("token", payload.token);
       if (payload.user?.ID) localStorage.setItem("ID", String(payload.user.ID));
 
-      const returnTo = sessionStorage.getItem("returnTo");
+      // ดึง returnTo จาก sessionStorage ก่อน → ถ้าไม่มีค่อยไปดู localStorage
+      let returnTo = sessionStorage.getItem("returnTo") || localStorage.getItem("returnTo");
+
       if (returnTo) {
         sessionStorage.removeItem("returnTo");
-        navigate(returnTo);
+        localStorage.removeItem("returnTo");
+        navigate(returnTo, { replace: true });
       } else {
-        navigate("/");
+        navigate("/", { replace: true });
       }
     } catch (e: any) {
       const err = e?.response?.data?.error ?? "เข้าสู่ระบบไม่สำเร็จ";

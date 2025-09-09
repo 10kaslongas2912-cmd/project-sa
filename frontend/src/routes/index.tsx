@@ -1,14 +1,15 @@
 import { useRoutes } from "react-router-dom";
-
 import PublicRoutes from "./PublicRoutes";
 import AuthRoutes from "./AuthRoutes";
-import { dashboardRoutes, dashboardTestRoute } from "./DashboardRoutes"; // 👈 เปลี่ยนชื่อให้สื่อความ
+import  RouteObject  from "./DashboardRoutes"; 
 import SponsorRoutes from "./SponsorRoutes";
 import DonationRoutes from "./DonationRoutes";
 import HealthRecordRoutes from "./HealthRecordRoutes";
 import AdoptionRoutes from "./AdoptionRoutes";
 import EventRoutes from "./EventRoutes";
 import MyAdoptionsPage from "./Myadoption";
+import { userDashboardRoutes } from "./UserDashboard";
+import VisitRoutes from "./VisitRoutes";
 
 // ==============================|| ROUTING RENDER ||============================== //
 
@@ -16,13 +17,14 @@ export default function ThemeRoutes() {
   return useRoutes([
     AuthRoutes(),
     PublicRoutes(),
-    dashboardRoutes,
-    dashboardTestRoute,
+    ...RouteObject,
     SponsorRoutes(),
     DonationRoutes(),
     HealthRecordRoutes(),
     AdoptionRoutes(),
     EventRoutes(),
     MyAdoptionsPage(),
+    userDashboardRoutes,
+    VisitRoutes(),
   ]);
 }

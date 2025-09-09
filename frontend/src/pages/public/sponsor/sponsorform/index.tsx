@@ -10,6 +10,7 @@ import { useDog } from "../../../../hooks/useDog";
 import SponsorDogCard from "../../../../components/Sponsor/SponsorCard";
 import { useGenders } from "../../../../hooks/useGenders";
 import { useSponsorForm } from "../../../../hooks/sponsorship/useSponsorForm";
+
 import "./style.css";
 
 const SponsorFormPage: React.FC = () => {
@@ -28,79 +29,71 @@ const SponsorFormPage: React.FC = () => {
   const { genders, loading: gLoading } = useGenders();
 
   // ฟอร์มผู้สนับสนุน (guest/user)
-const {
-  state: form,
-  allowedTitles,
-  setGenderId,
-  setTitleWithSync,
-  setField,
-  prefillFromUser,
-  validate,
-  sponsorData,
-  updatesPreference,
-} = useSponsorForm(dogId, genders);
+  const {
+    state: form,
+    allowedTitles,
+    setGenderId,
+    setTitleWithSync,
+    setField,
+    prefillFromUser,
+    validate,
+    sponsorData,
+    updatesPreference,
+  } = useSponsorForm(dogId, genders);
 
+  /* ---------------- Guards: รอ hydrate ก่อนค่อยเช็ค --------------- */
   useEffect(() => {
-    if (form.title === "mr" && form.gender_id !== 1) {
-      setField("gender_id", 1);
-    }
-    if ((form.title === "mrs" || form.title === "ms") && form.gender_id !== 2) {
-      setField("gender_id", 2);
-    }
-  }, [form.title, form.gender_id, setField]);
-
-  // ---------------- Auto-reset title ถ้าเลือกเพศไม่ match ----------------
-  useEffect(() => {
-    if (form.gender_id === 1 && form.title && form.title !== "mr") {
-      setField("title", "mr");
-    }
-    if (form.gender_id === 2 && form.title && !["mrs", "ms"].includes(form.title)) {
-      setField("title", "");
-    }
-  }, [form.gender_id, form.title, setField]);
-  // ----- Guards: ทำให้ “ไม่เด้ง” ก่อนโหลดเสร็จ -----
-  useEffect(() => {
-    // ไม่มี dogId จริง ๆ → กลับหน้า main
     if (!dogId) {
       message.error("ไม่พบรหัสสุนัข");
-      navigate("/sponsor");
+      navigate("/sponsor", { replace: true });
       return;
     }
 
-    // ถ้า plan/amount ยังไม่พร้อม ไม่ต้องรีบเด้งออก main → พาไปหน้าเลือกจำนวนของน้องตัวนี้แทน
+    // ถ้าข้อมูลไม่ครบ (plan/amount) → พากลับไป step จำนวนเงินของตัวนี้
     if (!planType || !amount) {
-      // แทนที่จะเด้งออก layout ให้พากลับไป step ก่อนหน้าใน flow เดิม
       navigate(`/sponsor/${dogId}/amount`, { replace: true });
       return;
     }
+  }, [ dogId, planType, amount, navigate]);
 
-    // สำหรับ subscription ต้องล็อกอิน แต่ “รอให้ authLoading จบก่อน”
-    if (planType === "subscription" && !authLoading && !isLoggedIn) {
-      sessionStorage.setItem("returnTo", `/sponsor/${dogId}/form`);
-      navigate("/auth");
-    }
-  }, [dogId, planType, amount, isLoggedIn, authLoading, navigate]);
-
-  // ถ้ายังไม่มี user แต่ล็อกอินอยู่ → ดึง me (หลัง authLoading จบ)
+  // สำหรับ subscription ต้องล็อกอิน (รอ authLoading จบก่อนเสมอ)
   useEffect(() => {
-    if (planType === "subscription" && !authLoading && isLoggedIn && !user) {
-      refresh();
+    if (planType === "subscription" && !authLoading) {
+      if (!isLoggedIn) {
+        // บังคับ set returnTo ทุกครั้ง
+        const path = `/sponsor/${dogId}/form`;
+        sessionStorage.setItem("returnTo", path);
+        localStorage.setItem("returnTo", path); // backup
+        navigate("/auth", { replace: true });
+      } else if (!user) {
+        refresh();
+      }
     }
-  }, [planType, isLoggedIn, user, authLoading, refresh]);
+  }, [planType, authLoading, isLoggedIn, user, refresh, dogId, navigate]);
 
-  // Prefill เมื่อมี user จริง ๆ แล้ว (กันเคสยัง loading)
+  /* -------- Prefill: รอให้พร้อม (authLoading จบ + hydrated + genders โหลดแล้ว) -------- */
   useEffect(() => {
-    if (user && !authLoading) prefillFromUser(user);
-  }, [user, authLoading, prefillFromUser]);
+    if (authLoading) return;
+    if (!isLoggedIn) return;
+    if (!user) return;
 
-  // ล็อกฟิลด์แค่เมื่อ “สมัครแบบ subscription + ล็อกอิน + user โหลดแล้ว”
+    // เมื่อพร้อมจริง ๆ แล้วค่อย prefill (hook จะจัดการ map gender/title ให้เอง)
+    prefillFromUser(user);
+  }, [authLoading, isLoggedIn, user, prefillFromUser]);
+
+  // ล็อกฟิลด์เฉพาะ identity เมื่อ “subscription + login เสร็จ + user พร้อม”
   const lockIdentity = useMemo(
     () => planType === "subscription" && isLoggedIn && !authLoading && !!user,
     [planType, isLoggedIn, authLoading, user]
   );
 
   const handleNextClick = () => {
-    // ถ้ายังโหลด auth อยู่ (หลังเพิ่ง login/signup) อย่าเพิ่งไปหน้า payment
+    // ยังไม่ล็อกอิน แต่เลือก subscription → ส่งไป login
+    if (planType === "subscription" && !authLoading && !isLoggedIn) {
+      sessionStorage.setItem("returnTo", `/sponsor/${dogId}/form`);
+      navigate("/auth");
+      return;
+    }
     if (planType === "subscription" && authLoading) {
       message.loading("กำลังตรวจสอบสถานะเข้าสู่ระบบ...");
       return;
@@ -116,7 +109,6 @@ const {
       return;
     }
 
-    // ส่งข้อมูลไปหน้า payment ผ่าน route state (หรือเก็บใน context ก็ได้)
     navigate(`/sponsor/${dogId}/payment`, {
       state: {
         donor: sponsorData,
@@ -127,7 +119,6 @@ const {
 
   const handlePreviousClick = () => navigate(-1);
 
-  // แสดง UI ได้ตามปกติ (ถ้าอยากกันกระพริบช่วง authLoading จะโชว์ skeleton ก็ได้)
   return (
     <div className="sponsor-container">
       <div className="sponsor-card">
@@ -150,8 +141,8 @@ const {
 
             {/* เพศ (Gender) - ไม่บังคับ */}
             <div className="form-group">
-              <label htmlFor="title" className="form-label">ระบุเพศ</label>
-               <select
+              <label htmlFor="gender" className="form-label">ระบุเพศ</label>
+              <select
                 id="gender"
                 className="form-input"
                 value={form.gender_id ?? ""}
@@ -165,6 +156,7 @@ const {
               </select>
             </div>
 
+            {/* คำนำหน้า: จำกัดตาม allowedTitles ที่ hook คำนวณจาก gender */}
             <div className="form-group">
               <label htmlFor="title" className="form-label">คำนำหน้า</label>
               <select
@@ -174,9 +166,9 @@ const {
                 onChange={(e) => setTitleWithSync(e.target.value as "mr" | "mrs" | "ms" | "")}
               >
                 <option value="">เลือกคำนำหน้า</option>
-                {allowedTitles.includes("mr")   && <option value="mr">นาย</option>}
-                {allowedTitles.includes("mrs")  && <option value="mrs">นาง</option>}
-                {allowedTitles.includes("ms")   && <option value="ms">นางสาว</option>}
+                {allowedTitles.includes("mr")  && <option value="mr">นาย</option>}
+                {allowedTitles.includes("mrs") && <option value="mrs">นาง</option>}
+                {allowedTitles.includes("ms")  && <option value="ms">นางสาว</option>}
               </select>
             </div>
 
@@ -302,7 +294,6 @@ const {
             className="next-button"
             onClick={handleNextClick}
             type="button"
-            // ✅ อย่าปิดปุ่มด้วย lockIdentity — ใช้เฉพาะฟิลด์
             disabled={planType === "subscription" && authLoading}
           >
             ดำเนินการต่อ
