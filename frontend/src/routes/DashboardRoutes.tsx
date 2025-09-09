@@ -29,20 +29,25 @@ export const dashboardRoutes: RouteObject = {
     },
     {
       path: "health-record",
-      element: <HealthRecords />
+      children: [
+        {
+          index: true,
+          element: <HealthRecords />,
+        },
+        {
+          path: "dog/:id",
+          element: <DetailPageHealth />
+        },
+        {
+          path: ":id/add",
+          element: <FormPageHealth />
+        },
+        {
+          path: "record/:recordId",
+          element: <SingleDetailPageHealth />
+        }
+      ]
     },
-    {
-      path: "health-record/:id",
-      element: <DetailPageHealth />
-    },
-    {
-      path: "health-record/:id/add",
-      element: <FormPageHealth />
-    },
-    {
-      path: "health-record/record/:recordId",
-      element: <SingleDetailPageHealth />
-    }
   ],
 };
 

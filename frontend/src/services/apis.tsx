@@ -122,6 +122,9 @@ export const visitAPI = {
   createVisit: (data: any) => Post("/visits", data),
 };
 
+export const personalityAPI = {
+  getAll: () => Get("/personalities"),
+}
 
 
 export const api = {
