@@ -10,6 +10,7 @@ import AdoptionRoutes from "./AdoptionRoutes";
 import EventRoutes from "./EventRoutes";
 import { userDashboardRoutes } from "./UserDashboard";
 import VisitRoutes from "./VisitRoutes";
+import ManageRoutes from "./ManageRoutes";
 
 // ==============================|| ROUTING RENDER ||============================== //
 
@@ -26,6 +27,7 @@ export default function ThemeRoutes() {
     EventRoutes(),
     userDashboardRoutes,
     VisitRoutes(),
+    ManageRoutes(),
     
   ]);
 }
