@@ -563,7 +563,7 @@ const SingleDetailPage: React.FC = () => {
                   >
                     <Row gutter={16}>
                       <Col xs={24} sm={6}>
-                        <div style={{ fontFamily: "Anakotmai", fontSize: "1.1em", marginBottom: "8px" }}>ชนิดวัคซีน</div>
+                        <div style={{ fontFamily: "Anakotmai", marginBottom: "8px" }}>ชนิดวัคซีน</div>
                         <Select
                           placeholder="เลือกชนิดวัคซีน"
                           value={record.vaccine_id || undefined}
@@ -578,7 +578,7 @@ const SingleDetailPage: React.FC = () => {
                         </Select>
                       </Col>
                       <Col xs={24} sm={6}>
-                        <div style={{ fontFamily: "Anakotmai", fontSize: "1.1em", marginBottom: "8px" }}>เข็มที่</div>
+                        <div style={{ fontFamily: "Anakotmai", marginBottom: "8px" }}>เข็มที่</div>
                         <InputNumber
                           min={1}
                           placeholder="1"
@@ -587,7 +587,7 @@ const SingleDetailPage: React.FC = () => {
                           style={{ width: '100%', fontFamily: 'Anakotmai' }} />
                       </Col>
                       <Col xs={24} sm={6}>
-                        <div style={{ fontFamily: "Anakotmai", fontSize: "1.1em", marginBottom: "8px" }}>หมายเลขล็อต</div>
+                        <div style={{ fontFamily: "Anakotmai", marginBottom: "8px" }}>หมายเลขล็อต</div>
                         <Input
                           placeholder="LOT123456"
                           value={record.lot_number}
@@ -595,7 +595,7 @@ const SingleDetailPage: React.FC = () => {
                           style={{ fontFamily: 'Anakotmai' }} />
                       </Col>
                       <Col xs={24} sm={6}>
-                        <div style={{ fontFamily: "Anakotmai", fontSize: "1.1em", marginBottom: "8px" }}>วันนัดหมายครั้งต่อไป</div>
+                        <div style={{ fontFamily: "Anakotmai", marginBottom: "8px" }}>วันนัดหมายครั้งต่อไป</div>
                         <DatePicker
                           placeholder="เลือกวันที่"
                           value={record.next_due_date ? dayjs(record.next_due_date) : null}

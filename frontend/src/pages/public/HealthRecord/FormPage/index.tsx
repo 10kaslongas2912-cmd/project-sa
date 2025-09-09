@@ -257,7 +257,7 @@ const FormPage: React.FC = () => {
           icon={<ArrowLeftOutlined />} 
           onClick={handleBack}
           className="back-button"
-          style={{marginRight: '100px'}}
+          style={{marginRight: '-100px'}}
         >
           ย้อนกลับ
         </Button>
