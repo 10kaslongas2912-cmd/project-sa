@@ -239,7 +239,7 @@ func DeleteAdoption(c *gin.Context) {
 	var adopter entity.Adopter
 	db := configs.DB()
 	// ค้นหา record ที่ต้องการลบก่อน
-	if err := db.First(&adopter, id).Error; err != nil {
+	if err := db.First(&adopter,id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Adoption record not found"})
 		return
 	}
@@ -270,7 +270,7 @@ func DeleteAdoption(c *gin.Context) {
 }
 
 func GetMyCurrentAdoptions(c *gin.Context) {
-	userIDValue, exists := c.Get("userId")
+	userIDValue, exists := c.Get("user_id")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
 		return

@@ -92,8 +92,8 @@ const NavigationBar: React.FC = () => {
 
                   <div className="dropdown-menu">
                     <Link to="/profile" className="dropdown-item"><span className="item-icon">👤</span>โปรไฟล์ของฉัน</Link>
-                    <Link to="/my-adoptions" className="dropdown-item"><span className="item-icon">🐕</span>สุนัขที่รับเลี้ยง</Link>
-                    <Link to="/donation/history" className="dropdown-item"><span className="item-icon">💖</span>ประวัติการบริจาค</Link>
+                    <Link to="/user-dashboard" className="dropdown-item"><span className="item-icon">🐕</span>สุนัขที่รับเลี้ยง</Link>
+                    <Link to="/user-dashboard" className="dropdown-item"><span className="item-icon">💖</span>ประวัติการบริจาค</Link>
                     <hr className="dropdown-divider" />
                     <button onClick={logout} className="dropdown-item logout-btn">
                       <span className="item-icon">🚪</span>ออกจากระบบ

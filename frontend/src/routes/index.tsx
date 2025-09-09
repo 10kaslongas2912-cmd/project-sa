@@ -6,9 +6,8 @@ import SponsorRoutes from "./SponsorRoutes";
 import DonationRoutes from "./DonationRoutes";
 import AdoptionRoutes from "./AdoptionRoutes";
 import EventRoutes from "./EventRoutes";
-import MyAdoptionsPage from "./Myadoption";
-import { userDashboardRoutes } from "./UserDashboard";
 import VisitRoutes from "./VisitRoutes";
+import UserDashboardRoute from "./UserDashboardRouts";
 
 // ==============================|| ROUTING RENDER ||============================== //
 
@@ -21,8 +20,7 @@ export default function ThemeRoutes() {
     DonationRoutes(),
     AdoptionRoutes(),
     EventRoutes(),
-    MyAdoptionsPage(),
-    userDashboardRoutes,
     VisitRoutes(),
+    UserDashboardRoute(),
   ]);
 }

@@ -8,7 +8,7 @@ const DashboardLayout = Loadable(lazy(() => import("../layout/DashboardLayout"))
 const DashboardTestPage = Loadable(lazy(() => import("../pages/dashboard/test")));
 const Overview = Loadable(lazy(() => import("../pages/dashboard/Overview"))); // Placeholder for the overview component
 const Dogs = Loadable(lazy(() => import("../pages/dashboard/Dogs"))); // Placeholder for the dogs component
-const UseradoptionPages = Loadable(lazy(() => import("../pages/public/adoption/adminadoption"))); // Placeholder for the users component
+const AdoptionPages = Loadable(lazy(() => import("../pages/public/adoption/adminadoption"))); // Placeholder for the users component
 const HealthRecords = Loadable(lazy(() => import("../pages/public/HealthRecord/SearchPage"))); // Placeholder for the health records component
 // ==============================|| DASHBOARD ROUTING ||============================== //
 export const dashboardRoutes: RouteObject = {
@@ -24,8 +24,8 @@ export const dashboardRoutes: RouteObject = {
       element: <Dogs />
     },
     {
-      path: "my-adoptions",
-      element: <UseradoptionPages />
+      path: "adoptions",
+      element: <AdoptionPages />
     },
     {
       path: "health-record",
