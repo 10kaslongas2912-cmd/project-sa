@@ -20,7 +20,6 @@ type Adopter struct {
 	UserID *uint `json:"user_id,omitempty"`
 	User   *User `json:"user,omitempty" gorm:"foreignKey:UserID"`
 
-	DogID uint `json:"dog_id" gorm:"not null"`
-	Dog   Dog  `json:"dog,omitempty" gorm:"foreignKey:DogID"`
+	DogID *uint `json:"dog_id" gorm:"not null"`
+	Dog   *Dog  `json:"dog,omitempty" gorm:"foreignKey:DogID"`
 }
-

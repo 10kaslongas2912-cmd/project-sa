@@ -5,7 +5,7 @@ import {
   HeartOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
-
+import MyAdoptionsPage from '../public/adoption/useradopt';
 import MyDonations from '../userDashboard/HistoryDonation'; // <- ใช้ไฟล์ที่ทำไว้ก่อนหน้า
 import './style.css';
 
@@ -67,7 +67,7 @@ const DonationsDashboard: React.FC = () => {
               <Paragraph className="db-sub" style={{ fontFamily: 'Anakotmai' }}>จัดทำเป็นแท็บไว้ก่อน รอพัฒนา</Paragraph>
               <div className="db-underline" />
             </div>
-            <AdoptionPlaceholder />
+            <MyAdoptionsPage />
           </>
         );
       default:

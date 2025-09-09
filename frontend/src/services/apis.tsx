@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // service/api/index.ts
 import { Get, Post, Put, Delete } from "./https";
 import type { CreateDogRequest, UpdateDogRequest } from "../interfaces/Dog";
@@ -34,12 +35,15 @@ export const userAPI = {
   remove:  (id: number) => Delete(`/users/${id}`),
 };
 
+/** ---------- ADOPTERS (CRUD) ---------- */
 export const adopterAPI = {
     create: (data: CreateAdoptionRequest) => Post("/adoptions", data),
-    getAll: () => Get("/adoptions"), 
-    updateStatus: (id: number, data: UpdateStatusRequest) => Put(`/adoptions/${id}/status`, data),
-    
+    getAll: () => Get("/adoptions"),
+    updateStatus: (id: number, data: UpdateStatusRequest) => Put(`/adoptions/${id}/status`, data), 
+    remove: (id: number) => Delete(`/adoptions/${id}`),
+    getMyCurrentAdoptions: () => Get("/my-adoptions", true), 
 };
+
 
 /** ---------- DOGS (CRUD) ---------- */
 // แก้ให้สม่ำเสมอทุกเมธอดอยู่ใต้ /dogs
@@ -122,6 +126,9 @@ export const visitAPI = {
   deleteVisit: (id: number) => Delete(`/visits/${id}`),
 };
 
+export const personalityAPI = {
+  getAll: () => Get("/personalities"),
+}
 
 
 export const api = {

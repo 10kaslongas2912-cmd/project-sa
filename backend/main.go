@@ -18,6 +18,7 @@ import (
 	user "example.com/project-sa/controllers/user"
 	vaccine "example.com/project-sa/controllers/vaccine"
 	visit "example.com/project-sa/controllers/visit"
+	personalities "example.com/project-sa/controllers/personality"
 	"example.com/project-sa/middlewares"
 	"example.com/project-sa/migrations"
 	"example.com/project-sa/seeds"
@@ -57,7 +58,7 @@ func main() {
 	r.GET("/genders", gender.GetAll)
 	r.GET("/vaccines", vaccine.GetAll)
 	r.GET("/paymentMethods", payment_method.GetAll)
-	
+
 	r.GET("/health-records/dog/:id", health_record.GetHealthRecordsByDogId)
 	r.POST("/health-records", health_record.CreateHealthRecord)
 	r.PUT("/health-records/:id", health_record.UpdateHealthRecord)
@@ -68,6 +69,8 @@ func main() {
 	r.GET("/visits/:id", visit.GetVisit)
 	r.PUT("/visits/:id", visit.UpdateVisit)
 	r.DELETE("/visits/:id", visit.DeleteVisit)
+
+	r.GET("/personalities", personalities.GetAllPersonalities)
 
 	// 7) Routes (protected)
 	protected := r.Group("/")
@@ -80,7 +83,9 @@ func main() {
 		protected.GET("/users/:id", user.GetUserById)
 		protected.DELETE("/users/:id", user.DeleteUser)
 		protected.POST("/sponsorships/subscription", sponsorship.CreateSubscriptionSponsorship)
+		protected.GET("/my-adoptions", adopter.GetMyCurrentAdoptions)
 		protected.GET("/donations/my", donation.GetMyDonations)
+
 	}
 
 	// health
@@ -90,9 +95,10 @@ func main() {
 
 	// Adoptions
 	r.POST("/adoptions", adopter.CreateAdoption)
-	r.GET("/adoptions", adopter.GetAllAdoptions)            
-  r.PUT("/adoptions/:id/status", adopter.UpdateAdoptionStatus)
-	
+	r.GET("/adoptions", adopter.GetAllAdoptions)
+	r.PUT("/adoptions/:id/status", adopter.UpdateAdoptionStatus)
+	r.DELETE("/adoptions/:id", adopter.DeleteAdoption)
+
 	// 8) Run (แนะนำ bind ทุก iface)
 	if err := r.Run("localhost:" + PORT); err != nil {
 		log.Fatal(err)

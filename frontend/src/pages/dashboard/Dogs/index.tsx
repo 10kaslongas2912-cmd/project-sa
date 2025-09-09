@@ -1,204 +1,521 @@
-// src/pages/dashboard/dogs/index.tsx (ส่วนที่เพิ่ม/ปรับ)
-import React, { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  Button, Input, Space, Table, Typography, Avatar, Tooltip,
-  Popconfirm, Drawer, Form, Select, DatePicker, Upload, message, InputNumber, Modal
-} from "antd";
-import { PlusOutlined, FilterOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from "@ant-design/icons";
-import type { ColumnsType } from "antd/es/table";
+// src/pages/dashboard/Dogs.tsx
+import React, { useMemo, useRef, useState } from "react";
+import { useDogs } from "../../../hooks/useDogs";
+import { usePersonalities } from "../../../hooks/usePersonalities";
+import type { PersonalityInterface } from "../../../interfaces/Personality";
+import type { DogInterface } from "../../../interfaces/Dog";
+import "./style.css";
 
-type Dog = {
-  id: number;
+/** ฟอร์มของหน้าจอนี้ใช้ชื่อฟิลด์ "ตามฐานข้อมูลจริง" */
+type FormData = {
+  photo_url: string;
   name: string;
-  breed: string;
-  ageYears: number;
-  color: string;
-  avatar?: string;
+  date_of_birth: string;
+  breed_id: number | "";        // เลือกพันธุ์ควรมีลิสต์พันธุ์จาก API (ยังไม่ทราบ endpoint)
+  animal_sex_id: number | "";   // ควรมีลิสต์เพศจาก API (ยังไม่ทราบ endpoint)
+  animal_size_id: number | "";  // ควรมีลิสต์ขนาดจาก API (ยังไม่ทราบ endpoint)
+  personality_ids: string[];    // เก็บเป็น string ID ของ personality
 };
 
-const seed: Dog[] = [
-  { id: 1, name: "Buddy",   breed: "Golden Retriever",  ageYears: 5, color: "Golden" },
-  { id: 2, name: "Luna",    breed: "Labrador",          ageYears: 3, color: "Black" },
-  { id: 3, name: "Max",     breed: "German Shepherd",   ageYears: 7, color: "Brown" },
-  { id: 4, name: "Bella",   breed: "Bulldog",           ageYears: 4, color: "White" },
-  { id: 5, name: "Charlie", breed: "Poodle",            ageYears: 2, color: "Cream" },
-  { id: 6, name: "Rocky",   breed: "Beagle",            ageYears: 6, color: "Tan" },
-  { id: 7, name: "Daisy",   breed: "Yorkshire Terrier", ageYears: 1, color: "Brown" },
-  { id: 8, name: "Cooper",  breed: "Shiba Inu",         ageYears: 4, color: "Red" },
-  { id: 9, name: "Milo",    breed: "Corgi",             ageYears: 5, color: "Fawn" },
-  { id:10, name: "Coco",    breed: "Pomeranian",        ageYears: 2, color: "White" },
-  { id:11, name: "Nala",    breed: "Husky",             ageYears: 3, color: "Grey" },
-  { id:12, name: "Bailey",  breed: "Mixed",             ageYears: 6, color: "Brown" },
-];
+const DogManagementSystem: React.FC = () => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-const DogsPage: React.FC = () => {
-  const navigate = useNavigate();
-  const [query, setQuery] = useState("");
-  const [data, setData] = useState<Dog[]>(seed);
+  // ดึงข้อมูลสุนัข & บุคลิกจาก API
+  const { dogs: apiDogs, loading, error } = useDogs();
+  const {
+    personalities: allPersonalities,
+    loading: loadingP,
+    error: errorP,
+  } = usePersonalities();
 
-  // ---------- Drawer state (desktop only) ----------
-  const [addOpen, setAddOpen] = useState(false);
-  const [form] = Form.useForm();
+  // ค้นหา
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return data;
-    return data.filter(
-      d =>
+  // โมดอลฟอร์ม
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingDog, setEditingDog] = useState<DogInterface | null>(null);
+
+  // ฟอร์มใช้ชื่อฟิลด์ตามฐานข้อมูลตรงๆ
+  const [formData, setFormData] = useState<FormData>({
+    photo_url: "",
+    name: "",
+    date_of_birth: "",
+    breed_id: "",
+    animal_sex_id: "",
+    animal_size_id: "",
+    personality_ids: [],
+  });
+
+  // แปลงข้อมูล “สำหรับแสดงผล” อย่างเบาๆ โดยไม่เปลี่ยนชื่อฟิลด์ต้นทาง
+  const viewDogs = useMemo(() => {
+    const list = Array.isArray(apiDogs) ? apiDogs : [];
+    return list.map((d) => ({
+      id: d.ID,
+      name: d.name,
+      photo_url: d.photo_url || "",
+      breed_name: d.breed?.name || "ไม่ระบุ",
+      sex_name: d.animal_sex?.name || "-",
+      size_name: d.animal_size?.name || "-",
+      date_of_birth: d.date_of_birth || "",
+      personality_names: (d.dog_personalities || [])
+        .map((dp) => dp?.personality?.name)
+        .filter(Boolean) as string[],
+    }));
+  }, [apiDogs]);
+
+  // ค้นหาจาก ชื่อ / พันธุ์
+  const filteredDogs = useMemo(() => {
+    if (!searchTerm.trim()) return viewDogs;
+    const q = searchTerm.toLowerCase();
+    return viewDogs.filter(
+      (d) =>
         d.name.toLowerCase().includes(q) ||
-        d.breed.toLowerCase().includes(q) ||
-        d.color.toLowerCase().includes(q) ||
-        String(d.id).includes(q)
+        d.breed_name.toLowerCase().includes(q)
     );
-  }, [data, query]);
+  }, [viewDogs, searchTerm]);
 
-  const handleCreate = async () => {
-    const v = await form.validateFields();
-    const nextId = (data.reduce((m, d) => Math.max(m, d.id), 0) || 0) + 1;
-    const newDog: Dog = {
-      id: nextId,
-      name: v.name,
-      breed: v.breed,
-      ageYears: v.ageYears,
-      color: v.color ?? "",
-      avatar: v.avatar?.[0]?.originFileObj ? URL.createObjectURL(v.avatar[0].originFileObj) : undefined,
-    };
-    setData(prev => [newDog, ...prev]);
-    message.success("Dog created");
-    form.resetFields();
-    setAddOpen(false);
-
-    // ไปหน้าเต็มถ้าต้องการกรอกต่อ (ตัวเลือก)
-    // navigate(`/dashboard/dogs/${nextId}/edit`);
+  // ----- ฟังก์ชันฟอร์ม (ใช้ค่าฐานข้อมูลตรงๆ) -----
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => {
+      // ตัวเลขบางช่อง (id) เก็บเป็น number หรือ "" (ว่าง)
+      if (["breed_id", "animal_sex_id", "animal_size_id"].includes(name)) {
+        return {
+          ...prev,
+          [name]: value === "" ? "" : Number(value),
+        } as FormData;
+      }
+      return { ...prev, [name]: value } as FormData;
+    });
   };
 
-  const handleCancel = () => {
-    if (form.isFieldsTouched()) {
-      Modal.confirm({
-        title: "Discard changes?",
-        okText: "Discard",
-        onOk: () => { form.resetFields(); setAddOpen(false); }
-      });
+  const handlePersonalityChange = (idStr: string, checked: boolean) => {
+    setFormData((prev) => ({
+      ...prev,
+      personality_ids: checked
+        ? [...prev.personality_ids, idStr]
+        : prev.personality_ids.filter((x) => x !== idStr),
+    }));
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () =>
+      setFormData((prev) => ({
+        ...prev,
+        photo_url: reader.result as string,
+      }));
+    reader.readAsDataURL(file);
+  };
+
+  const resetForm = () => {
+    setFormData({
+      photo_url: "",
+      name: "",
+      date_of_birth: "",
+      breed_id: "",
+      animal_sex_id: "",
+      animal_size_id: "",
+      personality_ids: [],
+    });
+    setEditingDog(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleEditDog = (dog: DogInterface) => {
+    setEditingDog(dog);
+    setFormData({
+      photo_url: dog.photo_url || "",
+      name: dog.name || "",
+      date_of_birth: dog.date_of_birth || "",
+      breed_id: dog.breed_id ?? "",
+      animal_sex_id: dog.animal_sex_id ?? "",
+      animal_size_id: dog.animal_size_id ?? "",
+      personality_ids: (dog.dog_personalities || [])
+        .map((dp) => dp?.personality?.ID)
+        .filter(Boolean)
+        .map(String),
+    });
+    setIsFormOpen(true);
+  };
+
+  // TODO: ต่อ API จริงเมื่อพร้อม
+  const handleCreateDog = async () => {
+    if (!formData.name.trim()) {
+      alert("กรุณากรอกชื่อสุนัข");
+      return;
+    }
+    // await dogAPI.create(formData)
+    // หลังบันทึก: ปิด modal และรีเฟรชรายการ (แล้วแต่กลยุทธ์ refresh)
+    setIsFormOpen(false);
+    resetForm();
+  };
+
+  const handleUpdateDog = async () => {
+    if (!formData.name.trim() || !editingDog) return;
+    // await dogAPI.update(editingDog.ID, formData)
+    setIsFormOpen(false);
+    resetForm();
+  };
+
+  const handleDeleteDog = async (id: number) => {
+    if (!window.confirm("คุณต้องการลบข้อมูลสุนัขนี้ใช่หรือไม่?")) return;
+    // await dogAPI.delete(id)
+    // รีเฟรชรายการ
+  };
+
+  // เครื่องคิดอายุ (โชว์ได้ถ้ามี date_of_birth)
+  const calculateAge = (birthDate: string) => {
+    if (!birthDate) return "";
+    const today = new Date();
+    const birth = new Date(birthDate);
+    const diffDays = Math.ceil(
+      Math.abs(today.getTime() - birth.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    if (diffDays < 365) {
+      const months = Math.floor(diffDays / 30);
+      return months > 0 ? `${months} เดือน` : `${diffDays} วัน`;
     } else {
-      setAddOpen(false);
+      const years = Math.floor(diffDays / 365);
+      const remainingMonths = Math.floor((diffDays % 365) / 30);
+      return remainingMonths > 0 ? `${years} ปี ${remainingMonths} เดือน` : `${years} ปี`;
     }
   };
 
-  const columns: ColumnsType<Dog> = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      sorter: (a, b) => a.name.localeCompare(b.name),
-      render: (_, rec) => (
-        <Space>
-          <Avatar size={36} src={rec.avatar}>{rec.name[0]}</Avatar>
-          <div>
-            <div style={{ fontWeight: 600 }}>{rec.name}</div>
-            <div style={{ fontSize: 12, color: "#858b94", lineHeight: 1 }}>ID: {rec.id}</div>
-          </div>
-        </Space>
-      ),
-    },
-    { title: "Breed", dataIndex: "breed", sorter: (a, b) => a.breed.localeCompare(b.breed) },
-    { title: "Age", dataIndex: "ageYears", width: 120, sorter: (a, b) => a.ageYears - b.ageYears, render: n => `${n} year${n>1?"s":""}` },
-    { title: "Color", dataIndex: "color", width: 140, sorter: (a, b) => a.color.localeCompare(b.color) },
-    {
-      title: "Actions",
-      key: "actions",
-      width: 120,
-      align: "right",
-      render: (_, rec) => (
-        <Space>
-          <Tooltip title="Edit">
-            <Button type="text" icon={<EditOutlined />} onClick={() => navigate(`${rec.id}/edit`)} />
-          </Tooltip>
-          <Popconfirm
-            title="Delete dog"
-            okText="Delete"
-            okButtonProps={{ danger: true }}
-            onConfirm={() => setData(prev => prev.filter(d => d.id !== rec.id))}
-          >
-            <Tooltip title="Delete"><Button type="text" danger icon={<DeleteOutlined />} /></Tooltip>
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ];
-
   return (
-    <div className="dogs-page">
-      <Typography.Title level={2} className="page-title">Dog Management</Typography.Title>
-      <Typography.Paragraph className="page-sub">
-        Manage your dog records with comprehensive tools for adding, editing, and organizing your pets' information.
-      </Typography.Paragraph>
-
-      <div className="toolbar">
-        <Input
-          allowClear
-          placeholder="Search dogs by name, breed, or color..."
-          className="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        <div className="toolbar-right">
-          <span className="total">{filtered.length} dogs total</span>
-          <Button icon={<FilterOutlined />}>Filters</Button>
-          <Button type="primary" icon={<PlusOutlined />} className="add-btn" onClick={() => setAddOpen(true)}>
-            Add New Dog
-          </Button>
+    <div className="dms-container">
+      {/* Header */}
+      <div className="dms-header">
+        <h1 className="dms-title">จัดการข้อมูลสุนัข</h1>
+        <div className="dms-header-actions">
+          <input
+            type="text"
+            placeholder="ค้นหาสุนัข..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="dms-search"
+          />
+          <button
+            onClick={() => {
+              resetForm();
+              setIsFormOpen(true);
+            }}
+            className="dms-btn dms-btn-primary"
+          >
+            + เพิ่มสุนัขใหม่
+          </button>
         </div>
       </div>
 
-      <div className="table-wrap">
-        <Table rowKey="id" columns={columns} dataSource={filtered} pagination={{ pageSize: 10, showSizeChanger: false }} />
-      </div>
+      {/* Loading / Error */}
+      {loading && (
+        <div className="dms-empty">
+          <div className="dms-empty-icon">⏳</div>
+          <p className="dms-empty-text">กำลังโหลดข้อมูลน้องหมา...</p>
+          <p className="dms-empty-sub">ดึงข้อมูลจากฐานข้อมูล</p>
+        </div>
+      )}
+      {!loading && error && (
+        <div className="dms-empty" role="alert">
+          <div className="dms-empty-icon">⚠️</div>
+          <p className="dms-empty-text">{error}</p>
+        </div>
+      )}
 
- 
-      <Drawer
-        title="Add New Dog"
-        open={addOpen}
-        onClose={handleCancel}
-        width={640}            
-        maskClosable={false}
-        destroyOnClose
-      >
-        <Form form={form} layout="vertical">
-          <Form.Item name="name" label="Name" rules={[{ required: true, message: "Required" }]}>
-            <Input placeholder="Buddy" />
-          </Form.Item>
-          <Form.Item name="breed" label="Breed" rules={[{ required: true }]}>
-            <Input placeholder="Golden Retriever" />
-          </Form.Item>
-          <Form.Item name="ageYears" label="Age (years)" rules={[{ required: true }]}>
-            <InputNumber min={0} style={{ width: "100%" }} />
-          </Form.Item>
-          <Form.Item name="sex" label="Sex" rules={[{ required: true }]}>
-            <Select options={[{value:"male",label:"Male"},{value:"female",label:"Female"}]} />
-          </Form.Item>
-          <Form.Item name="color" label="Color">
-            <Input placeholder="Brown" />
-          </Form.Item>
-          <Form.Item name="cage" label="Cage">
-            <Input placeholder="B2" />
-          </Form.Item>
-          <Form.Item name="intakeDate" label="Intake Date">
-            <DatePicker style={{ width: "100%" }} />
-          </Form.Item>
-          <Form.Item name="avatar" label="Photo" valuePropName="fileList" getValueFromEvent={(e)=>e?.fileList}>
-            <Upload beforeUpload={() => false} maxCount={1} listType="picture">
-              <Button icon={<UploadOutlined />}>Upload</Button>
-            </Upload>
-          </Form.Item>
+      {/* Main Content */}
+      {!loading && !error && (
+        <div className="dms-content">
+          <div className="dms-grid">
+            {filteredDogs.length === 0 ? (
+              <div className="dms-empty">
+                <div className="dms-empty-icon">🐕</div>
+                <p className="dms-empty-text">ยังไม่มีข้อมูลสุนัข</p>
+                <p className="dms-empty-sub">
+                  เพิ่มข้อมูลจากฝั่งแอดมิน หรือเช็ค API
+                </p>
+              </div>
+            ) : (
+              filteredDogs.map((dog) => (
+                <div key={dog.id} className="dms-card">
+                  <div className="dms-card-imgwrap">
+                    {dog.photo_url ? (
+                      <img
+                        src={dog.photo_url}
+                        alt={dog.name}
+                        className="dms-card-img"
+                      />
+                    ) : (
+                      <div className="dms-noimg">
+                        <span className="dms-noimg-icon">📷</span>
+                        <span>ไม่มีรูปภาพ</span>
+                      </div>
+                    )}
+                  </div>
 
-          <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-            <Button onClick={handleCancel}>Cancel</Button>
-            <Button type="primary" onClick={handleCreate}>Save</Button>
+                  <div className="dms-card-body">
+                    <h3 className="dms-dog-name">{dog.name}</h3>
+
+                    <div className="dms-details">
+                      <div className="dms-detail">
+                        <span className="dms-detail-label">สายพันธุ์:</span>
+                        <span className="dms-detail-val">
+                          {dog.breed_name}
+                        </span>
+                      </div>
+
+                      <div className="dms-detail">
+                        <span className="dms-detail-label">เพศ:</span>
+                        <span className="dms-detail-val">{dog.sex_name}</span>
+                      </div>
+
+                      <div className="dms-detail">
+                        <span className="dms-detail-label">ขนาด:</span>
+                        <span className="dms-detail-val">{dog.size_name}</span>
+                      </div>
+
+                      {dog.date_of_birth && (
+                        <div className="dms-detail">
+                          <span className="dms-detail-label">อายุ:</span>
+                          <span className="dms-detail-val">
+                            {calculateAge(dog.date_of_birth)}
+                          </span>
+                        </div>
+                      )}
+
+                      {dog.personality_names.length > 0 && (
+                        <div className="dms-personality">
+                          <span className="dms-detail-label">บุคลิก:</span>
+                          <div className="dms-tags">
+                            {dog.personality_names.map((nm, idx) => (
+                              <span key={idx} className="dms-tag">
+                                {nm}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="dms-card-actions">
+                      <button
+                        onClick={() =>
+                          apiDogs &&
+                          handleEditDog(
+                            apiDogs.find((d) => d.ID === dog.id) as DogInterface
+                          )
+                        }
+                        className="dms-btn dms-btn-edit"
+                      >
+                        ✏️ แก้ไข
+                      </button>
+                      <button
+                        onClick={() => handleDeleteDog(dog.id)}
+                        className="dms-btn dms-btn-danger"
+                      >
+                        🗑️ ลบ
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
-        </Form>
-      </Drawer>
+
+          {/* Form Modal */}
+          {isFormOpen && (
+            <div className="dms-modal">
+              <div className="dms-modal-content">
+                <div className="dms-modal-header">
+                  <h2 className="dms-modal-title">
+                    {editingDog ? "แก้ไขข้อมูลสุนัข" : "เพิ่มสุนัขใหม่"}
+                  </h2>
+                  <button
+                    onClick={() => {
+                      setIsFormOpen(false);
+                      resetForm();
+                    }}
+                    className="dms-btn dms-btn-close"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="dms-form">
+                  <div className="dms-form-grid">
+                    {/* Image Upload */}
+                    <div className="dms-upload-col">
+                      <label className="dms-label">รูปภาพ</label>
+                      <div className="dms-upload">
+                        {formData.photo_url ? (
+                          <div className="dms-preview">
+                            <img
+                              src={formData.photo_url}
+                              alt="Preview"
+                              className="dms-preview-img"
+                            />
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setFormData((p) => ({ ...p, photo_url: "" }))
+                              }
+                              className="dms-btn dms-btn-imgremove"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="dms-upload-placeholder">
+                            <span className="dms-upload-icon">📷</span>
+                            <span>คลิกเพื่อเพิ่มรูปภาพ</span>
+                          </div>
+                        )}
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="dms-file"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Fields */}
+                    <div className="dms-fields">
+                      <div className="dms-row">
+                        <div className="dms-group">
+                          <label className="dms-label">ชื่อ *</label>
+                          <input
+                            type="text"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleInputChange}
+                            placeholder="ชื่อสุนัข"
+                            className="dms-input"
+                          />
+                        </div>
+
+                        <div className="dms-group">
+                          <label className="dms-label">วันเกิด</label>
+                          <input
+                            type="date"
+                            name="date_of_birth"
+                            value={formData.date_of_birth}
+                            onChange={handleInputChange}
+                            className="dms-input"
+                          />
+                        </div>
+                      </div>
+
+                      {/* หมายเหตุ: ดรอปดาวน์ 3 ตัวนี้ควรได้ลิสต์จาก API จริง (breed/sex/size) */}
+                      <div className="dms-row">
+                        <div className="dms-group">
+                          <label className="dms-label">สายพันธุ์ (breed_id)</label>
+                          <input
+                            type="number"
+                            name="breed_id"
+                            value={formData.breed_id}
+                            onChange={handleInputChange}
+                            placeholder="เช่น 1, 2, 3 ..."
+                            className="dms-input"
+                          />
+                        </div>
+
+                        <div className="dms-group">
+                          <label className="dms-label">เพศ (animal_sex_id)</label>
+                          <input
+                            type="number"
+                            name="animal_sex_id"
+                            value={formData.animal_sex_id}
+                            onChange={handleInputChange}
+                            placeholder="เช่น 1=ผู้, 2=เมีย (ตามตารางจริง)"
+                            className="dms-input"
+                          />
+                        </div>
+
+                        <div className="dms-group">
+                          <label className="dms-label">ขนาด (animal_size_id)</label>
+                          <input
+                            type="number"
+                            name="animal_size_id"
+                            value={formData.animal_size_id}
+                            onChange={handleInputChange}
+                            placeholder="เช่น 1=เล็ก, 2=กลาง, 3=ใหญ่"
+                            className="dms-input"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="dms-personalities">
+                        <label className="dms-label">ลักษณะนิสัย</label>
+                        {loadingP && (
+                          <div style={{ color: "#64748b" }}>
+                            กำลังโหลดลิสต์บุคลิก…
+                          </div>
+                        )}
+                        {errorP && (
+                          <div style={{ color: "#b91c1c" }}>{errorP}</div>
+                        )}
+                        {!loadingP && !errorP && (
+                          <div className="dms-checkgrid">
+                            {allPersonalities.map((p: PersonalityInterface) => {
+                              const idStr = String(p.ID);
+                              const checked =
+                                formData.personality_ids.includes(idStr);
+                              return (
+                                <label key={p.ID} className="dms-checklabel">
+                                  <input
+                                    type="checkbox"
+                                    className="dms-checkbox"
+                                    checked={checked}
+                                    onChange={(e) =>
+                                      handlePersonalityChange(
+                                        idStr,
+                                        e.target.checked
+                                      )
+                                    }
+                                  />
+                                  <span className="dms-checktext">{p.name}</span>
+                                </label>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="dms-form-actions">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsFormOpen(false);
+                        resetForm();
+                      }}
+                      className="dms-btn dms-btn-gray"
+                    >
+                      ยกเลิก
+                    </button>
+                    <button
+                      type="button"
+                      onClick={editingDog ? handleUpdateDog : handleCreateDog}
+                      className="dms-btn dms-btn-primary"
+                    >
+                      {editingDog ? "บันทึกการเปลี่ยนแปลง" : "เพิ่มสุนัข"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          {/* End Modal */}
+        </div>
+      )}
     </div>
   );
 };
 
-export default DogsPage;
+export default DogManagementSystem;

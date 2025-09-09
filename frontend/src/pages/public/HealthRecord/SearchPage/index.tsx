@@ -3,11 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { message, Spin } from 'antd';
 import { 
   Input, 
-  Button, 
   Card,
   Typography,
 } from 'antd';
-import { SearchOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { SearchOutlined } from '@ant-design/icons';
 import type { DogInterface } from '../../../../interfaces/Dog';
 import { healthRecordAPI } from '../../../../services/apis';
 import "./style.css";
@@ -52,15 +51,12 @@ const SearchPage: React.FC = () => {
 
   const handleDogSelect = (dog: DogInterface) => {
     if (dog.ID) {
-      navigate(`/health-record/dog/${dog.ID}`);
+      navigate(`/dashboard/health-record/dog/${dog.ID}`);  
     } else {
       message.error('ไม่สามารถเปิดข้อมูลสุนัขได้');
     }
   };
 
-  const handleBack = () => {
-    navigate(-1);
-  };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -69,15 +65,6 @@ const SearchPage: React.FC = () => {
   return (
     <div className="search-page">
       <div className="search-header">
-        <Button 
-          type="text" 
-          icon={<ArrowLeftOutlined />} 
-          onClick={handleBack}
-          className="back-button"
-        >
-          ย้อนกลับ
-        </Button>
-        
         <Title level={2} className="page-title">
           บันทึกสุขภาพสุนัข
         </Title>

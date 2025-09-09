@@ -1,147 +1,273 @@
-body {
-    font-family: 'Sarabun', sans-serif;
-    background-color: #f8f9fa;
-    margin: 0;
-    padding: 2rem;
-    color: #212529;
+/* --- Variables --- */
+:root {
+    --orange: #f87b4e;
+    --orange-light: #f7931e;
+    --blue: #2a4ab5;
+    --blue-light: #5693f5;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-400: #64748b;
+    --gray-700: #1e293b;
+    --white: #ffffff;
 }
 
+/* --- Base Styles --- */
 .admin-container {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     max-width: 1200px;
-    margin: 0 auto;
-    background-color: #fff;
+    margin: 3rem auto;
+    padding: 2.5rem;
+    background: linear-gradient(135deg, var(--gray-50), var(--gray-200));
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    position: relative;
+}
+
+.admin-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--orange));
+    border-radius: 16px 16px 0 0;
+}
+
+.admin-container h1 {
+    text-align: center;
+    background: linear-gradient(135deg, var(--orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 2.5rem;
+    font: 700 2.5rem/1.2 inherit;
+}
+
+/* --- Tabs --- */
+.admin-tabs {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    padding: 0.5rem;
+    background: var(--white);
     border-radius: 12px;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.admin-header {
+.tab-button {
+    padding: 0.875rem 1.75rem;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font: 600 1rem inherit;
+    color: var(--gray-400);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    min-width: 120px;
+}
+
+.tab-button:hover {
+    background: linear-gradient(135deg, var(--gray-100), var(--gray-200));
+    transform: translateY(-1px);
+}
+
+.tab-button.active {
+    background: linear-gradient(135deg, var(--orange));
+    color: var(--white);
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+    transform: translateY(-2px);
+}
+
+/* --- Messages --- */
+.admin-loading, .admin-error {
     text-align: center;
-    padding: 2rem;
-    background-color: #f1f3f5;
-    border-bottom: 1px solid #dee2e6;
+    font-size: 1.2rem;
+    padding: 4rem;
+    border-radius: 12px;
+    margin: 2rem 0;
 }
 
-.admin-header h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #343a40;
-    margin: 0 0 0.5rem 0;
+.admin-loading {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    color: var(--blue);
 }
 
-.admin-header p {
-    font-size: 1.1rem;
-    color: #6c757d;
-    margin: 0;
+.admin-error {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    color: #dc2626;
 }
 
-.message-box {
-    padding: 1rem;
-    margin: 1.5rem 2rem 0 2rem;
-    border-radius: 8px;
-    text-align: center;
-    font-weight: 500;
-}
-
-.message-box.success {
-    background-color: #d1e7dd;
-    color: #0f5132;
-    border: 1px solid #badbcc;
-}
-
-.message-box.error {
-    background-color: #f8d7da;
-    color: #842029;
-    border: 1px solid #f5c2c7;
-}
-
+/* --- Table --- */
 .table-wrapper {
-    padding: 2rem;
-    overflow-x: auto;
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    position: relative;
+}
+
+.table-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--orange));
 }
 
 .adoption-table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 800px;
 }
 
 .adoption-table th, .adoption-table td {
-    padding: 1rem 1.5rem;
+    padding: 1.25rem;
     text-align: left;
-    border-bottom: 1px solid #dee2e6;
-    vertical-align: middle;
-}
-
-.adoption-table thead {
-    background-color: #f8f9fa;
+    border-bottom: 1px solid var(--gray-100);
 }
 
 .adoption-table th {
-    font-weight: 600;
-    color: #495057;
-    font-size: 0.8rem;
+    background: linear-gradient(135deg, var(--orange));
+    color: var(--white);
+    font: 700 0.875rem inherit;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.05em;
 }
 
-.adoption-table tbody tr:last-child td {
-    border-bottom: none;
-}
-
-.adoption-table tbody tr:hover {
-    background-color: #f1f3f5;
-}
-
-.loading-cell, .empty-cell {
-    text-align: center;
-    padding: 3rem;
-    color: #6c757d;
-    font-size: 1rem;
-}
-
-.status-badge {
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-weight: 600;
-    font-size: 0.75rem;
-    text-transform: capitalize;
-    display: inline-block;
-}
-
-.status-pending { background-color: #fff3cd; color: #856404; }
-.status-approved { background-color: #d4edda; color: #155724; }
-.status-rejected { background-color: #f8d7da; color: #721c24; }
-
-.action-buttons {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.btn {
-    border: none;
-    padding: 0.4rem 0.8rem;
-    border-radius: 6px;
+.adoption-row {
     cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    color: white;
-    font-size: 0.8rem;
+    transition: all 0.3s ease;
 }
 
-.btn:disabled {
-    background-color: #e9ecef;
-    color: #adb5bd;
-    cursor: not-allowed;
+.adoption-row:nth-child(even) {
+    background: var(--gray-50);
 }
 
-.btn.approve { background-color: #28a745; }
-.btn.approve:hover:not(:disabled) { background-color: #218838; }
+.adoption-row:hover {
+    background: linear-gradient(135deg, #fef3c7, #fed7aa);
+    transform: translateX(4px);
+    box-shadow: inset 4px 0 0 var(--orange);
+}
 
-.btn.reject { background-color: #dc3545; }
-.btn.reject:hover:not(:disabled) { background-color: #c82333; }
+/* --- Status Badges --- */
+.status-badge {
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font: 700 0.75rem inherit;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-.action-placeholder {
-    color: #adb5bd;
-    font-style: italic;
+.status-pending {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: var(--white);
+}
+
+.status-approved {
+    background: linear-gradient(135deg, #62d38f, #62d38f);
+    color: var(--white);
+}
+
+.status-rejected {
+    background: linear-gradient(135deg, #ca4545, #dc2626);
+    color: var(--white);
+}
+
+/* --- Action Buttons --- */
+.actions-cell {
+    width: 220px;
+    text-align: center;
+}
+
+.action-btn {
+    padding: 0.6rem 1.25rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font: 600 0.875rem inherit;
+    transition: all 0.3s ease;
+    margin: 0 0.25rem;
+    text-transform: uppercase;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.action-btn.approve {
+    background: linear-gradient(135deg, #4ab072, #4aa36e);
+    color: var(--white);
+}
+
+.action-btn.reject {
+    background: linear-gradient(135deg, #ca4545, #dc2626);
+    color: var(--white);
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Details --- */
+.details-row td {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    padding: 0;
+    border-bottom: 3px solid #0ea5e9;
+}
+
+.adoption-details {
+    padding: 2rem;
+    animation: slideDown 0.4s ease;
+    border-left: 4px solid var(--orange);
+    margin-left: 1rem;
+}
+
+.adoption-details h4 {
+    margin: 0 0 1.5rem;
+    background: linear-gradient(135deg, var(--orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font: 700 1.25rem inherit;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.25rem 2.5rem;
+}
+
+.details-grid p {
+    margin: 0.5rem 0;
+    padding: 0.75rem;
+    background: var(--white);
+    border-radius: 8px;
+    border-left: 4px solid var(--orange);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    color: #475569;
+    line-height: 1.6;
+}
+
+.details-grid p strong {
+    color: var(--gray-700);
+    margin-right: 0.75rem;
+    font-weight: 700;
+}
+
+/* --- Animation --- */
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+    .admin-container { margin: 1rem; padding: 1.5rem; }
+    .admin-tabs { flex-wrap: wrap; gap: 0.25rem; }
+    .tab-button { min-width: auto; padding: 0.75rem 1rem; }
+    .adoption-table th, .adoption-table td { padding: 0.875rem; }
+    .details-grid { grid-template-columns: 1fr; gap: 1rem; }
+    .actions-cell { width: auto; }
+    .action-btn { padding: 0.5rem 0.875rem; margin: 0.125rem; }
 }

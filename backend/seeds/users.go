@@ -41,6 +41,7 @@ func seedUsers(db *gorm.DB) error {
 			GenderID:    male.ID,
 			PhotoURL:    pointer.P(fmt.Sprintf("%s/static/images/user_profile/profile2.jpg", PublicBaseURL)),
 		},
+
 	}
 
 	for i := range users {

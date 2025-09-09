@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { message, Spin } from 'antd';
@@ -34,7 +35,7 @@ const { Title } = Typography;
 const { TextArea } = Input;
 
 const FormPage: React.FC = () => {
-  const { dogId, recordId } = useParams<{ dogId: string; recordId?: string }>();
+    const { id: dogId, recordId } = useParams<{ id: string; recordId?: string }>();
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -47,7 +48,7 @@ const FormPage: React.FC = () => {
   useEffect(() => {
     if (!dogId || isNaN(parseInt(dogId))) {
       message.error('รหัสสุนัขไม่ถูกต้อง');
-      navigate('/health-record/search');
+      navigate('/dashboard/health-record');
       return;
     }
 
@@ -102,7 +103,7 @@ const FormPage: React.FC = () => {
     } catch (error) {
       message.error('ไม่สามารถโหลดข้อมูลประวัติสุขภาพสำหรับแก้ไขได้');
       console.error('Fetch record error:', error);
-      navigate(`/health-record/dog/${dogId}`);
+      navigate(`/dashboard/health-record/dog/${dogId}`);
     } finally {
       setLoading(false);
     }
@@ -145,6 +146,7 @@ const FormPage: React.FC = () => {
     setVaccineRecords(newRecords);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSubmit = async (values: any) => {
     if (!dogId) return;
 
@@ -205,7 +207,7 @@ const FormPage: React.FC = () => {
         await healthRecordAPI.createHealthRecord(payload);
         message.success('บันทึกข้อมูลสุขภาพเรียบร้อยแล้ว');
       }
-      navigate(`/health-record/dog/${dogId}`);
+      navigate(`/dashboard/health-record/dog/${dogId}`);
     } catch (error) {
       message.error(
         isEditMode 
@@ -219,7 +221,7 @@ const FormPage: React.FC = () => {
   };
 
   const handleBack = () => {
-    navigate(`/health-record/dog/${dogId}`);
+    navigate(`/dashboard/health-record/dog/${dogId}`);
   };
 
   const validateTemperature = (_: any, value: number) => {
@@ -255,11 +257,12 @@ const FormPage: React.FC = () => {
           icon={<ArrowLeftOutlined />} 
           onClick={handleBack}
           className="back-button"
+          style={{marginRight: '-100px'}}
         >
           ย้อนกลับ
         </Button>
         
-        <Title level={2} className="page-title" style={{ fontFamily: 'Anakotmai-Bold',marginTop: '80px',marginLeft: '30px',color: '#FF6600',fontSize: '2.4em' }}>
+        <Title level={2} className="page-title" style={{ fontFamily: 'Anakotmai-Bold',marginTop: '20px',marginLeft: '30px',color: '#FF6600' }}>
           {isEditMode ? 'แก้ไขบันทึกสุขภาพ' : 'บันทึกสุขภาพสุนัข'}
         </Title>
       </div>
@@ -273,14 +276,14 @@ const FormPage: React.FC = () => {
         >
           {/* Basic Information Section */}
           <div className="form-section">
-            <h3 className="section-title" style={{ fontFamily: 'Anakotmai-Bold',fontSize: '1.4em' }}>
+            <h3 className="section-title" style={{ fontFamily: 'Anakotmai-Bold' }}>
               <FileTextOutlined /> ข้อมูลพื้นฐาน
             </h3>
             <Row gutter={24}>
               <Col xs={24} sm={8}>
                 <Form.Item
                   name="weight"
-                  label={<div style={{ fontFamily: "Anakotmai", fontSize: "1.2em", width: "100%", marginLeft: "0px", marginTop: "5px" }}>น้ำหนัก (กก.)</div>}
+                  label={<div style={{ fontFamily: "Anakotmai", width: "100%", marginLeft: "0px", marginTop: "5px" }}>น้ำหนัก (กก.)</div>}
                   rules={[
                     { required: true, message: 'กรุณากรอกน้ำหนัก' },
                     { validator: validateWeight }
@@ -300,7 +303,7 @@ const FormPage: React.FC = () => {
               <Col xs={24} sm={8}>
                 <Form.Item
                   name="temperature"
-                  label={<div style={{ fontFamily: "Anakotmai", fontSize: "1.2em", width: "100%", marginLeft: "0px", marginTop: "5px" }}>อุณหภูมิ (°C)</div>}
+                  label={<div style={{ fontFamily: "Anakotmai", width: "100%", marginLeft: "0px", marginTop: "5px" }}>อุณหภูมิ (°C)</div>}
                   rules={[
                     { required: true, message: 'กรุณากรอกอุณหภูมิ' },
                     { validator: validateTemperature }
@@ -321,7 +324,7 @@ const FormPage: React.FC = () => {
               <Col xs={24} sm={8}>
                 <Form.Item
                   name="recordDate"
-                  label={<div style={{ fontFamily: "Anakotmai", fontSize: "1.2em", width: "100%", marginLeft: "0px", marginTop: "5px" }}>วันที่บันทึก</div>}
+                  label={<div style={{ fontFamily: "Anakotmai", width: "100%", marginLeft: "0px", marginTop: "5px" }}>วันที่บันทึก</div>}
                   rules={[{ required: true, message: 'กรุณาเลือกวันที่' }]}
                 >
                   <DatePicker 
@@ -340,13 +343,13 @@ const FormPage: React.FC = () => {
 
           {/* Medical Information Section */}
           <div className="form-section">
-            <h3 className="section-title" style={{ fontFamily: 'Anakotmai-Bold',fontSize: '1.4em' }}>
+            <h3 className="section-title" style={{ fontFamily: 'Anakotmai-Bold' }}>
               <MedicineBoxOutlined /> ข้อมูลการตรวจรักษา
             </h3>
             
             <Form.Item
               name="symptoms"
-              label={<div style={{ fontFamily: "Anakotmai", fontSize: "1.2em", width: "100%", marginLeft: "0px", marginTop: "5px" }}>อาการที่พบ</div>}
+              label={<div style={{ fontFamily: "Anakotmai",  width: "100%", marginLeft: "0px", marginTop: "5px" }}>อาการที่พบ</div>}
               rules={[
                 { required: true, message: 'กรุณากรอกอาการที่พบ' },
                 { min: 10, message: 'อาการที่พบควรมีอย่างน้อย 10 ตัวอักษร' }
@@ -364,7 +367,7 @@ const FormPage: React.FC = () => {
 
             <Form.Item
               name="diagnosis"
-              label={<div style={{ fontFamily: "Anakotmai", fontSize: "1.2em", width: "100%", marginLeft: "0px", marginTop: "5px" }}>การวินิจฉัย</div>}
+              label={<div style={{ fontFamily: "Anakotmai", width: "100%", marginLeft: "0px", marginTop: "5px" }}>การวินิจฉัย</div>}
               rules={[
                 { min: 5, message: 'การวินิจฉัยควรมีอย่างน้อย 5 ตัวอักษร' }
               ]}
@@ -381,7 +384,7 @@ const FormPage: React.FC = () => {
 
             <Form.Item
               name="treatment"
-              label={<div style={{ fontFamily: "Anakotmai", fontSize: "1.2em", width: "100%", marginLeft: "0px", marginTop: "5px" }}>การรักษา</div>}
+              label={<div style={{ fontFamily: "Anakotmai", width: "100%", marginLeft: "0px", marginTop: "5px" }}>การรักษา</div>}
               rules={[
                 { min: 5, message: 'การรักษาควรมีอย่างน้อย 5 ตัวอักษร' }
               ]}
@@ -400,7 +403,7 @@ const FormPage: React.FC = () => {
               <Col xs={24} sm={24}>
                 <Form.Item
                   name="medication"
-                  label={<div style={{ fontFamily: "Anakotmai", fontSize: "1.2em", width: "100%", marginLeft: "0px", marginTop: "5px" }}>ยาที่ให้</div>}
+                  label={<div style={{ fontFamily: "Anakotmai", width: "100%", marginLeft: "0px", marginTop: "5px" }}>ยาที่ให้</div>}
                 >
                   <Input 
                     placeholder="ชื่อยาและขนาด" 
@@ -417,13 +420,13 @@ const FormPage: React.FC = () => {
 
           {/* Vaccination Section */}
           <div className="form-section vaccination-section">
-            <h3 className="section-title" style={{ fontFamily: 'Anakotmai-Bold',fontSize: '1.4em' }}>
+            <h3 className="section-title" style={{ fontFamily: 'Anakotmai-Bold' }}>
               <SafetyCertificateOutlined /> ข้อมูลการฉีดวัคซีน
             </h3>
             
             <Form.Item
               name="hasVaccination"
-              label={<div style={{ fontFamily: "Anakotmai", fontSize: "1.2em", width: "100%", marginLeft: "0px", marginTop: "5px" }}>วัคซีน</div>}
+              label={<div style={{ fontFamily: "Anakotmai", width: "100%", marginLeft: "0px", marginTop: "5px" }}>วัคซีน</div>}
               rules={[{ required: true, message: 'กรุณาเลือกสถานะการฉีดวัคซีน' }]}
             >
               <Select 
@@ -464,7 +467,7 @@ const FormPage: React.FC = () => {
                   >
                     <Row gutter={16}>
                       <Col xs={24} sm={6}>
-                        <div style={{ fontFamily: "Anakotmai", fontSize: "1.1em", marginBottom: "8px" }}>ชนิดวัคซีน</div>
+                        <div style={{ fontFamily: "Anakotmai", marginBottom: "8px" }}>ชนิดวัคซีน</div>
                         <Select
                           placeholder="เลือกชนิดวัคซีน"
                           value={record.vaccine_id || undefined}
@@ -480,7 +483,7 @@ const FormPage: React.FC = () => {
                         </Select>
                       </Col>
                       <Col xs={24} sm={6}>
-                        <div style={{ fontFamily: "Anakotmai", fontSize: "1.1em", marginBottom: "8px" }}>เข็มที่</div>
+                        <div style={{ fontFamily: "Anakotmai", marginBottom: "8px" }}>เข็มที่</div>
                         <InputNumber 
                           min={1} 
                           placeholder="1" 
@@ -492,7 +495,7 @@ const FormPage: React.FC = () => {
                         />
                       </Col>
                       <Col xs={24} sm={6}>
-                        <div style={{ fontFamily: "Anakotmai", fontSize: "1.1em", marginBottom: "8px" }}>หมายเลขลอต</div>
+                        <div style={{ fontFamily: "Anakotmai", marginBottom: "8px" }}>หมายเลขลอต</div>
                         <Input 
                           placeholder="LOT123456" 
                           value={record.lot_number}
@@ -502,7 +505,7 @@ const FormPage: React.FC = () => {
                         />
                       </Col>
                       <Col xs={24} sm={6}>
-                        <div style={{ fontFamily: "Anakotmai", fontSize: "1.1em", marginBottom: "8px" }}>วันนัดหมายครั้งต่อไป</div>
+                        <div style={{ fontFamily: "Anakotmai", marginBottom: "8px" }}>วันนัดหมายครั้งต่อไป</div>
                         <DatePicker 
                           placeholder="เลือกวันที่"
                           value={record.next_due_date ? dayjs(record.next_due_date) : null}
@@ -542,7 +545,7 @@ const FormPage: React.FC = () => {
           <div className="form-section">
             <Form.Item
               name="notes"
-              label={<div style={{ fontFamily: "Anakotmai", fontSize: "1.2em", width: "100%", marginLeft: "0px", marginTop: "5px" }}>หมายเหตุเพิ่มเติม</div>}
+              label={<div style={{ fontFamily: "Anakotmai", width: "100%", marginLeft: "0px", marginTop: "5px" }}>หมายเหตุเพิ่มเติม</div>}
             >
               <TextArea 
                 rows={2} 

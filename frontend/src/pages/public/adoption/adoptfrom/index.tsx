@@ -1,28 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // เพิ่ม useEffect เข้ามา
 import { useParams, useNavigate } from 'react-router-dom';
-import { useDog } from "../../../../hooks/useDog"; // Hook สำหรับดึงข้อมูลสุนัข
+import { useDog } from "../../../../hooks/useDog";
 import type { CreateAdoptionRequest } from '../../../../interfaces/Adoption';
-import './style.css'; // ไฟล์สำหรับตกแต่งหน้าตา
+import './style.css';
+import { useAuthUser } from "../../../../hooks/useAuth"; // <-- 1. Import hook useAuthUser
 
 const AdoptionForm: React.FC = () => {
-    // 1. ดึง dogId จาก URL parameter
     const { dogId } = useParams<{ dogId: string }>();
     const navigate = useNavigate();
+    
+    // --- ส่วนที่เพิ่มเข้ามา ---
+    const { user, isLoggedIn } = useAuthUser(); // <-- 2. เรียกใช้ hook เพื่อดึงข้อมูล user
+    // ----------------------
 
-    // 2. ใช้ useDog hook เพื่อดึงข้อมูลสุนัข, สถานะ loading, และ error
     const { dog, loading: loadingDog, error: dogFetchError } = useDog(dogId ? Number(dogId) : null);
 
-    // 3. State สำหรับจัดการข้อมูลในฟอร์ม
     const [formData, setFormData] = useState<CreateAdoptionRequest>({
         first_name: '', last_name: '', phone_number: '',
         address: '', district: '', city: '', province: '',
         zip_code: '', job: '', income: 0,
-        dog_id: parseInt(dogId || '0'), // กำหนด dog_id ให้ฟอร์มล่วงหน้า
+        dog_id: parseInt(dogId || '0'),
     });
     const [loadingSubmit, setLoadingSubmit] = useState(false);
     const [formError, setFormError] = useState('');
 
-    // 4. ฟังก์ชันสำหรับอัปเดต state เมื่อผู้ใช้กรอกข้อมูล
+    // --- ส่วนที่เพิ่มเข้ามา (แนะนำ) ---
+    // ทำให้ข้อมูลในฟอร์มถูกเติมอัตโนมัติเมื่อ user โหลดเสร็จ
+    useEffect(() => {
+        if (user) {
+            setFormData(prev => ({
+                ...prev,
+                first_name: user.first_name || '',
+                last_name: user.last_name || '',
+                phone_number: user.phone || '',
+            }));
+        }
+    }, [user]); // ทำงานเมื่อ user เปลี่ยน
+    // ---------------------------------
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -31,27 +46,45 @@ const AdoptionForm: React.FC = () => {
         }));
     };
 
-    // 5. ฟังก์ชันสำหรับส่งข้อมูลฟอร์มไปหา Backend
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setFormError('');
+
+        // --- ส่วนที่แก้ไข ---
+        // 3. ตรวจสอบว่า user login หรือยัง
+        if (!user || !isLoggedIn) {
+            setFormError('กรุณาเข้าสู่ระบบก่อนทำการขอรับเลี้ยง');
+            // อาจจะ navigate ไปหน้า login
+            // navigate('/login');
+            return;
+        }
+
         setLoadingSubmit(true);
 
+        // 4. สร้างข้อมูลที่จะส่ง โดยเพิ่ม user_id เข้าไป
+        const submissionData = {
+            ...formData,
+            user_id: user.ID, 
+        };
+        // -------------------
+
         try {
-            // Endpoint นี้ต้องตรงกับที่ตั้งค่าไว้ใน Go router
             const response = await fetch('http://localhost:8000/adoptions', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
+                headers: { 
+                    'Content-Type': 'application/json',
+                    // หาก API ต้องการ token ให้ใส่ Authorization header ด้วย
+                    // 'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify(submissionData), // <-- 5. ส่งข้อมูลใหม่ที่มี user_id
             });
 
             const result = await response.json();
             if (!response.ok) {
-                // แสดง error ที่ได้รับมาจาก Backend
                 throw new Error(result.error || 'เกิดข้อผิดพลาดในการส่งข้อมูล');
             }
             alert('ส่งคำขอรับเลี้ยงสำเร็จแล้ว!');
-            navigate('/'); // กลับไปหน้าหลักหลังส่งสำเร็จ
+            navigate('/');
         } catch (err: unknown) {
             if (err instanceof Error) {
                 setFormError(err.message);
@@ -77,6 +110,10 @@ const AdoptionForm: React.FC = () => {
     return (
         <div className="adoption-container">
             <div className="adoption-header">
+                <br />
+                <br />  
+                <br />
+                <br />
                 <h1>ท่านมีความประสงค์จะรับเลี้ยง</h1>
             </div>
             <div className="adoption-content">
@@ -95,6 +132,7 @@ const AdoptionForm: React.FC = () => {
                 </div>
                 <div className="form-section">
                     <h2 className="form-title">โปรดกรอกข้อมูลของท่าน</h2>
+                    <form onSubmit={handleSubmit} autoComplete="off"></form>
                     {formError && <div className="error-message">{formError}</div>}
                     <form onSubmit={handleSubmit}>
                         <div className="form-row">
