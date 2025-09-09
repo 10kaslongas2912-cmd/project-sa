@@ -23,5 +23,4 @@ type Event struct {
 	Visit     *Visit    `gorm:"foreignKey:VisitID" json:"visit"` // Association to Visit
 
 	
-	Attendees   []Attendee `gorm:"foreignKey:EventID" json:"attendees"`
 }

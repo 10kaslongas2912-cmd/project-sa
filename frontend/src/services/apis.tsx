@@ -41,7 +41,7 @@ export const adopterAPI = {
     getAll: () => Get("/adoptions"),
     updateStatus: (id: number, data: UpdateStatusRequest) => Put(`/adoptions/${id}/status`, data), 
     remove: (id: number) => Delete(`/adoptions/${id}`),
-    getMyCurrentAdoptions: () => Get("my-adoptions", true), 
+    getMyCurrentAdoptions: () => Get("/my-adoptions", true), 
 };
 
 
