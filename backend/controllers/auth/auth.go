@@ -103,7 +103,11 @@ func SignUp(c *gin.Context) {
 		return
 	}
 
-	// บันทึก
+	dob, err := time.Parse("2006-01-02", req.DateOfBirth)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid date_of_birth (YYYY-MM-DD)"})
+		return
+	}
 	user := entity.User{
 		FirstName:   req.FirstName,
 		LastName:    req.LastName,
@@ -111,7 +115,7 @@ func SignUp(c *gin.Context) {
 		Phone:       req.Phone,
 		Username:    req.Username,
 		Password:    hashed,
-		DateOfBirth: req.DateOfBirth, // หาก entity.User ใช้ time.Time ให้แปลงก่อน
+		DateOfBirth: dob, // หาก entity.User ใช้ time.Time ให้แปลงก่อน
 		GenderID:    req.GenderID,
 	}
 	if err := db.Create(&user).Error; err != nil {
@@ -183,7 +187,7 @@ func SignIn(c *gin.Context) {
 		signedToken, err = generateForUser.GenerateTokenForUser(user.ID, user.Username, user.Email)
 	} else {
 		// Fallback: ใช้ของเดิมที่รับ string เดียว (เดิมคุณรับ email; ถ้าของเดิมยังรับ email ให้เปลี่ยนเป็น user.Email)
-		signedToken, err = jwtWrapper.GenerateToken(user.ID,user.Username,user.Email)
+		signedToken, err = jwtWrapper.GenerateToken(user.ID, user.Username, user.Email)
 	}
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "error signing token"})
@@ -196,18 +200,19 @@ func SignIn(c *gin.Context) {
 		out = user
 	}
 
-	resp := LoginResponse{
-        TokenType: "Bearer",
-        Token:     signedToken,
-        User: LoginUserDTO{
-            ID:        out.ID,
-            Username:  out.Username,
-            FirstName: out.FirstName,
-            LastName:  out.LastName,
-            Email:     out.Email,
-            Phone:     out.Phone,
-            Gender:    out.Gender,
-        },
-	}
-	c.JSON(http.StatusOK, resp);
+	c.JSON(http.StatusOK, gin.H{
+		"data": gin.H{
+			"token_type": "Bearer",
+			"token":      signedToken,
+			"user": gin.H{
+				"id":        out.ID, // ใช้ gorm.Model => ฟิลด์ ID ใหญ่
+				"username":  out.Username,
+				"firstname": out.Firstname,
+				"lastname":  out.Lastname,
+				"email":     out.Email,
+				"phone":     out.Phone,
+				"gender":    out.Gender, // ถ้า entity.Gender มี json tag ถูก จะ serialize เป็น object
+			},
+		},
+	})
 }

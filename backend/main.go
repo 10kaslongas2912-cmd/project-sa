@@ -16,6 +16,8 @@ import (
 	payment_method "example.com/project-sa/controllers/payment_method"
 	sponsorship "example.com/project-sa/controllers/sponsorship"
 	user "example.com/project-sa/controllers/user"
+	volunteers "example.com/project-sa/controllers/volunteerRegister"
+	zcmanagement "example.com/project-sa/controllers/zcmanagement"
 	vaccine "example.com/project-sa/controllers/vaccine"
 	visit "example.com/project-sa/controllers/visit"
 	personalities "example.com/project-sa/controllers/personality"
@@ -68,6 +70,21 @@ func main() {
 
 	r.GET("/personalities", personalities.GetAllPersonalities)
 
+	r.GET("/zcmanagement", zcmanagement.GetAll)
+	r.GET("/zones", zcmanagement.GetZones)
+	r.GET("/kennels/:zone_id", zcmanagement.GetKennelsByZone)
+	r.GET("/kennel/:kennel_id/dog", zcmanagement.GetDogInKennel)
+	r.PUT("/kennel/:kennel_id/dog", zcmanagement.UpdateDogInKennel)
+	r.DELETE("/kennel/:kennel_id/dog", zcmanagement.DeleteDogFromKennel)
+
+	r.GET("/volunteers", volunteers.GetAllVolunteers)
+	r.GET("/volunteer/:id", volunteers.GetVolunteerByID)
+	r.GET("/volunteers/user/:user_id", volunteers.GetVolunteersByUserID)
+	r.POST("/volunteer", volunteers.CreateVolunteer)
+	r.PUT("/volunteer/:id", volunteers.UpdateVolunteer)
+	r.DELETE("/volunteer/:id", volunteers.DeleteVolunteer)
+	r.GET("/skills", volunteers.GetAllSkills)     //new
+	r.GET("/statusfv", volunteers.GetAllStatusFV) //new
 	// 7) Routes (protected)
 	protected := r.Group("/")
 	protected.Use(middlewares.Authorizes())

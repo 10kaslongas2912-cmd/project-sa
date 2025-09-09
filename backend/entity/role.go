@@ -6,6 +6,6 @@ import (
 
 type Role struct {
 	gorm.Model
-	Name string `json:"name"`
-	Staffs   []Staff `gorm:"foreignKey:RoleID" json:"staffs"`
+	Name   string  `json:"name"`
+	Staffs []Staff `gorm:"foreignKey:RoleID" json:"staffs"`
 }
