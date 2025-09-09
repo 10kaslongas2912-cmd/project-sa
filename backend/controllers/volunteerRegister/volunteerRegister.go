@@ -4,177 +4,309 @@ import (
 	"net/http"
 	"time"
 
-	"example.com/project-sa/config"
+	// NOTE: be consistent: if your package is "config", use that everywhere.
+	// Below I use "configs" because your file imports show that.
+	"example.com/project-sa/configs"
 	"example.com/project-sa/entity"
 	"github.com/gin-gonic/gin"
 )
 
-// GetAllVolunteers retrieves all volunteers
+/* ---------------------------- DTOs (request) ---------------------------- */
+
+type CreateVolunteerDTO struct {
+	UserID         uint    `json:"user_id" binding:"required"`
+	Role           string  `json:"role"`
+	Address        string  `json:"address"`
+	AnotherContact string  `json:"another_contact"`
+	HealthDetail   string  `json:"health_detail"`
+	WorkingDate    string  `json:"working_date" binding:"required"` // "YYYY-MM-DD"
+	WorkingTime    string  `json:"working_time"`
+	Skill          *string `json:"skill"`
+	Note           string  `json:"note"`
+	StatusFVID     uint    `json:"status_fv_id"` // optional from client
+}
+
+type UpdateVolunteerDTO struct {
+	UserID         *uint   `json:"user_id"`
+	Role           *string `json:"role"`
+	Address        *string `json:"address"`
+	AnotherContact *string `json:"another_contact"`
+	HealthDetail   *string `json:"health_detail"`
+	WorkingDate    *string `json:"working_date"` // "YYYY-MM-DD"
+	WorkingTime    *string `json:"working_time"`
+	Skill          *string `json:"skill"`
+	Note           *string `json:"note"`
+	StatusFVID     *uint   `json:"status_fv_id"`
+}
+
+/* ------------------------------ Helpers -------------------------------- */
+
+func parseYMD(s string) (time.Time, error) {
+	t, err := time.Parse("2006-01-02", s)
+	if err != nil {
+		return time.Time{}, err
+	}
+	return t, nil
+}
+
+/* ------------------------------- Handlers ------------------------------- */
+
+// GET /volunteers
 func GetAllVolunteers(c *gin.Context) {
 	var volunteers []entity.Volunteer
-
-	if err := config.DB().Preload("Users").Preload("Skills").Find(&volunteers).Error; err != nil {
+	if err := configs.DB().Preload("User").Preload("StatusFV").Find(&volunteers).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{"data": volunteers})
 }
 
-// GetVolunteerByID retrieves a volunteer by ID
+// GET /volunteer/:id
 func GetVolunteerByID(c *gin.Context) {
 	id := c.Param("id")
-	var volunteer entity.Volunteer
-
-	if err := config.DB().Preload("Users").Preload("Skills").First(&volunteer, id).Error; err != nil {
+	var v entity.Volunteer
+	if err := configs.DB().Preload("User").Preload("StatusFV").First(&v, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "volunteer not found"})
 		return
 	}
-
-	c.JSON(http.StatusOK, gin.H{"data": volunteer})
+	c.JSON(http.StatusOK, gin.H{"data": v})
 }
 
-// GetVolunteersByUserID retrieves volunteers for a specific user
+// GET /volunteers/user/:user_id
 func GetVolunteersByUserID(c *gin.Context) {
 	userID := c.Param("user_id")
 	var volunteers []entity.Volunteer
-
-	if err := config.DB().Preload("Users").Preload("Skills").Where("user_id = ?", userID).Find(&volunteers).Error; err != nil {
+	if err := configs.DB().Preload("User").Preload("StatusFV").
+		Where("user_id = ?", userID).
+		Order("created_at DESC").
+		Find(&volunteers).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "volunteers not found for this user"})
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{"data": volunteers})
 }
 
-// GetVolunteersBySkillID retrieves volunteers with a specific skill
+// GET /volunteers/skill/:skill_id
 func GetVolunteersBySkillID(c *gin.Context) {
-	skillID := c.Param("skill_id")
-	var volunteers []entity.Volunteer
+	id := c.Param("skill_id")
 
-	if err := config.DB().Preload("Users").Preload("Skills").Where("skill_id = ?", skillID).Find(&volunteers).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "volunteers not found for this skill"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"data": volunteers})
-}
-
-// CreateVolunteer creates a new volunteer record
-func CreateVolunteer(c *gin.Context) {
-	var volunteer entity.Volunteer
-
-	// Bind the incoming JSON to the volunteer struct
-	if err := c.ShouldBindJSON(&volunteer); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Set the working date if not provided (or ensure it's a valid time)
-	if volunteer.WorkingDate.IsZero() {
-		volunteer.WorkingDate = time.Now()
-	}
-
-	// Save the volunteer to the database
-	if err := config.DB().Create(&volunteer).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Load associations for response
-	config.DB().Preload("Users").Preload("Skills").First(&volunteer, volunteer.ID)
-
-	c.JSON(http.StatusCreated, gin.H{"data": volunteer})
-}
-
-// UpdateVolunteer updates an existing volunteer record
-func UpdateVolunteer(c *gin.Context) {
-	id := c.Param("id")
-	var updatedVolunteer entity.Volunteer
-
-	// Bind the incoming JSON to the updatedVolunteer struct
-	if err := c.ShouldBindJSON(&updatedVolunteer); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Find the existing volunteer
-	var existingVolunteer entity.Volunteer
-	if err := config.DB().First(&existingVolunteer, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "volunteer not found"})
-		return
-	}
-
-	// Update fields (excluding primary key)
-	existingVolunteer.Address = updatedVolunteer.Address
-	existingVolunteer.PhoneNumber = updatedVolunteer.PhoneNumber
-	existingVolunteer.AnotherContact = updatedVolunteer.AnotherContact
-	existingVolunteer.HealthDetail = updatedVolunteer.HealthDetail
-	existingVolunteer.WorkingDate = updatedVolunteer.WorkingDate
-	existingVolunteer.WorkingTime = updatedVolunteer.WorkingTime
-	existingVolunteer.Skill = updatedVolunteer.Skill
-	existingVolunteer.Note = updatedVolunteer.Note
-	existingVolunteer.PhotoAdr = updatedVolunteer.PhotoAdr
-	existingVolunteer.UserID = updatedVolunteer.UserID
-
-	// Save the updated volunteer to the database
-	if err := config.DB().Save(&existingVolunteer).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Load associations for response
-	config.DB().Preload("Users").Preload("Skills").First(&existingVolunteer, existingVolunteer.ID)
-
-	c.JSON(http.StatusOK, gin.H{"message": "Volunteer updated successfully", "data": existingVolunteer})
-}
-
-// DeleteVolunteer deletes a volunteer by ID
-func DeleteVolunteer(c *gin.Context) {
-	id := c.Param("id")
-
-	// Find the volunteer
-	var volunteer entity.Volunteer
-	if err := config.DB().First(&volunteer, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "volunteer not found"})
-		return
-	}
-
-	// Delete the volunteer
-	if err := config.DB().Delete(&volunteer).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "Volunteer deleted successfully"})
-}
-
-// GetVolunteersByWorkingDate retrieves volunteers by working date
-func GetVolunteersByWorkingDate(c *gin.Context) {
-	dateStr := c.Query("date") // Expected format: "2006-01-02"
-	if dateStr == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "date parameter is required"})
-		return
-	}
-
-	date, err := time.Parse("2006-01-02", dateStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid date format, expected YYYY-MM-DD"})
+	var skill entity.Skill
+	if err := configs.DB().First(&skill, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "skill not found"})
 		return
 	}
 
 	var volunteers []entity.Volunteer
-
-	// Query for volunteers working on the specific date
-	startOfDay := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, date.Location())
-	endOfDay := startOfDay.Add(24 * time.Hour)
-
-	if err := config.DB().Preload("Users").Preload("Skills").
-		Where("working_date >= ? AND working_date < ?", startOfDay, endOfDay).
+	like := "%" + skill.Description + "%"
+	if err := configs.DB().Preload("User").Preload("StatusFV").
+		Where("skill LIKE ?", like).
 		Find(&volunteers).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": volunteers})
+}
+
+// POST /volunteer
+func CreateVolunteer(c *gin.Context) {
+	var in CreateVolunteerDTO
+	if err := c.ShouldBindJSON(&in); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	wd, err := parseYMD(in.WorkingDate)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid working_date; expected YYYY-MM-DD"})
+		return
+	}
+
+	// Default to "pending" if no status provided
+	if in.StatusFVID == 0 {
+		var pending entity.StatusFV
+		if err := configs.DB().First(&pending, "status = ?", "pending").Error; err == nil {
+			in.StatusFVID = pending.ID
+		}
+	}
+
+	v := entity.Volunteer{
+		UserID:         in.UserID,
+		Role:           in.Role,
+		Address:        in.Address,
+		AnotherContact: in.AnotherContact,
+		HealthDetail:   in.HealthDetail,
+		WorkingDate:    wd,
+		WorkingTime:    in.WorkingTime,
+		Skill:          in.Skill,
+		Note:           in.Note,
+		StatusFVID:     in.StatusFVID,
+	}
+
+	if err := configs.DB().Create(&v).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	configs.DB().Preload("User").Preload("StatusFV").First(&v, v.ID)
+	c.JSON(http.StatusCreated, gin.H{"data": v})
+}
+
+// PUT /volunteer/:id
+func UpdateVolunteer(c *gin.Context) {
+	id := c.Param("id")
+
+	var in UpdateVolunteerDTO
+	if err := c.ShouldBindJSON(&in); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var v entity.Volunteer
+	if err := configs.DB().First(&v, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "volunteer not found"})
+		return
+	}
+
+	// patch
+	if in.UserID != nil {
+		v.UserID = *in.UserID
+	}
+	if in.Role != nil {
+		v.Role = *in.Role
+	}
+	if in.Address != nil {
+		v.Address = *in.Address
+	}
+	if in.AnotherContact != nil {
+		v.AnotherContact = *in.AnotherContact
+	}
+	if in.HealthDetail != nil {
+		v.HealthDetail = *in.HealthDetail
+	}
+	if in.WorkingDate != nil && *in.WorkingDate != "" {
+		wd, err := parseYMD(*in.WorkingDate)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid working_date; expected YYYY-MM-DD"})
+			return
+		}
+		v.WorkingDate = wd
+	}
+	if in.WorkingTime != nil {
+		v.WorkingTime = *in.WorkingTime
+	}
+	if in.Skill != nil {
+		v.Skill = in.Skill
+	}
+	if in.Note != nil {
+		v.Note = *in.Note
+	}
+	if in.StatusFVID != nil {
+		v.StatusFVID = *in.StatusFVID
+	}
+
+	if err := configs.DB().Save(&v).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	configs.DB().Preload("User").Preload("StatusFV").First(&v, v.ID)
+	c.JSON(http.StatusOK, gin.H{"message": "Volunteer updated successfully", "data": v})
+}
+
+// DELETE /volunteer/:id
+func DeleteVolunteer(c *gin.Context) {
+	id := c.Param("id")
+
+	var v entity.Volunteer
+	if err := configs.DB().First(&v, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "volunteer not found"})
+		return
+	}
+	if err := configs.DB().Delete(&v).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Volunteer deleted successfully"})
+}
+
+// GET /volunteers/by-date?date=YYYY-MM-DD
+func GetVolunteersByWorkingDate(c *gin.Context) {
+	dateStr := c.Query("date")
+	if dateStr == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "date parameter is required (YYYY-MM-DD)"})
+		return
+	}
+	d, err := parseYMD(dateStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid date format, expected YYYY-MM-DD"})
+		return
+	}
+
+	start := time.Date(d.Year(), d.Month(), d.Day(), 0, 0, 0, 0, d.Location())
+	end := start.Add(24 * time.Hour)
+
+	var volunteers []entity.Volunteer
+	if err := configs.DB().Preload("User").Preload("StatusFV").
+		Where("working_date >= ? AND working_date < ?", start, end).
+		Find(&volunteers).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": volunteers})
+}
+
+// GET /skills
+func GetAllSkills(c *gin.Context) {
+	db := configs.DB()
+	if db == nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "DB is not initialized"})
+		return
+	}
+	var skills []entity.Skill
+	if err := db.Find(&skills).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": skills})
+}
+
+// PUT /volunteer/:id/status   body: { "status": "approved" | "rejected" }
+type updateStatusReq struct {
+	Status string `json:"status"`
+}
+
+func UpdateVolunteerStatus(c *gin.Context) {
+	id := c.Param("id")
+
+	var req updateStatusReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	var st entity.StatusFV
+	if err := configs.DB().First(&st, "status = ?", req.Status).Error; err != nil {
+		c.JSON(404, gin.H{"error": "status not found"})
+		return
+	}
+
+	if err := configs.DB().
+		Model(&entity.Volunteer{}).
+		Where("id = ?", id).
+		Update("status_fv_id", st.ID).Error; err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "status updated", "status": st.Status})
+}
+
+func GetAllStatusFV(c *gin.Context) {
+	var statusFVs []entity.StatusFV
+	if err := configs.DB().Find(&statusFVs).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": statusFVs})
 }

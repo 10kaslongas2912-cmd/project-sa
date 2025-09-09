@@ -43,10 +43,11 @@ func SetupDatabase() {
 		&entity.Vaccine{},
 		&entity.KennelManagement{},
 		&entity.Role{},
-		&entity.Skills{},
+		&entity.Skill{},
 		&entity.Staff{},
 		&entity.Volunteer{},
 		&entity.Zone{},
+		&entity.StatusFV{},
 	)
 
 	// Clear existing Dog data before seeding to ensure fresh data for testing
@@ -247,4 +248,18 @@ func SetupDatabase() {
 	db.FirstOrCreate(User, &entity.User{
 		Username: "sa",
 	})
+
+	// Seed Skills (idempotent)
+	skillDescs := []string{
+		"การดูแลสุนัข",
+		"การฝึกสุนัข",
+		"การจัดการเหตุฉุกเฉิน",
+		"การสื่อสารและการประชาสัมพันธ์",
+		"อื่นๆ",
+	}
+	for _, d := range skillDescs {
+		var s entity.Skill
+		db.FirstOrCreate(&s, entity.Skill{Description: d})
+	}
+
 }

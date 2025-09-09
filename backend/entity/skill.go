@@ -1,6 +1,8 @@
 package entity
 
-type Skills struct {
-	SkillID     uint   `gorm:"primarykey;autoIncrement" json:"skill_id"`
-	Description string `json:"description"`
+import "gorm.io/gorm"
+
+type Skill struct {
+	gorm.Model
+	Description string `json:"description" gorm:"uniqueIndex"`
 }

@@ -48,6 +48,12 @@ func SeedAll(db *gorm.DB) error {
 		if err := seedZones(tx); err != nil {
 			return err
 		}
+		if err := seedSkills(tx); err != nil {
+			return err
+		}
+		if err := seedStatusFV(tx); err != nil {
+			return err
+		}
 		return nil
 	})
 }

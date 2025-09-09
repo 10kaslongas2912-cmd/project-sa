@@ -16,6 +16,10 @@ export interface VolunteerInterface {
   skill?: string | null;        // matches *string in Go
   note: string;
   photo_adr: string;
+  status_fv?: {
+    id: number;
+    status: string;             // e.g. "pending", "approved", "rejected"
+  };
 }
 
 // Creation payload you should send (JSON or FormData text parts)
@@ -37,6 +41,7 @@ export interface CreateVolunteerPayload {
   // optional/extra fields the backend has:
   skill?: string | null;
   note?: string;
+  status_fv_id?: number;        // e.g. 1 for "pending", 2 for "approved", 3 for "rejected"
   // photo_adr is set by server after it saves the uploaded file
   // so you do NOT send photo_adr in the request
 }

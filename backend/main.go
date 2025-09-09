@@ -69,11 +69,11 @@ func main() {
 	r.GET("/volunteers", volunteers.GetAllVolunteers)
 	r.GET("/volunteer/:id", volunteers.GetVolunteerByID)
 	r.GET("/volunteers/user/:user_id", volunteers.GetVolunteersByUserID)
-	r.GET("/volunteers/skill/:skill_id", volunteers.GetVolunteersBySkillID)
 	r.POST("/volunteer", volunteers.CreateVolunteer)
 	r.PUT("/volunteer/:id", volunteers.UpdateVolunteer)
 	r.DELETE("/volunteer/:id", volunteers.DeleteVolunteer)
-
+	r.GET("/skills", volunteers.GetAllSkills)     //new
+	r.GET("/statusfv", volunteers.GetAllStatusFV) //new
 	// 7) Routes (protected)
 	protected := r.Group("/")
 	protected.Use(middlewares.Authorizes())
