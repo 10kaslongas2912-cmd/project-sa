@@ -6,7 +6,6 @@ import SponsorRoutes from "./SponsorRoutes";
 import DonationRoutes from "./DonationRoutes";
 import AdoptionRoutes from "./AdoptionRoutes";
 import EventRoutes from "./EventRoutes";
-import VisitRoutes from "./VisitRoutes";
 import ManageRoutes from "./ManageRoutes";
 import UserDashboardRoute from "./UserDashboardRouts";
 
@@ -21,7 +20,6 @@ export default function ThemeRoutes() {
     DonationRoutes(),
     AdoptionRoutes(),
     EventRoutes(),
-    VisitRoutes(),
     ManageRoutes(),
     
     UserDashboardRoute(),
