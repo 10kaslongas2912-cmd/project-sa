@@ -24,9 +24,25 @@ func seedKennels(db *gorm.DB) error {
 	for i := range kennels {
 		if err := db.
 			Where("name = ?", kennels[i].Name).
+			Assign(kennels[i]).
 			FirstOrCreate(&kennels[i]).Error; err != nil {
 			return err
 		}
 	}
+
+	// NEW: ensure kennel "00" exists (used as unassigned bucket)
+	// Put it in zone A (any zone is fine).
+	if err := db.
+		Where("name = ?", "00").
+		FirstOrCreate(&entity.Kennel{
+			Name:     "00",
+			ZoneID:   zoneA.ID,
+			Capacity: 9999,
+			Color:    "Gray",
+			Note:     pointer.P("unassigned bucket"),
+		}).Error; err != nil {
+		return err
+	}
+
 	return nil
 }
