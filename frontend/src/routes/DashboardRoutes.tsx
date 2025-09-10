@@ -12,6 +12,7 @@ const AdoptionPages = Loadable(lazy(() => import("../pages/public/adoption/admin
 const HealthRecords = Loadable(lazy(() => import("../pages/public/HealthRecord/SearchPage"))); // Placeholder for the health records component
 const CreateVisit = Loadable(lazy(() => import("../pages/dashboard/visit/createVisit")));
 const UpdateVisit = Loadable(lazy(() => import("../pages/dashboard/visit/updateVisit")));
+const DonationStaff = Loadable(lazy(() => import("../pages/dashboard/Donation/index")));
 // ==============================|| DASHBOARD ROUTING ||============================== //
 export const dashboardRoutes: RouteObject = {
   path: "dashboard",
@@ -69,7 +70,11 @@ export const dashboardRoutes: RouteObject = {
     {
       path: "health-record/record/:recordId",
       element: <SingleDetailPageHealth />
-    }
+    },
+    {
+      path: "donation",
+      element: <DonationStaff />
+    },
   ],
 };
 

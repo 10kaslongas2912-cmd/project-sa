@@ -7,7 +7,7 @@ import vaccine from "../../../assets/vaccine.png";
 import treatment from "../../../assets/treat.png";
 import shelter from "../../../assets/shelter.png";
 import adoption from "../../../assets/adopt.png";
-
+import NavigationBar from '../../../components/NavigationBar';
 const carouselImages = [
     'https://longwoodvetcenter.com/wp-content/uploads/2023/05/Animal-Shelters-in-Pennsylvania.jpg',
     'https://media.4-paws.org/4/8/2/0/4820f570a119f3e8bd1b6db470d0c6a65445dcf1/VIER_PFOTEN_2023-02-15_00002-2895x2004-1300x900.jpg?_jtsuid=22804175291243065431299',

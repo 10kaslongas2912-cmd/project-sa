@@ -29,7 +29,6 @@ import {
   ShoppingOutlined,
   CalendarOutlined,
   BankOutlined,
-  HeartFilled,
 } from '@ant-design/icons';
 import { useAuthUser } from '../../../hooks/useAuth';
 import { donationAPI } from '../../../services/apis';
