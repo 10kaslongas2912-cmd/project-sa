@@ -8,11 +8,11 @@ import { Get } from '../../../services/https';
 import { zcManagementAPI } from '../../../services/apis';
 
 interface Box {
-  id: number;          // dog id
-  zone: string;        // zoneId (string)
-  cage: string;        // cageId (string)
-  data: string;        // dog name (label)
-  photo?: string;      // dog photo url (optional)
+  id: number;      // dog id
+  zone: string;    // zoneId (string)
+  cage: string;    // cageId (string)
+  data: string;    // dog name
+  photo?: string;  // dog photo url (optional)
 }
 
 /* ------------ robust extractors (tolerate different backend shapes) ------------ */
@@ -20,17 +20,37 @@ const getId = (o: any): string => String(o?.ID ?? o?.id ?? '').trim();
 
 const getZoneIdFromCage = (c: any): string =>
   String(
-    c?.zone?.ID ?? c?.zone?.id ?? c?.zone_id ?? c?.ZoneID ?? c?.zoneId ?? c?.zones ?? c?.Zones ?? ''
+    c?.zone?.ID ??
+      c?.zone?.id ??
+      c?.zone_id ??
+      c?.ZoneID ??
+      c?.zoneId ??
+      c?.zones ??
+      c?.Zones ??
+      ''
   ).trim();
 
 const getDogId = (d: any): string => String(d?.ID ?? d?.id ?? '').trim();
 const getDogName = (d: any): string => String(d?.name ?? `Dog #${getDogId(d)}`);
 const getDogPhoto = (d: any): string =>
-  String(d?.photo_url ?? d?.PhotoURL ?? d?.photoURL ?? d?.image_url ?? d?.ImageURL ?? d?.avatar ?? '').trim();
+  String(
+    d?.photo_url ??
+      d?.PhotoURL ??
+      d?.photoURL ??
+      d?.image_url ??
+      d?.ImageURL ??
+      d?.avatar ??
+      ''
+  ).trim();
 
 const getDogKennelIdRaw = (d: any) =>
-  d?.kennel_id ?? d?.KennelID ?? d?.kennelId ??
-  d?.kennel?.ID ?? d?.kennel?.id ?? d?.Kennel?.ID ?? d?.Kennel?.id;
+  d?.kennel_id ??
+  d?.KennelID ??
+  d?.kennelId ??
+  d?.kennel?.ID ??
+  d?.kennel?.id ??
+  d?.Kennel?.ID ??
+  d?.Kennel?.id;
 
 /* -------------------------------- Component -------------------------------- */
 const ZoneCageManagementPage = () => {
@@ -67,13 +87,13 @@ const ZoneCageManagementPage = () => {
     (async () => {
       try {
         const res = await zcManagementAPI.getAll();
-        const payload = (res && 'data' in res) ? (res as any).data : res;
+        const payload = res && 'data' in (res as any) ? (res as any).data : res;
         const zs = (payload?.zones ?? []) as ZoneInterface[];
         const ks = (payload?.kennels ?? []) as KennelInterface[];
 
         // resolve kennel "00" id
         const k00 = ks.find((k: any) => String((k?.name ?? '')).trim() === '00');
-        const _id = k00 ? Number((k00 as any)?.ID ?? (k00 as any)?.id ?? 0) : 0;
+        const _id = k00 ? Number(getId(k00)) : 0;
 
         if (!cancelled) {
           setZones(zs);
@@ -82,23 +102,29 @@ const ZoneCageManagementPage = () => {
         }
       } catch (e) {
         console.error('load zc management', e);
-        if (!cancelled) { setZones([]); setCages([]); setK00Id(null); }
+        if (!cancelled) {
+          setZones([]);
+          setCages([]);
+          setK00Id(null);
+        }
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   /* -------------------------- maps for display names & capacity ------------- */
   const zoneNameById = React.useMemo(
-    () => new Map(zones.map(z => [getId(z), String((z as any)?.name ?? '')])),
+    () => new Map(zones.map((z) => [getId(z), String((z as any)?.name ?? '')])),
     [zones]
   );
   const cageNameById = React.useMemo(
-    () => new Map(cages.map(c => [getId(c), String((c as any)?.name ?? '')])),
+    () => new Map(cages.map((c) => [getId(c), String((c as any)?.name ?? '')])),
     [cages]
   );
   const capacityById = React.useMemo(
-    () => new Map(cages.map(c => [getId(c), Number((c as any)?.capacity ?? 0)])),
+    () => new Map(cages.map((c) => [getId(c), Number((c as any)?.capacity ?? 0)])),
     [cages]
   );
 
@@ -148,10 +174,10 @@ const ZoneCageManagementPage = () => {
         setLoadingComplete(false);
 
         const res = await zcManagementAPI.getDogsInKennel(Number(selectedCage));
-        const dogs: DogInterface[] = Array.isArray(res) ? res : (res?.data ?? []);
+        const dogs: DogInterface[] = Array.isArray(res) ? (res as any) : (res as any)?.data ?? [];
 
         if (!cancelled) {
-          const mapped = dogs.map(d => ({
+          const mapped = dogs.map((d: any) => ({
             id: Number(getDogId(d)),
             zone: selectedZone!,
             cage: selectedCage!,
@@ -160,7 +186,7 @@ const ZoneCageManagementPage = () => {
           }));
           setBoxes(mapped);
           // capture original set for this cage
-          originalDogIdsRef.current = new Set(mapped.map(m => m.id));
+          originalDogIdsRef.current = new Set(mapped.map((m) => m.id));
           setMarkedForDeletion(new Set());
           setLoadingComplete(true);
         }
@@ -176,11 +202,13 @@ const ZoneCageManagementPage = () => {
       }
     };
     run();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [selectedZone, selectedCage]);
 
   /* ------------------------------- helpers --------------------------------- */
-  // Treat kennel "00" as unassigned (and accept legacy 0 just in case)
+  // Treat kennel "00" as unassigned (and accept legacy 0/null/'' just in case)
   const isUnassigned = React.useCallback(
     (d: any) => {
       const raw = getDogKennelIdRaw(d);
@@ -218,17 +246,23 @@ const ZoneCageManagementPage = () => {
     return Number.isFinite(cap ?? NaN) ? (cap as number) : Infinity;
   }, [selectedCage, capacityById]);
 
-  // count dogs that will remain in the cage after local toggles (before Save)
-  const plannedCount = React.useMemo(() => {
-    return boxes.filter(b => b.cage === selectedCage && !markedForDeletion.has(b.id)).length;
+  // dogs that will remain in this cage after local toggles (before Save)
+  const plannedKeepIds = React.useMemo(() => {
+    return new Set(
+      boxes
+        .filter((b) => b.cage === selectedCage && !markedForDeletion.has(b.id))
+        .map((b) => String(b.id))
+    );
   }, [boxes, markedForDeletion, selectedCage]);
+
+  const plannedCount = React.useMemo(() => plannedKeepIds.size, [plannedKeepIds]);
 
   /* ------------------------------- handlers -------------------------------- */
   const handleEdit = () => setIsEditing(true);
 
   const handleRedo = () => {
     // revert UI back to original (no server call)
-    setBoxes(prev => prev.filter(b => originalDogIdsRef.current.has(b.id)));
+    setBoxes((prev) => prev.filter((b) => originalDogIdsRef.current.has(b.id)));
     setMarkedForDeletion(new Set());
     setIsEditing(false);
   };
@@ -239,11 +273,13 @@ const ZoneCageManagementPage = () => {
     // Capacity check BEFORE any API calls
     const originalCount = originalDogIdsRef.current.size;
     const removed = Array.from(markedForDeletion);
-    const currentIds = new Set(boxes.map(b => b.id));
+
+    const currentIds = new Set(boxes.map((b) => b.id));
     const added: number[] = [];
-    currentIds.forEach(id => {
+    currentIds.forEach((id) => {
       if (!originalDogIdsRef.current.has(id) && !markedForDeletion.has(id)) added.push(id);
     });
+
     const after = originalCount - removed.length + added.length;
     if (after > capacityForSelected) {
       alert(`This cage can hold ${capacityForSelected} dog(s). You’re trying to keep ${after}.`);
@@ -260,7 +296,7 @@ const ZoneCageManagementPage = () => {
       for (const id of removed) ops.push(guardRemove(kennelIdNum, id));
 
       const results = await Promise.allSettled(ops);
-      const failed = results.filter(r => r.status === 'rejected');
+      const failed = results.filter((r) => r.status === 'rejected');
       if (failed.length) {
         console.error('Some kennel updates failed:', failed);
         return; // keep edit mode
@@ -268,8 +304,8 @@ const ZoneCageManagementPage = () => {
 
       // SUCCESS → refetch to sync & set new baseline
       const ref = await zcManagementAPI.getDogsInKennel(Number(selectedCage));
-      const dogs: DogInterface[] = Array.isArray(ref) ? ref : (ref?.data ?? []);
-      const mapped = dogs.map(d => ({
+      const dogs: DogInterface[] = Array.isArray(ref) ? (ref as any) : (ref as any)?.data ?? [];
+      const mapped = dogs.map((d: any) => ({
         id: Number(getDogId(d)),
         zone: selectedZone!,
         cage: selectedCage!,
@@ -277,7 +313,7 @@ const ZoneCageManagementPage = () => {
         photo: getDogPhoto(d),
       }));
       setBoxes(mapped);
-      originalDogIdsRef.current = new Set(mapped.map(m => m.id));
+      originalDogIdsRef.current = new Set(mapped.map((m) => m.id));
 
       setMarkedForDeletion(new Set());
       setIsEditing(false);
@@ -290,7 +326,7 @@ const ZoneCageManagementPage = () => {
 
   // Toggle mark for deletion (instead of removing immediately)
   const handleDelete = (boxId: number) => {
-    setMarkedForDeletion(prev => {
+    setMarkedForDeletion((prev) => {
       const next = new Set(prev);
       if (next.has(boxId)) next.delete(boxId);
       else next.add(boxId);
@@ -315,35 +351,30 @@ const ZoneCageManagementPage = () => {
     try {
       let arr: any[] = [];
 
-      // Preferred: dogs in kennel "00"
+      // Prefer kennel "00"
       if (k00Id) {
         const res = await zcManagementAPI.getDogsInKennel(k00Id);
-        arr = Array.isArray(res) ? res : (res?.data ?? []);
+        arr = Array.isArray(res) ? (res as any) : (res as any)?.data ?? [];
       }
 
-      // Fallbacks (legacy)
+      // Fallbacks (legacy data where "unassigned" still had 0 or null)
       if (!arr.length) {
         let r: any = await Get('/dogs?unassigned=1');
-        arr = Array.isArray(r) ? r : (r?.data ?? []);
+        arr = Array.isArray(r) ? (r as any) : (r?.data ?? []);
       }
       if (!arr.length) {
         let r: any = await Get('/dogs?kennel_id=null');
-        arr = Array.isArray(r) ? r : (r?.data ?? []);
+        arr = Array.isArray(r) ? (r as any) : (r?.data ?? []);
       }
       if (!arr.length) {
         let r: any = await Get('/dogs');
-        const all: any[] = Array.isArray(r) ? r : (r?.data ?? []);
-        arr = all;
+        arr = Array.isArray(r) ? (r as any) : (r?.data ?? []);
       }
 
-      arr = arr.filter(d => {
-        const raw = getDogKennelIdRaw(d);
-        const kid = Number(raw ?? 0);
-        if (k00Id && kid === k00Id) return true;
-        if (!raw) return true;
-        const s = String(raw).trim();
-        return s === '' || s === '0';
-      });
+      // Keep only truly unassigned…
+      arr = arr.filter(isUnassigned);
+      // …and remove any already staged to keep in this cage
+      arr = arr.filter((d: any) => !plannedKeepIds.has(getDogId(d)));
 
       setUnassignedDogs(arr);
     } catch (e) {
@@ -352,7 +383,7 @@ const ZoneCageManagementPage = () => {
     } finally {
       setAddLoading(false);
     }
-  }, [k00Id]);
+  }, [k00Id, isUnassigned, plannedKeepIds]);
 
   const openAddModal = async () => {
     if (!selectedZone || !selectedCage) return;
@@ -362,7 +393,7 @@ const ZoneCageManagementPage = () => {
     }
     setSelectedDogIdForAdd('');
     setIsAddModalOpen(true);
-    if (unassignedDogs.length === 0) await fetchUnassignedDogs();
+    await fetchUnassignedDogs(); // always refresh list to reflect staged changes
   };
 
   const closeAddModal = () => {
@@ -377,26 +408,29 @@ const ZoneCageManagementPage = () => {
       return;
     }
 
-    const dog = unassignedDogs.find(d => getDogId(d) === selectedDogIdForAdd);
+    const dog = unassignedDogs.find((d) => getDogId(d) === selectedDogIdForAdd);
     if (!dog) return;
 
     const dogNumericId = Number(getDogId(dog));
-    if (boxes.some(b => b.id === dogNumericId)) { // prevent duplicates
+    // prevent duplicates in UI
+    if (boxes.some((b) => b.id === dogNumericId)) {
       closeAddModal();
       return;
     }
 
-    setBoxes(prev => [
+    setBoxes((prev) => [
       ...prev,
       {
         id: dogNumericId,
-        zone: selectedZone,
-        cage: selectedCage,
+        zone: selectedZone!,
+        cage: selectedCage!,
         data: getDogName(dog),
         photo: getDogPhoto(dog),
       },
     ]);
-    setUnassignedDogs(prev => prev.filter(d => getDogId(d) !== selectedDogIdForAdd));
+
+    // instant feedback while modal is open
+    setUnassignedDogs((prev) => prev.filter((d) => getDogId(d) !== selectedDogIdForAdd));
     closeAddModal();
   };
 
@@ -406,13 +440,20 @@ const ZoneCageManagementPage = () => {
   const showOtherButtons = bothSelected && isEditing;
 
   React.useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closeAddModal(); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeAddModal();
+    };
     if (isAddModalOpen) window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [isAddModalOpen]);
 
   const imgStyle: React.CSSProperties = {
-    width: 56, height: 56, borderRadius: '50%', objectFit: 'cover', flex: '0 0 auto', background: '#eee'
+    width: 56,
+    height: 56,
+    borderRadius: '50%',
+    objectFit: 'cover',
+    flex: '0 0 auto',
+    background: '#eee',
   };
   const rowStyle: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 };
   const nameStyle: React.CSSProperties = { fontWeight: 700 };
@@ -428,7 +469,9 @@ const ZoneCageManagementPage = () => {
           <div className="form-group">
             <label>Zone : </label>
             <select value={selectedZone ?? ''} onChange={handleZoneChange}>
-              <option key="__zph" value="">Select zone</option>
+              <option key="__zph" value="">
+                Select zone
+              </option>
               {zones.map((zone) => {
                 const zId = getId(zone);
                 return (
@@ -464,15 +507,20 @@ const ZoneCageManagementPage = () => {
           </div>
 
           {bothSelected && (
-            <div style={{fontSize:12, opacity:.8, marginTop:-6, marginBottom:10}}>
-              Capacity: {Number.isFinite(capacityForSelected) ? `${plannedCount}/${capacityForSelected}` : 'unknown'}
+            <div style={{ fontSize: 12, opacity: 0.8, marginTop: -6, marginBottom: 10 }}>
+              Capacity:{' '}
+              {Number.isFinite(capacityForSelected)
+                ? `${plannedCount}/${capacityForSelected}`
+                : 'unknown'}
             </div>
           )}
 
           {showEdit && <button onClick={handleEdit}>Edit</button>}
           {showOtherButtons && (
             <>
-              <button onClick={handleRedo} disabled={saving}>Redo</button>
+              <button onClick={handleRedo} disabled={saving}>
+                Redo
+              </button>
               <button onClick={handleSave} disabled={saving}>
                 {saving ? 'Saving…' : 'Save'}
               </button>
@@ -498,10 +546,19 @@ const ZoneCageManagementPage = () => {
                             src={box.photo}
                             alt={box.data}
                             style={imgStyle}
-                            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).style.display = 'none';
+                            }}
                           />
                         ) : (
-                          <div style={{...imgStyle, display:'grid', placeItems:'center', fontWeight:700}}>
+                          <div
+                            style={{
+                              ...imgStyle,
+                              display: 'grid',
+                              placeItems: 'center',
+                              fontWeight: 700,
+                            }}
+                          >
                             {fallbackInitial}
                           </div>
                         )}
@@ -525,15 +582,24 @@ const ZoneCageManagementPage = () => {
                 {showOtherButtons && (
                   <div className="info-box">
                     <div style={rowStyle}>
-                      <div style={{...imgStyle, display:'grid', placeItems:'center', fontWeight:700}}>+</div>
+                      <div
+                        style={{ ...imgStyle, display: 'grid', placeItems: 'center', fontWeight: 700 }}
+                      >
+                        +
+                      </div>
                       <div>
                         <div style={nameStyle}>Add a dog</div>
-                        <div style={{opacity:.7, fontSize:12}}>
-                          {zoneNameById.get(selectedZone!) ?? selectedZone} · {cageNameById.get(selectedCage!) ?? selectedCage}
+                        <div style={{ opacity: 0.7, fontSize: 12 }}>
+                          {zoneNameById.get(selectedZone!) ?? selectedZone} ·{' '}
+                          {cageNameById.get(selectedCage!) ?? selectedCage}
                         </div>
                       </div>
                     </div>
-                    <button className="add-btn" onClick={openAddModal} disabled={plannedCount >= capacityForSelected}>
+                    <button
+                      className="add-btn"
+                      onClick={openAddModal}
+                      disabled={plannedCount >= capacityForSelected}
+                    >
                       Add
                     </button>
                   </div>
@@ -585,12 +651,31 @@ const ZoneCageManagementPage = () => {
                         <img
                           src={photo}
                           alt={name}
-                          style={{ width: 80, height: 80, borderRadius: 8, objectFit: 'cover', marginBottom: 8 }}
-                          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                          style={{
+                            width: 80,
+                            height: 80,
+                            borderRadius: 8,
+                            objectFit: 'cover',
+                            marginBottom: 8,
+                          }}
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).style.display = 'none';
+                          }}
                         />
                       ) : (
-                        <div style={{ width: 80, height: 80, borderRadius: 8, background: '#eee', display:'grid', placeItems:'center', fontWeight:700, marginBottom: 8 }}>
-                          {name.slice(0,1).toUpperCase()}
+                        <div
+                          style={{
+                            width: 80,
+                            height: 80,
+                            borderRadius: 8,
+                            background: '#eee',
+                            display: 'grid',
+                            placeItems: 'center',
+                            fontWeight: 700,
+                            marginBottom: 8,
+                          }}
+                        >
+                          {name.slice(0, 1).toUpperCase()}
                         </div>
                       )}
                       <div className="dog-card-name">{name}</div>
@@ -601,8 +686,15 @@ const ZoneCageManagementPage = () => {
             )}
 
             <div className="modal-actions">
-              <button onClick={closeAddModal} className="ghost">Cancel</button>
-              <button onClick={handleConfirmAdd} disabled={!selectedDogIdForAdd || plannedCount >= capacityForSelected}>Add</button>
+              <button onClick={closeAddModal} className="ghost">
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmAdd}
+                disabled={!selectedDogIdForAdd || plannedCount >= capacityForSelected}
+              >
+                Add
+              </button>
             </div>
           </div>
         </div>
