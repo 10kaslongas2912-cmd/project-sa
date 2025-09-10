@@ -833,3 +833,8 @@
     min-width: calc(100vw - 32px);
   }
 }
+
+.profile-avatar .avatar-img,
+.profile-dropdown-avatar .avatar-img {
+  width: 32px; height: 32px; border-radius: 50%; object-fit: cover;
+}

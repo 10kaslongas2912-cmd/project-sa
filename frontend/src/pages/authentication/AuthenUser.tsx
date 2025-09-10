@@ -3,11 +3,11 @@ import { useState, useEffect } from "react";
 import { Form, Input, message, DatePicker, Select, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 
-import type { CreateUserRequest,LoginUserRequest, UpdateUserRequest } from "../../interfaces/User"; // แยกเป็น Request ชัดเจน
+import type { CreateUserRequest, LoginUserRequest } from "../../interfaces/User";
 import type { GenderInterface } from "../../interfaces/Gender";
 
-import { authAPI, genderAPI } from "../../services/apis"; // <- ใช้รวม API ที่ไฟล์เดียว
-import "./style.css";
+import { authAPI, genderAPI } from "../../services/apis";
+import "./AuthenUserStyle.css";
 import logo from "../../assets/logo.png";
 import ButtonComponent from "../../components/Button";
 
@@ -15,40 +15,43 @@ const AuthPage: React.FC = () => {
   const [isLoginActive, setIsLoginActive] = useState(true);
   const [genders, setGenders] = useState<GenderInterface[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
   const [loginForm] = Form.useForm();
   const [registerForm] = Form.useForm();
-  
+
   const handleToggleForm = (isLogin: boolean) => {
     setIsLoginActive(isLogin);
     loginForm.resetFields();
     registerForm.resetFields();
   };
 
-  // ---- FORGOT PASSWORD ----
   const handleForgotPassword = () => {
     messageApi.info("กรุณาติดต่อเจ้าหน้าที่เพื่อขอรีเซ็ตรหัสผ่าน");
-    // TODO: นำไปหน้า forgot password หรือแสดง modal
   };
 
   // ---- LOGIN ----
   const onFinishLogin = async (values: LoginUserRequest) => {
     try {
+      setSubmitting(true);
       const res = await authAPI.logIn(values);
       const payload = res.data;
-      console.log(payload);
+
       messageApi.success("เข้าสู่ระบบสำเร็จ");
-      localStorage.setItem("isLogin", "true");
-      localStorage.setItem("token_type", payload.token_type);
-      localStorage.setItem("token", payload.token);
-      if (payload.user?.ID) localStorage.setItem("ID", String(payload.user.ID));
 
-      // ดึง returnTo จาก sessionStorage ก่อน → ถ้าไม่มีค่อยไปดู localStorage
-      let returnTo = sessionStorage.getItem("returnTo") || localStorage.getItem("returnTo");
+      // ✅ ใช้ sessionStorage ให้หมด
+      // เคลียร์ค่าค้างในแท็บก่อน (กันเคสสลับ role ภายในแท็บเดียว)
+      sessionStorage.clear();
+      sessionStorage.setItem("isLogin", "true");
+      sessionStorage.setItem("userType", "user");
+      sessionStorage.setItem("token_type", payload.token_type);
+      sessionStorage.setItem("token", payload.token);
+      if (payload.user?.ID) sessionStorage.setItem("ID", String(payload.user.ID));
 
+      // ✅ อ่าน returnTo จาก sessionStorage เท่านั้น
+      const returnTo = sessionStorage.getItem("returnTo");
       if (returnTo) {
         sessionStorage.removeItem("returnTo");
-        localStorage.removeItem("returnTo");
         navigate(returnTo, { replace: true });
       } else {
         navigate("/", { replace: true });
@@ -62,44 +65,42 @@ const AuthPage: React.FC = () => {
   // ---- LOAD GENDERS ----
   const onGetGender = async () => {
     try {
-      const res = await genderAPI.getAll(); 
+      const res = await genderAPI.getAll();
       const list = Array.isArray(res) ? res : [];
 
       const normalized: GenderInterface[] = list.map((g: any) => ({
         ID: g.ID,
         code: g.code,
-        name: g.name
+        name: g.name,
       }));
       setGenders(normalized);
-    } catch (e: any) {
+    } catch {
       messageApi.error("ไม่พบข้อมูลเพศ");
     }
   };
 
   // ---- REGISTER ----
   const onFinishRegister = async (values: any) => {
-    // แปลงค่า form -> payload ที่ BE ต้องการ
-  const payload: CreateUserRequest = {
-    username: values.username, // 
-    password: values.password,
-    first_name: values.first_name,
-    last_name: values.last_name,
-    date_of_birth: values.birthday?.format?.("YYYY-MM-DD") ?? values.birthday,
-    email: values.email,
-    phone: values.phone_number,
-    gender_id: values.gender_id,
-  };
+    const payload: CreateUserRequest = {
+      username: values.username,
+      password: values.password,
+      first_name: values.first_name,
+      last_name: values.last_name,
+      date_of_birth: values.birthday?.format?.("YYYY-MM-DD") ?? values.birthday,
+      email: values.email,
+      phone: values.phone_number,
+      gender_id: values.gender_id,
+    };
 
     try {
       await authAPI.signUp(payload);
       messageApi.success("สมัครสมาชิกสำเร็จ, กำลังเข้าสู่ระบบ...");
 
-      // Automatically log the user in after successful registration
+      // auto login
       await onFinishLogin({
         username: payload.username,
         password: payload.password,
       });
-
     } catch (e: any) {
       const err = e?.response?.data?.error ?? "สมัครสมาชิกไม่สำเร็จ";
       messageApi.error(err);
@@ -109,11 +110,11 @@ const AuthPage: React.FC = () => {
   useEffect(() => {
     onGetGender();
 
-    const prefillDataString = sessionStorage.getItem('signupPrefillData');
+    const prefillDataString = sessionStorage.getItem("signupPrefillData");
     if (prefillDataString) {
       try {
         const prefillData = JSON.parse(prefillDataString);
-        
+
         registerForm.setFieldsValue({
           first_name: prefillData.first_name,
           last_name: prefillData.last_name,
@@ -122,8 +123,7 @@ const AuthPage: React.FC = () => {
         });
 
         setIsLoginActive(false);
-
-        sessionStorage.removeItem('signupPrefillData');
+        sessionStorage.removeItem("signupPrefillData");
       } catch (error) {
         console.error("Error parsing or using prefill data:", error);
       }
@@ -201,6 +201,7 @@ const AuthPage: React.FC = () => {
                 </Form.Item>
               </div>
             </div>
+
             <div className="username">
               <Form.Item
                 label="ชื่อผู้ใช้ (Username)"
@@ -208,7 +209,10 @@ const AuthPage: React.FC = () => {
                 rules={[
                   { required: true, message: "กรุณากรอกชื่อผู้ใช้!" },
                   { min: 4, message: "อย่างน้อย 4 ตัวอักษร" },
-                  { pattern: /^[a-zA-Z0-9._-]+$/, message: "ใช้ได้เฉพาะ a-z, 0-9, จุด, ขีดกลาง, ขีดล่าง" },
+                  {
+                    pattern: /^[a-zA-Z0-9._-]+$/,
+                    message: "ใช้ได้เฉพาะ a-z, 0-9, จุด, ขีดกลาง, ขีดล่าง",
+                  },
                 ]}
                 normalize={(v) => (typeof v === "string" ? v.trim() : v)}
                 hasFeedback
@@ -216,6 +220,7 @@ const AuthPage: React.FC = () => {
                 <Input placeholder="ชื่อผู้ใช้" autoComplete="username" />
               </Form.Item>
             </div>
+
             <div className="mail">
               <Form.Item
                 label="อีเมล"
@@ -239,14 +244,19 @@ const AuthPage: React.FC = () => {
             </div>
 
             <div className="btn">
-              <ButtonComponent className="btn-primary" htmlType="submit">
+              <ButtonComponent className="btn-primary" htmlType="submit" disabled={submitting}>
+                {submitting ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
                 สมัครสมาชิก
               </ButtonComponent>
             </div>
 
-            {/* ข้อความชี้ทางสำหรับหน้าสมัครสมาชิก */}
             <div className="form-guide">
-              <p>เป็นสมาชิกอยู่แล้ว? <a href="#" onClick={() => handleToggleForm(true)}>เข้าสู่ระบบที่นี่</a></p>
+              <p>
+                เป็นสมาชิกอยู่แล้ว?{" "}
+                <a href="#" onClick={() => handleToggleForm(true)}>
+                  เข้าสู่ระบบที่นี่
+                </a>
+              </p>
             </div>
           </Form>
         </div>
@@ -285,16 +295,26 @@ const AuthPage: React.FC = () => {
             </div>
 
             <div className="btn">
-  <ButtonComponent className="btn-primary" htmlType="submit">
-    เข้าสู่ระบบ
-  </ButtonComponent>
+              <ButtonComponent className="btn-primary" htmlType="submit">
+                เข้าสู่ระบบ
+              </ButtonComponent>
             </div>
 
-            {/* ข้อความชี้ทางสำหรับหน้า login */}
             <div className="form-guide">
-              <p>คุณเป็นสมาชิกแล้วหรือยัง? ถ้ายังไม่มี <a href="#" onClick={() => handleToggleForm(false)}>สมัครสมาชิกได้ที่นี่</a></p>
+              <p>
+                คุณเป็นสมาชิกแล้วหรือยัง? ถ้ายังไม่มี{" "}
+                <a href="#" onClick={() => handleToggleForm(false)}>
+                  สมัครสมาชิกได้ที่นี่
+                </a>
+              </p>
             </div>
           </Form>
+
+          <div className="staff-login">
+            <ButtonComponent className="btn-staff" type="button" onClick={() => navigate("../staffs")}>
+              เข้าสู่ระบบสำหรับพนักงาน
+            </ButtonComponent>
+          </div>
         </div>
 
         {/* สลับฟอร์ม */}
@@ -304,6 +324,6 @@ const AuthPage: React.FC = () => {
       </div>
     </>
   );
-}
+};
 
 export default AuthPage;

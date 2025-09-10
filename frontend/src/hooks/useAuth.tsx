@@ -8,13 +8,16 @@ export function useAuthUser() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(
-    Boolean(localStorage.getItem("token"))
+    Boolean(sessionStorage.getItem("token")) &&
+      (sessionStorage.getItem("userType") === "user" || !sessionStorage.getItem("userType"))
   );
 
   const refresh = useCallback(async () => {
-    const hasToken = Boolean(localStorage.getItem("token"));
+    const hasToken =
+      Boolean(sessionStorage.getItem("token")) &&
+      (sessionStorage.getItem("userType") === "user" || !sessionStorage.getItem("userType"));
+
     if (!hasToken) {
-      // ไม่มี token → เคลียร์สถานะและหยุดโหลด
       setUser(null);
       setIsLoggedIn(false);
       setError(null);
@@ -25,7 +28,8 @@ export function useAuthUser() {
     try {
       setLoading(true);
       setError(null);
-      const res = await authAPI.me(); // ควรเรียกด้วย header Authorization ภายใน authAPI
+
+      const res = await authAPI.me(); // ควรได้ object user ตรง ๆ (เพราะ https.Get คืน res.data)
       if (!res) throw new Error("User data not found");
 
       const userForApp: AppUserInterface = {
@@ -43,8 +47,10 @@ export function useAuthUser() {
       setUser(userForApp);
       setIsLoggedIn(true);
     } catch (e: any) {
-      // token ไม่ถูกต้อง/หมดอายุ → ลบและเซ็ตสถานะออกจากระบบ
-      localStorage.removeItem("token");
+      // ล้างเฉพาะ sessionStorage ตามนโยบายใหม่
+      ["token", "token_type", "ID", "username", "email", "userType", "isLogin"].forEach((k) =>
+        sessionStorage.removeItem(k)
+      );
       setUser(null);
       setIsLoggedIn(false);
       setError(e instanceof Error ? e : new Error(String(e)));
@@ -57,25 +63,18 @@ export function useAuthUser() {
     // โหลดตอนเมาท์
     refresh();
 
-    // ถ้า tab อื่นเปลี่ยน token ให้รีเฟรช
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === "token") refresh();
-    };
-    window.addEventListener("storage", onStorage);
-
-    // โฟกัสหน้าเว็บกลับมา → รีเฟรชสถานะ (เช่น token เพิ่งรีเฟรช)
+    // โฟกัสหน้าเว็บกลับมา → รีเฟรชสถานะ
     const onFocus = () => refresh();
     window.addEventListener("focus", onFocus);
 
     return () => {
-      window.removeEventListener("storage", onStorage);
       window.removeEventListener("focus", onFocus);
     };
   }, [refresh]);
 
   const logout = useCallback(() => {
-    ["token", "token_type", "ID", "username", "email"].forEach((k) =>
-      localStorage.removeItem(k)
+    ["token", "token_type", "ID", "username", "email", "userType", "isLogin"].forEach((k) =>
+      sessionStorage.removeItem(k)
     );
     setUser(null);
     setIsLoggedIn(false);

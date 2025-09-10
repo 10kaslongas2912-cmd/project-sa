@@ -14,20 +14,6 @@ func seedLookupsBase(db *gorm.DB) error {
 		FirstOrCreate(&entity.Gender{Code: "F", Name: "หญิง"}).Error; err != nil {
 		return err
 	}
-
-	if err := db.Where("name = ?", "Handler").
-		FirstOrCreate(&entity.Role{Name: "Handler"}).Error; err != nil {
-		return err
-	}
-	if err := db.Where("name = ?", "Manager").
-		FirstOrCreate(&entity.Role{Name: "Manager"}).Error; err != nil {
-		return err
-	}
-	if err := db.Where("name = ?", "Medician").
-		FirstOrCreate(&entity.Role{Name: "Medician"}).Error; err != nil {
-		return err
-	}
-
 	if err := db.Where("name = ?", "ตัวผู้").
 		FirstOrCreate(&entity.AnimalSex{Name: "ตัวผู้"}).Error; err != nil {
 		return err

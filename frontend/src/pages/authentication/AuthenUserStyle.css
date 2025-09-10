@@ -156,20 +156,11 @@
   width: 100%;
 }
 
-/* ======================================= */
-/* Button Styles - แยกประเภทตามความสำคัญ  */
-/* ======================================= */
 
 /* Base button styles */
 .btn{
   margin-top: 20px;
-  max-width: 400px;
 }
-.btn button{
-  width: 100%;
-}
-
-
 
 /* ======================================= */
 /* Forgot Password Styles         */
@@ -304,7 +295,32 @@
   transform: translateX(50%);
 }
 
-/* ======================================= */
-/* Responsive Design              */
-/* ======================================= */
 
+.staff-login {
+  width: 100%;
+  text-align: center;
+  margin-top: 16px;
+}
+
+.staff-login .btn-staff {
+  display: inline-block;
+  padding: 10px 18px;
+  font-size: 16px;
+  font-weight: 600;
+  border: 1px solid #512da8;
+  border-radius: 8px;
+  background: #fff;
+  color: #512da8;
+  cursor: pointer;
+  line-height: 1;
+  transition: transform 0.05s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.staff-login .btn-staff:hover {
+  background: #512da8;
+  color: #fff;
+}
+
+.staff-login .btn-staff:active {
+  transform: translateY(1px);
+}

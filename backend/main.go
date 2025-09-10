@@ -88,7 +88,8 @@ func main() {
 	r.DELETE("/manages/:id", manage.DeleteManage)
 
 	// Staff routes
-	r.POST("/staffs", staffs.CreateStaff)
+	r.POST("/staffs/auth",staffs.StaffSignIn)
+	r.POST("/staffs/signup",staffs.StaffSignUp)
 	r.GET("/staffs", staffs.GetAllStaffs)
 	r.GET("/staffs/:id", staffs.GetStaffById)
 	r.PUT("/staffs/:id", staffs.UpdateStaff)
@@ -120,6 +121,7 @@ func main() {
 	{
 		protected.POST("/donations", donation.CreateDonation)
 		protected.GET("/users/me", user.Me)
+		protected.GET("/staffs/me", staffs.Me)
 		protected.PUT("/users/:id", user.UpdateUser)
 		protected.GET("/users", user.GetAllUsers)
 		protected.GET("/users/:id", user.GetUserById)

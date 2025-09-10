@@ -65,7 +65,16 @@ func userResp(u entity.User) gin.H {
 
 /* ===== Handlers ===== */
 
+// users/me.go (หรือในไฟล์ controller ของ user เดิม)
 func Me(c *gin.Context) {
+	// ถ้ามี kind และเป็น staff ให้ปฏิเสธ
+	if k, ok := c.Get("kind"); ok {
+		if ks, ok2 := k.(string); ok2 && ks == "staff" {
+			c.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
+			return
+		}
+	}
+
 	uidAny, _ := c.Get("user_id")
 	unameAny, _ := c.Get("username")
 	emailAny, _ := c.Get("user_email")
@@ -103,6 +112,7 @@ func Me(c *gin.Context) {
 
 	c.JSON(http.StatusOK, userResp(u))
 }
+
 
 func GetAllUsers(c *gin.Context) {
 	db := configs.DB()

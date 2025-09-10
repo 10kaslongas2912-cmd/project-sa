@@ -13,9 +13,8 @@ type Staff struct {
 	Email    string `json:"email"`    // เพิ่ม Email
 	Phone string `json:"phone"`
 	DateOfBirth string `json:"date_of_birth"`
+	PhotoURL *string `json:"photo_url"`
 	Note *string `json:"note"`
-	RoleID uint  `json:"role_id"`
-	Role   *Role `gorm:"foreignKey:RoleID" json:"role"`
 	Status *string `json:"status"`
 	ZoneID uint  `json:"zone_id"`
 	Zone   *Zone `gorm:"foreignKey:ZoneID" json:"zone"`

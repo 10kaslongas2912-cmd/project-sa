@@ -13,7 +13,7 @@ import type { CreateDonationRequest } from "../interfaces/Donation";
 import type { UpdateZCManagementRequest } from "../interfaces/zcManagement";
 import type { CreateVolunteerPayload } from "../interfaces/Volunteer";
 import type { SkillInterface } from "../interfaces/Skill";
-
+import type { LoginStaffRequest } from "../interfaces/Staff";
 /** ---------- helpers ---------- */
 const isFormData = (v: any): v is FormData =>
   typeof FormData !== "undefined" && v instanceof FormData;
@@ -29,11 +29,16 @@ export const authAPI = {
   signUp: (data: CreateUserRequest) =>
     Post("/users/signup", data, false),
 
-  // ถ้า BE ใช้ /auth/me ให้เปลี่ยน path ตรงนี้ที่เดียว
   me: () => Get("/users/me", true),
 
-  // ถ้า BE ไม่มี endpoint นี้ ลบออกได้
-  logout: () => Post("/user/logout", {}),
+};
+
+export const staffAuthAPI = {
+  logIn: (data: LoginStaffRequest) =>
+    Post("/staffs/auth", data, false),     // ตาม BE ปัจจุบันของคุณ
+
+  me: () => Get("/staffs/me", true),
+
 };
 
 // ฐานพหูพจน์ + /:id
