@@ -73,10 +73,12 @@ const fetchPaymentMethods = async () => {
       return;
     }
 
-    let finalData: MoneyDonationInterface = {
+    const finalData: MoneyDonationInterface = {
       amount: type === 'รายเดือน' ? Number(values.monthlyAmount) : Number(values.oneTimeAmount),
-      payment_method_id: values.paymentMethod,
+      payment_method_id: type === 'รายเดือน' ? 1 : values.paymentMethod,
       payment_type: type === 'รายเดือน' ? 'monthly' : 'one-time',
+      billing_date: type === 'รายเดือน' ? String(values.billingDate) : "-",
+      next_payment_date: "-", // Default value
     };
 
     if (type === 'รายเดือน') {
@@ -86,12 +88,7 @@ const fetchPaymentMethods = async () => {
       if (today.getDate() >= billingDay) {
         nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1);
       }
-            // Format nextPaymentDate to YYYY-MM-DD string
-      const formattedNextPaymentDate = nextPaymentDate.toISOString().split('T')[0]; // "YYYY-MM-DD"
-      finalData = {
-        ...finalData,
-        next_payment_date: formattedNextPaymentDate,
-      };
+      finalData.next_payment_date = nextPaymentDate.toISOString().split('T')[0];
     }
 
     console.log('Final data before navigation:', finalData);

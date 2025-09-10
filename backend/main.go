@@ -17,6 +17,8 @@ import (
 	user "example.com/project-sa/controllers/user"
 	vaccine "example.com/project-sa/controllers/vaccine"
 	visit "example.com/project-sa/controllers/visit"
+	manage "example.com/project-sa/controllers/manage"
+	staffs "example.com/project-sa/controllers/staff"
 	volunteers "example.com/project-sa/controllers/volunteerRegister"
 	zcmanagement "example.com/project-sa/controllers/zcmanagement"
 	"example.com/project-sa/middlewares"
@@ -53,6 +55,11 @@ func main() {
 	r.GET("/dogs", dog.GetAllDogs)
 	r.GET("/dogs/:id", dog.GetDogById)
 	r.POST("/dogs", dog.CreateDog)
+	r.PUT("/dogs/:id", dog.UpdateDog)	
+	r.DELETE("/dogs/:id", dog.DeleteDog)
+	// r.POST("/dogs", dogs.CreateDog)
+	// r.PUT("/dogs/:id", dogs.UpdateDog)
+	// r.DELETE("/dogs/:id", dogs.DeleteDog)
 	r.PUT("/dogs/:id", dog.UpdateDog)
 	r.DELETE("/dogs/:id", dog.DeleteDog)
 	r.POST("/sponsorships/one-time", sponsorship.CreateOneTimeSponsorship)
@@ -69,12 +76,30 @@ func main() {
 	r.DELETE("/health-records/:id", health_record.DeleteHealthRecord)
 	r.GET("/health-records/:id", health_record.GetHealthRecordById)
 	r.POST("/visits", visit.CreateVisit)
+	r.GET("/animal-sexes",dog.GetAllAnimalSexes)
+	r.GET("/animal-sizes",dog.GetAllAnimalSizes)
 	r.GET("/visits", visit.GetAllVisits)
 	r.GET("/visits/:id", visit.GetVisit)
 	r.PUT("/visits/:id", visit.UpdateVisit)
 	r.DELETE("/visits/:id", visit.DeleteVisit)
 
+	r.POST("/manages", manage.CreateManage)
+	r.GET("/manages", manage.GetAllManages)
+	r.GET("/manages/:id", manage.GetManageByID)
+	r.PUT("/manages/:id", manage.UpdateManage)
+	r.DELETE("/manages/:id", manage.DeleteManage)
+
+	// Staff routes
+	r.POST("/staffs", staffs.CreateStaff)
+	r.GET("/staffs", staffs.GetAllStaffs)
+	r.GET("/staffs/:id", staffs.GetStaffById)
+	r.PUT("/staffs/:id", staffs.UpdateStaff)
+	r.DELETE("/staffs/:id", staffs.DeleteStaff)
+
+
+
 	r.GET("/personalities", personalities.GetAllPersonalities)
+	r.GET("/breeds", dog.GetAllBreeds)
 
 	r.PUT("/kennels/:id", zcmanagement.UpdateDogInKennel)
 	r.DELETE("/kennels/:id", zcmanagement.DeleteDogFromKennel)
@@ -102,6 +127,7 @@ func main() {
 		protected.POST("/sponsorships/subscription", sponsorship.CreateSubscriptionSponsorship)
 		protected.GET("/my-adoptions", adopter.GetMyCurrentAdoptions)
 		protected.GET("/donations/my", donation.GetMyDonations)
+		protected.PUT("/donations/:id/status", donation.UpdateDonationStatus)
 
 	}
 
@@ -124,7 +150,7 @@ func main() {
 
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")	
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")

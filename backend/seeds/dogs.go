@@ -2,7 +2,6 @@ package seeds
 
 import (
 	"fmt"
-	"time"
 
 	"example.com/project-sa/entity"
 	"gorm.io/gorm"
@@ -56,8 +55,8 @@ func seedDogs(db *gorm.DB) error {
 			AnimalSizeID:  sizeSmall.ID,
 			BreedID:       golden.ID,
 			KennelID:      kenA.ID,
-			DateOfBirth:   time.Date(2012, 8, 9, 0, 0, 0, 0, time.UTC),
-			DateOfArrived: time.Date(2012, 12, 1, 0, 0, 0, 0, time.UTC),
+			DateOfBirth:   "2020-02-14",
+			DateOfArrived: "2020-02-14",
 			IsAdopted:     false,
 			ReadyToAdopt:  true,
 			Character:     "Playful",
@@ -69,8 +68,8 @@ func seedDogs(db *gorm.DB) error {
 			AnimalSizeID:  sizeMedium.ID,
 			BreedID:       poodle.ID,
 			KennelID:      kenB.ID,
-			DateOfBirth:   time.Date(1995, 10, 9, 0, 0, 0, 0, time.UTC),
-			DateOfArrived: time.Date(1999, 4, 9, 0, 0, 0, 0, time.UTC),
+			DateOfBirth:   "2020-02-14",
+			DateOfArrived: "2020-02-14",
 			IsAdopted:     false,
 			ReadyToAdopt:  true,
 			Character:     "Calm",
@@ -82,8 +81,8 @@ func seedDogs(db *gorm.DB) error {
 			AnimalSizeID:  sizeLarge.ID,
 			BreedID:       bulldog.ID,
 			KennelID:      kenA.ID,
-			DateOfBirth:   time.Date(2010, 12, 1, 0, 0, 0, 0, time.UTC),
-			DateOfArrived: time.Date(2011, 10, 2, 0, 0, 0, 0, time.UTC),
+			DateOfBirth:   "2020-02-14",
+			DateOfArrived: "2020-02-14",
 			IsAdopted:     false,
 			ReadyToAdopt:  true,
 			Character:     "Energetic",
@@ -95,8 +94,8 @@ func seedDogs(db *gorm.DB) error {
 			AnimalSizeID:  sizeLarge.ID,
 			BreedID:       bulldog.ID,
 			KennelID:      kenA.ID,
-			DateOfBirth:   time.Date(2022, 12, 1, 0, 0, 0, 0, time.UTC),
-			DateOfArrived: time.Date(2023, 10, 2, 0, 0, 0, 0, time.UTC),
+			DateOfBirth:   "2020-02-14",
+			DateOfArrived: "2020-02-14",
 			IsAdopted:     false,
 			ReadyToAdopt:  true,
 			Character:     "Energetic",
@@ -108,8 +107,8 @@ func seedDogs(db *gorm.DB) error {
 			AnimalSizeID:  sizeLarge.ID,
 			BreedID:       bulldog.ID,
 			KennelID:      kenA.ID,
-			DateOfBirth:   time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
-			DateOfArrived: time.Date(2025, 1, 2, 0, 0, 0, 0, time.UTC),
+			DateOfBirth:   "2020-02-14",
+			DateOfArrived: "2020-02-14",
 			IsAdopted:     false,
 			ReadyToAdopt:  true,
 			Character:     "Energetic",

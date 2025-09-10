@@ -2,6 +2,7 @@ package dog
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -10,6 +11,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
+
+/* ========== DTOs ========== */
 
 /* ========== DTOs ========== */
 
@@ -24,10 +27,13 @@ type DogCreateRequest struct {
 	IsAdopted     bool   `json:"is_adopted"`
 	PhotoURL      string `json:"photo_url"`
 	Character     string `json:"character"`
+
+	// ✅ เพิ่ม personalities (IDs) ตอนสร้าง
+	PersonalityIDs []uint `json:"personality_ids"`
 }
 
 type DogUpdateRequest struct {
-	DogID uint	`json:"dog_id"`
+	DogID         uint    `json:"dog_id"`
 	Name          *string `json:"name,omitempty"`
 	AnimalSexID   *uint   `json:"animal_sex_id,omitempty"`
 	AnimalSizeID  *uint   `json:"animal_size_id,omitempty"`
@@ -38,6 +44,10 @@ type DogUpdateRequest struct {
 	IsAdopted     *bool   `json:"is_adopted,omitempty"`
 	PhotoURL      *string `json:"photo_url,omitempty"`
 	Character     *string `json:"character,omitempty"`
+
+	// ✅ เพิ่ม personalities (IDs) ตอนแก้ไข
+	// ใช้ pointer เพื่อตีความ: ไม่ส่ง = ไม่แตะ, ส่ง [] = เคลียร์ทั้งหมด
+	PersonalityIDs *[]uint `json:"personality_ids,omitempty"`
 }
 
 /* ========== Helpers ========== */
@@ -67,6 +77,7 @@ func preloadDog(db *gorm.DB) *gorm.DB {
 /* ========== CRUD Handlers ========== */
 
 // CreateDog (C)
+// POST /dogs
 func CreateDog(c *gin.Context) {
 	var req DogCreateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -74,42 +85,56 @@ func CreateDog(c *gin.Context) {
 		return
 	}
 
-	dob, err := time.Parse("2006-01-02", req.DateOfBirth)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid date_of_birth (YYYY-MM-DD)"})
-		return
-	}
+	db := configs.DB()
+	var created entity.Dog
 
-	doa, err := time.Parse("2006-01-02", req.DateOfArrived)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid date_of_arrived (YYYY-MM-DD)"})
-		return
-	}
+	if err := db.Transaction(func(tx *gorm.DB) error {
+		d := entity.Dog{
+			Name:          req.Name,
+			AnimalSexID:   req.AnimalSexID,
+			AnimalSizeID:  req.AnimalSizeID,
+			BreedID:       req.BreedID,
+			KennelID:      req.KennelID,
+			DateOfBirth:   req.DateOfBirth,
+			DateOfArrived: req.DateOfArrived,
+			IsAdopted:     req.IsAdopted,
+			PhotoURL:      req.PhotoURL,
+			Character:     req.Character,
+		}
+		if err := tx.Create(&d).Error; err != nil {
+			return err
+		}
 
-	dog := entity.Dog{
-		Name:          req.Name,
-		AnimalSexID:   req.AnimalSexID,
-		AnimalSizeID:  req.AnimalSizeID,
-		BreedID:       req.BreedID,
-		KennelID:      req.KennelID,
-		DateOfBirth:   dob,
-		DateOfArrived: doa,
-		IsAdopted:     req.IsAdopted,
-		PhotoURL:      req.PhotoURL,
-		Character:     req.Character,
-	}
+		// personalities
+		if len(req.PersonalityIDs) > 0 {
+			rows := make([]entity.DogPersonality, 0, len(req.PersonalityIDs))
+			seen := map[uint]struct{}{}
+			for _, pid := range req.PersonalityIDs {
+				if _, ok := seen[pid]; ok {
+					continue
+				}
+				seen[pid] = struct{}{}
+				rows = append(rows, entity.DogPersonality{DogID: d.ID, PersonalityID: pid})
+			}
+			if err := tx.Create(&rows).Error; err != nil {
+				return err
+			}
+		}
 
-	if err := configs.DB().Create(&dog).Error; err != nil {
+		// preload ก่อนส่งออก
+		if err := preloadDog(tx).First(&created, d.ID).Error; err != nil {
+			created = d
+		}
+		return nil
+	}); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "create failed: " + err.Error()})
 		return
 	}
 
-	var res entity.Dog
-	if err := preloadDog(configs.DB()).First(&res, dog.ID).Error; err != nil {
-		c.JSON(http.StatusOK, gin.H{"data": dog}) // fallback ถ้า preload ล้มเหลว
-		return
-	}
-	c.JSON(http.StatusCreated,res)
+	// ตอบ "นอก" transaction เสมอ
+	c.Header("Location", fmt.Sprintf("/dogs/%d", created.ID))
+	c.JSON(http.StatusCreated, created) // 201 แน่นอน
+	return 
 }
 
 // GetDogByID (R - by ID)
@@ -154,11 +179,10 @@ func GetAllDogs(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": dogs,
-	})
+	c.JSON(http.StatusOK, dogs)
 }
 
+// UpdateDog (U) — partial update
 // UpdateDog (U) — partial update
 func UpdateDog(c *gin.Context) {
 	id := c.Param("id")
@@ -179,68 +203,98 @@ func UpdateDog(c *gin.Context) {
 		return
 	}
 
-	updates := map[string]any{}
-	if req.Name != nil {
-		updates["name"] = *req.Name
-	}
-	if req.AnimalSexID != nil {
-		updates["animal_sex_id"] = *req.AnimalSexID
-	}
-	if req.BreedID != nil {
-		updates["breed_id"] = *req.BreedID
-	}
-	if req.KennelID != nil {
-		updates["kennel_id"] = *req.KennelID
-	}
-	if req.IsAdopted != nil {
-		updates["is_adopted"] = *req.IsAdopted
-	}
-	if req.PhotoURL != nil {
-		updates["photo_url"] = *req.PhotoURL
-	}
-	if req.Character != nil {
-		updates["character"] = *req.Character
-	}
-	if req.DateOfBirth != nil {
-		if t, err := parseYMD(*req.DateOfBirth); err == nil {
-			updates["date_of_birth"] = t
-		} else {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid date_of_birth (YYYY-MM-DD)"})
-			return
+	db := configs.DB()
+	if err := db.Transaction(func(tx *gorm.DB) error {
+		updates := map[string]any{}
+		if req.Name != nil {
+			updates["name"] = *req.Name
 		}
-	}
-	if req.DateOfArrived != nil {
-		if t, err := parseYMD(*req.DateOfArrived); err == nil {
-			updates["date_arrived"] = t
-		} else {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid date_arrived (YYYY-MM-DD)"})
-			return
+		if req.AnimalSexID != nil {
+			updates["animal_sex_id"] = *req.AnimalSexID
 		}
-	}
+		if req.AnimalSizeID != nil {
+			updates["animal_size_id"] = *req.AnimalSizeID
+		}
+		if req.BreedID != nil {
+			updates["breed_id"] = *req.BreedID
+		}
+		if req.KennelID != nil {
+			updates["kennel_id"] = *req.KennelID
+		}
+		if req.IsAdopted != nil {
+			updates["is_adopted"] = *req.IsAdopted
+		}
+		if req.PhotoURL != nil {
+			updates["photo_url"] = *req.PhotoURL
+		}
+		if req.Character != nil {
+			updates["character"] = *req.Character
+		}
+		if req.DateOfBirth != nil {
+			if _, err := parseYMD(*req.DateOfBirth); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "invalid date_of_birth (YYYY-MM-DD)"})
+				return nil
+			}
+			updates["date_of_birth"] = *req.DateOfBirth
+		}
+		if req.DateOfArrived != nil {
+			if _, err := parseYMD(*req.DateOfArrived); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "invalid date_arrived (YYYY-MM-DD)"})
+				return nil
+			}
+			updates["date_arrived"] = *req.DateOfArrived
+		}
 
-	if len(updates) == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "no fields to update"})
-		return
-	}
+		if len(updates) > 0 {
+			if err := tx.Model(&existing).Updates(updates).Error; err != nil {
+				return err
+			}
+		}
 
-	if err := configs.DB().Model(&existing).Updates(updates).Error; err != nil {
+		// personalities: replace ถ้าส่งฟิลด์มา
+		// personalities: replace ทั้งหมด ถ้าส่งฟิลด์มา
+if req.PersonalityIDs != nil {
+    // ❗️ลบแบบ hard delete (ไม่ใช่ soft)
+    if err := tx.Unscoped().
+        Where("dog_id = ?", existing.ID).
+        Delete(&entity.DogPersonality{}).Error; err != nil {
+        return err
+    }
+
+    if len(*req.PersonalityIDs) > 0 {
+        rows := make([]entity.DogPersonality, 0, len(*req.PersonalityIDs))
+        seen := map[uint]struct{}{}
+        for _, pid := range *req.PersonalityIDs {
+            if _, ok := seen[pid]; ok { continue } // กันซ้ำใน payload
+            seen[pid] = struct{}{}
+            rows = append(rows, entity.DogPersonality{
+                DogID: existing.ID, PersonalityID: pid,
+            })
+        }
+        if err := tx.Create(&rows).Error; err != nil {
+            return err
+        }
+    }
+}
+
+
+		var out entity.Dog
+		if err := preloadDog(tx).First(&out, existing.ID).Error; err != nil {
+			c.JSON(http.StatusOK, existing) // ❗️ส่ง struct ตรง ๆ
+			return nil
+		}
+		c.JSON(http.StatusOK, out) // ❗️ส่ง struct ตรง ๆ
+		return nil
+	}); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "update failed: " + err.Error()})
 		return
 	}
-
-	var out entity.Dog
-	if err := preloadDog(configs.DB()).First(&out, id).Error; err != nil {
-		c.JSON(http.StatusOK, gin.H{"data": existing})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"data": out})
 }
 
 // DeleteDog (D)
 func DeleteDog(c *gin.Context) {
 	id := c.Param("id")
 
-	// ตรวจสอบว่ามีอยู่จริงก่อน (จะได้แยก 404 กับ FK error)
 	var dog entity.Dog
 	if err := configs.DB().First(&dog, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -252,10 +306,9 @@ func DeleteDog(c *gin.Context) {
 	}
 
 	if err := configs.DB().Delete(&dog).Error; err != nil {
-		// ถ้ามี FK อ้างถึง (เช่น MedicalRecord) แล้วไม่ได้ตั้ง OnDelete:CASCADE จะลบไม่ออก
 		c.JSON(http.StatusConflict, gin.H{"error": "cannot delete dog (maybe referenced by other records): " + err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "deleted", "id": dog.ID})
+	c.Status(http.StatusNoContent)
 }

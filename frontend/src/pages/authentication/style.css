@@ -79,7 +79,6 @@
 .password {
   width: 100%;
   display: flex;
-
   gap: 10px;
 }
 
@@ -97,12 +96,6 @@
 }
 
 /* กลุ่มปุ่ม */
-.btn {
-  display: flex;
-  flex-direction: row-reverse;
-  gap: 30px;
-  margin-top: 20px;
-}
 
 /* ======================================= */
 /* Form Components Styles         */
@@ -117,6 +110,7 @@
   /* max-width: 500px;  <--- อาจจะลบหรือไม่ใช้ max-width เพื่อให้ logo อยู่กลางได้ง่ายขึ้น */
   width: 100%;
 }
+
 /* สไตล์สำหรับ Input, Select, DatePicker ที่ใช้ในฟอร์ม */
 .container .ant-input,
 .container .ant-select-selector,
@@ -139,14 +133,15 @@
   width: 100%;
 }
 
-
 .i-form {
   width: 400px;
   height: auto;
 }
+
 .email {
   width: 400px;
 }
+
 /* แก้ไข Input.Password ที่มี icon */
 .container .ant-input-password {
   background-color: #eee;
@@ -157,33 +152,76 @@
   height: 44px;
 }
 
-
 .container .ant-form-item {
   width: 100%;
 }
-/* ลบสไตล์ที่ซ้ำซ้อนสำหรับ Input ที่ไม่ได้ใช้ */
-/* .container input { ... } */
 
-/* สไตล์สำหรับปุ่ม */
-.btn button {
-  color: #fff;
-  font-size: 12px;
-  padding: 10px 45px;
-  border: 1px solid transparent;
-  border-radius: 8px;
+/* ======================================= */
+/* Button Styles - แยกประเภทตามความสำคัญ  */
+/* ======================================= */
+
+/* Base button styles */
+.btn{
+  margin-top: 20px;
+  max-width: 400px;
+}
+.btn button{
+  width: 100%;
+}
+
+
+
+/* ======================================= */
+/* Forgot Password Styles         */
+/* ======================================= */
+
+.forgot-password {
+  width: 100%;
+  text-align: right;
+  margin-top: -10px;
+  margin-bottom: 15px;
+}
+
+.forgot-link {
+  color: #512da8;
+  font-size: 14px;
+  padding: 0;
+  height: auto;
+  text-decoration: underline;
+}
+
+.forgot-link:hover {
+  color: #ff8800;
+  text-decoration: underline;
+}
+
+/* ======================================= */
+/* Form Guide Text Styles         */
+/* ======================================= */
+
+.form-guide {
+  margin-top: 20px;
+  text-align: center;
+  width: 100%;
+}
+
+.form-guide p {
+  font-size: 14px;
+  color: #666;
+  margin: 10px 0;
+}
+
+.form-guide a {
+  color: #ff8800;
+  font-size: 14px;
+  text-decoration: underline;
   font-weight: 600;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  height: 40px;
-  cursor: pointer;
+  margin: 0;
 }
 
-.btn1 {
-  background-color: #ff8800;
-}
-
-.btn2 {
-  background-color: #512da8;
+.form-guide a:hover {
+  color: #512da8;
+  text-decoration: underline;
 }
 
 /* ======================================= */
@@ -265,3 +303,8 @@
 .container.active .toggle {
   transform: translateX(50%);
 }
+
+/* ======================================= */
+/* Responsive Design              */
+/* ======================================= */
+

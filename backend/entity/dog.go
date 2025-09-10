@@ -1,7 +1,6 @@
 package entity
 
 import (
-	"time"
 
 	"gorm.io/gorm"
 )
@@ -9,9 +8,9 @@ import (
 type Dog struct {
 	gorm.Model
 	Name          string    `json:"name"`
-	DateOfBirth   time.Time `json:"date_of_birth"`
-	DateOfArrived time.Time `json:"date_of_arrived"`
-	SterilizedAt  time.Time `json:"sterilized_at"` // วันที่ทำหมัน (ถ้ามี)
+	DateOfBirth   string `json:"date_of_birth"`
+	DateOfArrived string `json:"date_of_arrived"`
+	SterilizedAt  string `json:"sterilized_at"` // วันที่ทำหมัน (ถ้ามี)
 	PhotoURL      string    `json:"photo_url"`
 	Character     string    `json:"character"`
 	ReadyToAdopt  bool      `json:"ready_to_adopt"`

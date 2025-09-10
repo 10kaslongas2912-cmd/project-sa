@@ -14,6 +14,8 @@ import {
   Tabs,
   Statistic,
   Avatar,
+  message,
+  Popconfirm,
 } from 'antd';
 import {
   DollarOutlined,
@@ -45,7 +47,7 @@ interface DonationWithDetails {
     amount: number;
     payment_type: 'one-time' | 'monthly';
     transaction_ref?: string;
-    status?: 'success' | 'complete';
+    status?: 'success' | 'complete' | 'active';
     payment_method?: {
       name: string;
     };
@@ -68,6 +70,7 @@ const MyDonations: React.FC = () => {
   const [donationsLoading, setDonationsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'all' | 'money' | 'items'>('all');
+  
 
   useEffect(() => {
     if (isLoggedIn && user?.ID) {
@@ -98,6 +101,19 @@ const MyDonations: React.FC = () => {
     }
   };
 
+  const handleConfirmCancel = async (donationId: number) => {
+    try {
+      setDonationsLoading(true);
+      await donationAPI.updateStatus(donationId, { status: 'cancel' });
+      message.success('การบริจาครายเดือนได้ถูกยกเลิกแล้ว');
+      fetchMyDonations();
+    } catch (err) {
+      console.error('Error cancelling donation:', err);
+      message.error('เกิดข้อผิดพลาดในการยกเลิกการบริจาค');
+      setDonationsLoading(false);
+    }
+  };
+
   const formatDate = (dateString: string) =>
     new Date(dateString).toLocaleDateString('th-TH', {
       year: 'numeric',
@@ -117,6 +133,8 @@ const MyDonations: React.FC = () => {
       complete: { cls: 'tag-success', icon: <CheckCircleOutlined style={{ color: 'green' }} />, text: 'สำเร็จ' },
       completed: { cls: 'tag-success', icon: <CheckCircleOutlined style={{ color: 'green' }} />, text: 'สำเร็จ' },
       pending: { cls: 'tag-pending', icon: <ClockCircleOutlined style={{ color: 'orange' }} />, text: 'รอดำเนินการ' },
+      active: { cls: 'tag-active', icon: <ClockCircleOutlined style={{ color: 'blue' }} />, text: 'ใช้งานอยู่' },
+      cancel: { cls: 'tag-failed', icon: <CloseCircleOutlined style={{ color: 'black' }} />, text: 'ยกเลิก' },
       cancelled: { cls: 'tag-failed', icon: <CloseCircleOutlined style={{ color: 'black' }} />, text: 'ยกเลิก' },
       failed: { cls: 'tag-failed', icon: <CloseCircleOutlined style={{ color: 'red' }} />, text: 'ล้มเหลว' },
     };
@@ -173,6 +191,7 @@ const MyDonations: React.FC = () => {
     if (!d.money_donations?.length) return null;
     return d.money_donations.map((m, idx) => {
       const { amount, payment_type, transaction_ref, payment_method } = m;
+      const isMonthlyActive = payment_type === 'monthly' && (d.status.toLowerCase() === 'active' || d.status.toLowerCase() === 'success');
       return (
         <Card key={idx} size="small" className="mdn-subcard mdn-subcard--money">
           <Row gutter={[16, 12]}>
@@ -213,6 +232,24 @@ const MyDonations: React.FC = () => {
               </Col>
             )}
           </Row>
+          {isMonthlyActive && (
+            <Popconfirm
+              title={<div style={{ fontFamily: 'Anakotmai' }}>ยืนยันการยกเลิก</div>}
+              description={<div style={{ fontFamily: 'Anakotmai' }}>คุณแน่ใจหรือไม่ว่าต้องการยกเลิกการบริจาครายเดือนนี้?</div>}
+              onConfirm={() => handleConfirmCancel(d.ID)}
+              okText={<div style={{ fontFamily: 'Anakotmai' }}>ยืนยัน</div>}
+              cancelText={<div style={{ fontFamily: 'Anakotmai' }}>ยกเลิก</div>}
+            >
+              <Button
+                type="primary"
+                danger
+                style={{ marginTop: '10px', width: '100%' }}
+                icon={<CloseCircleOutlined />}
+              >
+                ยกเลิกการบริจาครายเดือน
+              </Button>
+            </Popconfirm>
+          )}
         </Card>
       );
     });
@@ -332,9 +369,9 @@ const MyDonations: React.FC = () => {
 
   return (
     <div className="mdn-root" style={{ fontFamily: 'Anakotmai' }}>
+      
       <div className="mdn-header">
         <Title level={1} className="mdn-title">
-          <HeartFilled className="mdn-heart" />
           ประวัติการบริจาคของฉัน
         </Title>
         <Paragraph className="mdn-subtext">
@@ -429,7 +466,7 @@ const MyDonations: React.FC = () => {
           image={Empty.PRESENTED_IMAGE_SIMPLE}
           description={
             <div>
-              <Title level={3} className="mdn-empty-title">🤝 ยังไม่มีประวัติการบริจาค</Title>
+              <Title level={3} className="mdn-empty-title">ยังไม่มีประวัติการบริจาค</Title>
               <Paragraph>
                 {activeTab === 'money' && 'ยังไม่มีประวัติการบริจาคเงิน'}
                 {activeTab === 'items' && 'ยังไม่มีประวัติการบริจาคสิ่งของ'}

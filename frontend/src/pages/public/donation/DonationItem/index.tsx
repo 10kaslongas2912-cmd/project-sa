@@ -213,11 +213,12 @@ const DonationItemsForm: React.FC = () => {
             type="button"
             onClick={addDonationItem}
             className="add-item-button"
+            style ={{ fontFamily: 'Anakotmai-Bold'}}
           >
             + เพิ่มรายการบริจาค
           </button>
 
-          <button type="submit" className="submit-button">
+          <button type="submit" className="submit-button" style ={{ fontFamily: 'Anakotmai-Bold'}}>
             ยืนยันการบริจาค
           </button>
         </form>

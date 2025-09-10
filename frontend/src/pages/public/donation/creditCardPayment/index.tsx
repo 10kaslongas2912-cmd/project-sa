@@ -26,7 +26,7 @@ const CreditCardPaymentForm: React.FC = () => {
 
     // 1) โหลดข้อมูลจาก sessionStorage
     const donorInfoString = sessionStorage.getItem("donationInfoFormData");
-    const moneyDetailsString = sessionStorage.getItem("donationMoneyFormData");
+    const moneyDetailsString = sessionStorage.getItem("moneyDonationData");
     const donationType = sessionStorage.getItem("donationType");
 
     if (!donorInfoString || !moneyDetailsString || !donationType) {
@@ -40,9 +40,9 @@ const CreditCardPaymentForm: React.FC = () => {
 
     try {
       const donorInfo: DonorInterface = JSON.parse(donorInfoString);
-      const moneyDetailsRaw = JSON.parse(moneyDetailsString);
+      let moneyDetails: MoneyDonationInterface = JSON.parse(moneyDetailsString);
 
-      // 2) enrich donorInfo จากสถานะ login (ถ้าต้องการ)
+      // 2) enrich donorInfo from login status
       const token = localStorage.getItem("token");
       const userId = localStorage.getItem("ID");
       donorInfo.donor_type = token ? "user" : "guest";
@@ -50,43 +50,22 @@ const CreditCardPaymentForm: React.FC = () => {
         donorInfo.user_id = parseInt(userId, 10);
       }
 
-      // 3) สร้าง moneyDetails
-      const isMonthly = moneyDetailsRaw.donationFrequency === "รายเดือน";
+      // 3) Add final properties to moneyDetails
       const transactionNumber = `SA-TXN-${Date.now()}`;
+      const isMonthly = moneyDetails.payment_type === "monthly";
 
-      const moneyDetails: MoneyDonationInterface = {
-        amount: isMonthly
-          ? Number(moneyDetailsRaw.monthlyAmount)
-          : Number(moneyDetailsRaw.oneTimeAmount),
-        payment_method_id: 1, // สมมติ 1=Credit Card
-        payment_type: isMonthly ? "monthly" : "one-time",
-        status: isMonthly ? "success" : "complete",
+      moneyDetails = {
+        ...moneyDetails,
+        status: isMonthly ? "active" : "complete",
         transaction_ref: transactionNumber,
-        billing_date: isMonthly ? String(moneyDetailsRaw.billingDate) : "-",
-        next_payment_date: isMonthly
-          ? (() => {
-              const today = new Date();
-              const billingDay = Number(moneyDetailsRaw.billingDate);
-              let nextDate = new Date(
-                today.getFullYear(),
-                today.getMonth(),
-                billingDay
-              );
-              if (today.getDate() >= billingDay) {
-                nextDate.setMonth(nextDate.getMonth() + 1);
-              }
-              return nextDate.toISOString().split("T")[0]; // YYYY-MM-DD
-            })()
-          : "-",
       };
 
-      // 5) รวม payload ตามสเปค CreateDonationRequest
+      // 5) Combine payload for CreateDonationRequest
       const payload: CreateDonationRequest = {
-              donor_info: donorInfo,                         // <-- เพิ่มข้อมูลผู้บริจาค
-              donation_type: donationType,                   // <-- แก้ชื่อ key
-              money_donation_details: moneyDetails,         // << รวมไว้ในก้อนเดียว
-              // itemDetails: []     // ถ้ามีของ (กรณี item) ใส่ภายหลัง
-            };
+        donor_info: donorInfo,
+        donation_type: donationType,
+        money_donation_details: moneyDetails,
+      };
 
       // 6) เรียก API ครั้งเดียวด้วย payload ก้อนเดียว
       const result = await donationAPI.create(payload);

@@ -1,6 +1,6 @@
 // src/pages/auth/AuthPage.tsx
 import { useState, useEffect } from "react";
-import { Button, Form, Input, message, DatePicker, Select } from "antd";
+import { Form, Input, message, DatePicker, Select, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 
 import type { CreateUserRequest,LoginUserRequest, UpdateUserRequest } from "../../interfaces/User"; // แยกเป็น Request ชัดเจน
@@ -9,18 +9,26 @@ import type { GenderInterface } from "../../interfaces/Gender";
 import { authAPI, genderAPI } from "../../services/apis"; // <- ใช้รวม API ที่ไฟล์เดียว
 import "./style.css";
 import logo from "../../assets/logo.png";
+import ButtonComponent from "../../components/Button";
 
-function AuthPage() {
+const AuthPage: React.FC = () => {
   const [isLoginActive, setIsLoginActive] = useState(true);
   const [genders, setGenders] = useState<GenderInterface[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
   const [loginForm] = Form.useForm();
   const [registerForm] = Form.useForm();
+  
   const handleToggleForm = (isLogin: boolean) => {
     setIsLoginActive(isLogin);
     loginForm.resetFields();
     registerForm.resetFields();
+  };
+
+  // ---- FORGOT PASSWORD ----
+  const handleForgotPassword = () => {
+    messageApi.info("กรุณาติดต่อเจ้าหน้าที่เพื่อขอรีเซ็ตรหัสผ่าน");
+    // TODO: นำไปหน้า forgot password หรือแสดง modal
   };
 
   // ---- LOGIN ----
@@ -28,7 +36,7 @@ function AuthPage() {
     try {
       const res = await authAPI.logIn(values);
       const payload = res.data;
-
+      console.log(payload);
       messageApi.success("เข้าสู่ระบบสำเร็จ");
       localStorage.setItem("isLogin", "true");
       localStorage.setItem("token_type", payload.token_type);
@@ -231,12 +239,14 @@ function AuthPage() {
             </div>
 
             <div className="btn">
-              <Button className="btn1" htmlType="submit">
+              <ButtonComponent className="btn-primary" htmlType="submit">
                 สมัครสมาชิก
-              </Button>
-              <Button className="btn2" onClick={() => handleToggleForm(true)}>
-                ลงชื่อเข้าใช้
-              </Button>
+              </ButtonComponent>
+            </div>
+
+            {/* ข้อความชี้ทางสำหรับหน้าสมัครสมาชิก */}
+            <div className="form-guide">
+              <p>เป็นสมาชิกอยู่แล้ว? <a href="#" onClick={() => handleToggleForm(true)}>เข้าสู่ระบบที่นี่</a></p>
             </div>
           </Form>
         </div>
@@ -268,14 +278,21 @@ function AuthPage() {
               <Input.Password placeholder="รหัสผ่าน" />
             </Form.Item>
 
-            <a href="#">ลืมรหัสผ่าน?</a>
+            <div className="forgot-password">
+              <Button type="link" className="forgot-link" onClick={handleForgotPassword}>
+                ลืมรหัสผ่าน?
+              </Button>
+            </div>
+
             <div className="btn">
-              <Button className="btn1" htmlType="submit">
-                เข้าสู่ระบบ
-              </Button>
-              <Button className="btn2" onClick={() => handleToggleForm(false)}>
-                สมัครสมาชิก
-              </Button>
+  <ButtonComponent className="btn-primary" htmlType="submit">
+    เข้าสู่ระบบ
+  </ButtonComponent>
+            </div>
+
+            {/* ข้อความชี้ทางสำหรับหน้า login */}
+            <div className="form-guide">
+              <p>คุณเป็นสมาชิกแล้วหรือยัง? ถ้ายังไม่มี <a href="#" onClick={() => handleToggleForm(false)}>สมัครสมาชิกได้ที่นี่</a></p>
             </div>
           </Form>
         </div>

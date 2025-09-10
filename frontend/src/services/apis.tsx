@@ -20,7 +20,6 @@ const isFormData = (v: any): v is FormData =>
 const mpHeaders = { "Content-Type": "multipart/form-data" };
 import type { CreateAdoptionRequest, UpdateStatusRequest } from "../interfaces/Adoption";
 import type { CreateSponsorshipRequest } from "../interfaces/Sponsorship";
-import { s } from "framer-motion/client";
 
 /** ---------- AUTH ---------- */
 export const authAPI = {
@@ -30,7 +29,7 @@ export const authAPI = {
     Post("/users/signup", data, false),
 
   // ถ้า BE ใช้ /auth/me ให้เปลี่ยน path ตรงนี้ที่เดียว
-  me: () => Get("/users/me"),
+  me: () => Get("/users/me", true),
 
   // ถ้า BE ไม่มี endpoint นี้ ลบออกได้
   logout: () => Post("/user/logout", {}),
@@ -61,7 +60,7 @@ export const dogAPI = {
   getById: (id: number) => Get(`/dogs/${id}`),
   create:  (data: CreateDogRequest) => Post("/dogs", data),
   update:  (id: number, data: UpdateDogRequest) => Put(`/dogs/${id}`, data),
-  remove:  (id: number) => Delete(`/dogs/${id}`),
+  delete:  (id: number) => Delete(`/dogs/${id}`),
 };
 
 /** ---------- LOOKUPS ---------- */
@@ -83,6 +82,12 @@ export const animalSexAPI = {
   // getAll:  () => Get("/animal-sexs"),
   // getById: (id: number) => Get(`/animal-sex/${id}`),
 };
+
+export const animalSizeAPI = {
+  getAll: () => Get("/animal-sizes"),
+  getById: (id: number) => Get(`/animal-sizes/${id}`),
+
+}
 
 export const roleAPI = {
   getAll:  () => Get("/roles"),
@@ -180,6 +185,7 @@ export const donationAPI = {
   getAllItems: () => Get("/items"),
   getUnitById: (id: number) => Get(`/units/${id}`),
   getAllUnits: () => Get("/units"),
+  updateStatus: (id: number, data: { status: string }) => Put(`/donations/${id}/status`, data),
   // ถ้า BE มี endpoint สำหรับ update/delete ค่อยเพิ่ม
   // update:  (id: number, data: UpdateDonationRequest) => Put(`/donations/${id}`, data),
   // remove:  (id: number) => Delete(`/donations/${id}`),
@@ -216,9 +222,20 @@ export const visitAPI = {
 export const personalityAPI = {
   getAll: () => Get("/personalities"),
 }
-export const staffAPI = {
-  getAll: () => Get("/staffs"),
+
+export const manageAPI = { 
+  create: (data: any) => Post("/manages", data),
+  getAll: () => Get("/manages"),
+  getById: (id: number) => Get(`/manages/${id}`),
+  update: (id: number, data: any) => Put(`/manages/${id}`, data),
+  remove: (id: number) => Delete(`/manages/${id}`),
 }
+
+export const staffAPI = {
+  create: (data: any) => Post("/staffs", data),
+  getAll: () => Get("/staffs"),
+  getById: (id: number) => Get(`/staffs/${id}`),
+};
 
 
 let _KENNEL_00_ID: number | null = null;
@@ -268,6 +285,7 @@ export const api = {
   genderAPI,
   breedAPI,
   animalSexAPI,
+  animalSizeAPI,
   roleAPI,
   adopterAPI,
   paymentMethodAPI,
@@ -279,5 +297,5 @@ export const api = {
   healthRecordAPI,
   vaccineAPI,
   visitAPI,
-  staffAPI,
+  manageAPI
 };

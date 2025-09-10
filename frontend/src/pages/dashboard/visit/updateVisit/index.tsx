@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Card, Avatar, Typography, Space, message, Modal, Table, Tag, Popconfirm } from "antd";
-import { CalendarOutlined, EditOutlined, DeleteOutlined, EyeOutlined, SearchOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, EyeOutlined, SearchOutlined } from "@ant-design/icons";
 import "./style.css";
 import type { DogInterface } from "../../../../interfaces/Dog";
 import { ageText } from "../../../../utils/date";
-import { useDogs } from "../../../../hooks/useDogs";
+import { useDogs } from "../../../../hooks/useDogs_jia";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
 import { visitAPI } from "../../../../services/apis";
@@ -389,10 +389,13 @@ const handleDelete = async (visitId: number) => {
     ];
 
     // กรองหมาตามคำค้นหา
-    const filteredDogs = dogs.filter(dog =>
-        dog.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (dog.breed?.name && dog.breed.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    const filteredDogs = Array.isArray(dogs)
+  ? dogs.filter(dog =>
+      dog.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (dog.breed?.name && dog.breed.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
+  : [];
+
     const filteredVisits = visits.filter(visit =>
     visit.visit_name.toLowerCase().includes(searchVisitTerm.toLowerCase())
 );
