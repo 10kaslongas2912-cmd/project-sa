@@ -26,7 +26,9 @@ const DogShelterDashboard = () => {
     { id: 'visits', label: 'ตารางการเยี่ยมชม', icon: Calendar },
     { id: 'medical', label: 'บันทึกการรักษา', icon: Stethoscope },
     { id: 'support', label: 'การอุปถัมภ์สนับสนุน', icon: Shield },
-    { id: 'reports', label: 'รายงานสถิติ', icon: BarChart3 }
+    { id: 'reports', label: 'รายงานสถิติ', icon: BarChart3 },
+    { id: 'zone-cage-management', label: 'จัดการโซนและกรง', icon: X }
+
   ];
 
   const stats = [
@@ -205,6 +207,8 @@ const DogShelterDashboard = () => {
         return renderPlaceholder('การอุปถัมภ์สนับสนุน');
       case 'reports':
         return renderPlaceholder('รายงานสถิติ');
+      case 'zone-cage-management':
+        return renderPlaceholder('จัดการโซนและกรง');
       default:
         return renderDashboard();
     }

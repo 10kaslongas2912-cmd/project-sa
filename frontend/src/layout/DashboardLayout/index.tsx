@@ -23,6 +23,7 @@ import {
   Plus,
   MoreVertical,
   Edit,
+  Users,
 } from "lucide-react";
 import type { JSX } from "react/jsx-runtime";
 
@@ -173,6 +174,17 @@ const UpdatedDashboard: React.FC = () => {
       icon: BarChart3,
       path: "/dashboard/reports",
     },
+    { id: "zone-cage-management", 
+      label: "จัดการโซนและกรง", 
+      icon: X, 
+      path: "/dashboard/zone-cage-management" 
+    },
+    {
+      id: "volunteer",
+      label: "อาสาสมัคร",
+      icon: Users,
+      path: "/dashboard/volunteer"
+    }
   ];
 
 

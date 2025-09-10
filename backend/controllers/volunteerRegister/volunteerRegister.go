@@ -3,7 +3,9 @@ package volunteers
 import (
 	"net/http"
 	"time"
-
+	"strings"
+	"fmt"
+	"gorm.io/gorm"
 	// NOTE: be consistent: if your package is "config", use that everywhere.
 	// Below I use "configs" because your file imports show that.
 	"example.com/project-sa/configs"
@@ -271,7 +273,37 @@ func GetAllSkills(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": skills})
 }
 
-// PUT /volunteer/:id/status   body: { "status": "approved" | "rejected" }
+// PUT /volunteer/:id/status   body: { "status": "approved" | "rejected" 
+var allowedStatuses = map[string]struct{}{
+	"pending":  {},
+	"approved": {},
+	"rejected": {},
+}
+
+func normalizeStatus(s string) string {
+	return strings.ToLower(strings.TrimSpace(s))
+}
+
+// ensureStatus finds (case-insensitive) or creates a StatusFV row.
+func ensureStatus(db *gorm.DB, s string) (entity.StatusFV, error) {
+	ns := normalizeStatus(s)
+	if _, ok := allowedStatuses[ns]; !ok {
+		return entity.StatusFV{}, fmt.Errorf("invalid status %q (allowed: pending, approved, rejected)", s)
+	}
+
+	var st entity.StatusFV
+	// Case-insensitive match using LOWER(...) = LOWER(?) – works on Postgres/MySQL/SQLite
+	if err := db.Where("LOWER(status) = LOWER(?)", ns).First(&st).Error; err == nil {
+		return st, nil
+	}
+
+	// Not found -> create it
+	st = entity.StatusFV{Status: ns}
+	if err := db.Create(&st).Error; err != nil {
+		return entity.StatusFV{}, err
+	}
+	return st, nil
+}
 type updateStatusReq struct {
 	Status string `json:"status"`
 }
@@ -281,25 +313,40 @@ func UpdateVolunteerStatus(c *gin.Context) {
 
 	var req updateStatusReq
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	var st entity.StatusFV
-	if err := configs.DB().First(&st, "status = ?", req.Status).Error; err != nil {
-		c.JSON(404, gin.H{"error": "status not found"})
+	db := configs.DB()
+	if db == nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "DB is not initialized"})
 		return
 	}
 
-	if err := configs.DB().
-		Model(&entity.Volunteer{}).
-		Where("id = ?", id).
+	// Find or create the status row (case-insensitive), validate allowed values.
+	st, err := ensureStatus(db, req.Status)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Ensure the volunteer exists (and load current status to return)
+	var v entity.Volunteer
+	if err := db.First(&v, "id = ?", id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "volunteer not found"})
+		return
+	}
+
+	if err := db.Model(&entity.Volunteer{}).Where("id = ?", id).
 		Update("status_fv_id", st.ID).Error; err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "status updated", "status": st.Status})
+	c.JSON(http.StatusOK, gin.H{
+		"message": "status updated",
+		"status":  st.Status,
+	})
 }
 
 func GetAllStatusFV(c *gin.Context) {
@@ -310,3 +357,4 @@ func GetAllStatusFV(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"data": statusFVs})
 }
+
