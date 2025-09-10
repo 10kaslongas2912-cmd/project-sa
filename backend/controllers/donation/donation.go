@@ -4,6 +4,7 @@ package donation
 
 import (
 	"errors"
+	"log"
 	"net/http"
 	"time"
 
@@ -139,10 +140,6 @@ func CreateDonation(c *gin.Context) {
 			}
 		}
 	default:
-		// ถ้าต้องการเข้มงวดกับค่า type ที่รองรับ ให้เปิดบล็อกนี้
-		// tx.Rollback()
-		// c.JSON(http.StatusBadRequest, gin.H{"error": "unsupported donation_type"})
-		// return
 	}
 
 	if err := tx.Commit().Error; err != nil {
@@ -158,6 +155,7 @@ func CreateDonation(c *gin.Context) {
 // - ถ้าไม่พบ donor → คืน [] (200)
 // - คืนรายการพร้อม preload relations ให้ FE ใช้ได้ทันที
 func GetMyDonations(c *gin.Context) {
+	log.Println("--- GetMyDonations function called ---")
 	uidAny, ok := c.Get("user_id")
 	if !ok {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "missing user id in context"})
@@ -179,8 +177,11 @@ func GetMyDonations(c *gin.Context) {
 	// preload ความสัมพันธ์ที่ FE ใช้
 	var donations []entity.Donation
 	if err := configs.DB().
+		Preload("MoneyDonations").
 		Preload("MoneyDonations.PaymentMethod").
 		Preload("ItemDonations").
+		Preload("ItemDonations.Item").
+		Preload("ItemDonations.Unit").
 		Where("donor_id = ?", donor.ID).
 		Order("donation_date desc").
 		Find(&donations).Error; err != nil {
@@ -189,4 +190,24 @@ func GetMyDonations(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, donations)
+}
+
+// GET /items
+func GetAllItems(c *gin.Context) {
+	var items []entity.Item
+	if err := configs.DB().Find(&items).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, items)
+}
+
+// GET /units
+func GetAllUnits(c *gin.Context) {
+	var units []entity.Unit
+	if err := configs.DB().Find(&units).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, units)
 }

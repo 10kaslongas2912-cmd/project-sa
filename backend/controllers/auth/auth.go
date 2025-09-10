@@ -102,6 +102,7 @@ func SignUp(c *gin.Context) {
 		return
 	}
 
+	
 	user := entity.User{
 		FirstName:   req.FirstName,
 		LastName:    req.LastName,

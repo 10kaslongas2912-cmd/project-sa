@@ -32,13 +32,25 @@ export interface MoneyDonationInterface {
     payment_method_id?: number;
 }
 
+export interface UnitInterface {
+    ID?: number;
+    name?: string;
+}
+
+export interface ItemInterface {
+    ID?: number;
+    name?: string;
+}
+
 export interface ItemDonationInterface {
     ID?: number;
-    item_name?: string;
     quantity?: number;
-    unit?: string;
     item_ref?: string;
     donation_id?: number;
+    item_id?: number;
+    unit_id?: number;
+    Item?: ItemInterface;
+    Unit?: UnitInterface;
 }
 
 export interface CreateDonationRequest {

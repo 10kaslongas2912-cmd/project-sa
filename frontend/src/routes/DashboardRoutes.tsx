@@ -10,6 +10,8 @@ const Overview = Loadable(lazy(() => import("../pages/dashboard/Overview"))); //
 const Dogs = Loadable(lazy(() => import("../pages/dashboard/Dogs"))); // Placeholder for the dogs component
 const AdoptionPages = Loadable(lazy(() => import("../pages/public/adoption/adminadoption"))); // Placeholder for the users component
 const HealthRecords = Loadable(lazy(() => import("../pages/public/HealthRecord/SearchPage"))); // Placeholder for the health records component
+const CreateVisit = Loadable(lazy(() => import("../pages/dashboard/visit/createVisit")));
+const UpdateVisit = Loadable(lazy(() => import("../pages/dashboard/visit/updateVisit")));
 // ==============================|| DASHBOARD ROUTING ||============================== //
 export const dashboardRoutes: RouteObject = {
   path: "dashboard",
@@ -45,8 +47,16 @@ export const dashboardRoutes: RouteObject = {
         {
           path: "record/:recordId",
           element: <SingleDetailPageHealth />
-        }
+        },
       ]
+    },
+    {
+        path: 'create-visit',
+        element: <CreateVisit />
+    },
+    {
+        path: 'update-visit',
+        element: <UpdateVisit />
     },
     {
       path: "health-record/dog/:id",
