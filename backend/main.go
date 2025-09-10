@@ -21,6 +21,8 @@ import (
 	vaccine "example.com/project-sa/controllers/vaccine"
 	visit "example.com/project-sa/controllers/visit"
 	personalities "example.com/project-sa/controllers/personality"
+	manage "example.com/project-sa/controllers/manage"
+	staffs "example.com/project-sa/controllers/staff"
 	"example.com/project-sa/middlewares"
 	"example.com/project-sa/migrations"
 	"example.com/project-sa/seeds"
@@ -71,6 +73,21 @@ func main() {
 	r.GET("/visits/:id", visit.GetVisit)
 	r.PUT("/visits/:id", visit.UpdateVisit)
 	r.DELETE("/visits/:id", visit.DeleteVisit)
+
+	r.POST("/manages", manage.CreateManage)
+	r.GET("/manages", manage.GetAllManages)
+	r.GET("/manages/:id", manage.GetManageByID)
+	r.PUT("/manages/:id", manage.UpdateManage)
+	r.DELETE("/manages/:id", manage.DeleteManage)
+
+	// Staff routes
+	r.POST("/staffs", staffs.CreateStaff)
+	r.GET("/staffs", staffs.GetAllStaffs)
+	r.GET("/staffs/:id", staffs.GetStaffById)
+	r.PUT("/staffs/:id", staffs.UpdateStaff)
+	r.DELETE("/staffs/:id", staffs.DeleteStaff)
+
+
 
 	r.GET("/personalities", personalities.GetAllPersonalities)
 

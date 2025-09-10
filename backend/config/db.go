@@ -189,14 +189,14 @@ func SetupDatabase() {
 
 	// Seed Donors
 	Donor1 := entity.Donor{
-		Firstname: pointer.P("John"),
-		Lastname:  pointer.P("Doe"),
+		FirstName: pointer.P("John"),
+		LastName:  pointer.P("Doe"),
 		Email:     pointer.P("john.doe@example.com"),
 		Phone:     pointer.P("0812345678"),
 	}
 	Donor2 := entity.Donor{
-		Firstname: pointer.P("Jane"),
-		Lastname:  pointer.P("Smith"),
+		FirstName: pointer.P("Jane"),
+		LastName:  pointer.P("Smith"),
 		Email:     pointer.P("jane.smith@example.com"),
 		Phone:     pointer.P("0898765432"),
 	}
@@ -237,13 +237,13 @@ func SetupDatabase() {
 
 	hashedPassword, _ := services.HashPassword("123456")
 	User := &entity.User{
-		Firstname:   "Software",
-		Lastname:    "Analysis",
+		FirstName:   "Software",
+		LastName:    "Analysis",
 		Email:       "sa@gmail.com",
 		Password:    hashedPassword,
 		Phone:       "0123456789",
 		Username:    "sa",
-		DateOfBirth: time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC),
+		DateOfBirth: "1999-01-01",
 	}
 	db.FirstOrCreate(User, &entity.User{
 		Username: "sa",

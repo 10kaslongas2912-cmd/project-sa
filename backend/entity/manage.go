@@ -8,16 +8,15 @@ import (
 
 type Manage struct {
 	gorm.Model
-	DateWork	time.Time
+	DateTask	time.Time
 	
-	TyeTask	string	`json:"type_task" gorm:"not null"`
+	TypeTask	string	`json:"type_task" gorm:"not null"`
 	DetailTask	string	`json:"detail_task"`
-	Username string `json:"username"`
 	
-	StaffID		uint
+	StaffID		uint `json:"staff_id"`
 	Staff		*Staff `gorm:"foreignKey:StaffID"`
 
-	BuildingID	uint
+	BuildingID	uint `json:"building_id"`
 	Building	*Building `gorm:"foreignKey:BuildingID"`
 
 }
