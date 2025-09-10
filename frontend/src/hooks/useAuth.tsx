@@ -1,3 +1,4 @@
+// hooks/useAuth.tsx
 import { useEffect, useState, useCallback } from "react";
 import { authAPI } from "../services/apis";
 import type { AppUserInterface } from "../interfaces/User";
@@ -13,6 +14,7 @@ export function useAuthUser() {
   const refresh = useCallback(async () => {
     const hasToken = Boolean(localStorage.getItem("token"));
     if (!hasToken) {
+      // ไม่มี token → เคลียร์สถานะและหยุดโหลด
       setUser(null);
       setIsLoggedIn(false);
       setError(null);
@@ -22,7 +24,8 @@ export function useAuthUser() {
 
     try {
       setLoading(true);
-      const res = await authAPI.me();
+      setError(null);
+      const res = await authAPI.me(); // ควรเรียกด้วย header Authorization ภายใน authAPI
       if (!res) throw new Error("User data not found");
 
       const userForApp: AppUserInterface = {
@@ -39,24 +42,35 @@ export function useAuthUser() {
 
       setUser(userForApp);
       setIsLoggedIn(true);
-      setError(null);
-    } catch (e) {
+    } catch (e: any) {
+      // token ไม่ถูกต้อง/หมดอายุ → ลบและเซ็ตสถานะออกจากระบบ
       localStorage.removeItem("token");
       setUser(null);
       setIsLoggedIn(false);
-      setError(e as Error);
+      setError(e instanceof Error ? e : new Error(String(e)));
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
+    // โหลดตอนเมาท์
     refresh();
+
+    // ถ้า tab อื่นเปลี่ยน token ให้รีเฟรช
     const onStorage = (e: StorageEvent) => {
       if (e.key === "token") refresh();
     };
     window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+
+    // โฟกัสหน้าเว็บกลับมา → รีเฟรชสถานะ (เช่น token เพิ่งรีเฟรช)
+    const onFocus = () => refresh();
+    window.addEventListener("focus", onFocus);
+
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("focus", onFocus);
+    };
   }, [refresh]);
 
   const logout = useCallback(() => {

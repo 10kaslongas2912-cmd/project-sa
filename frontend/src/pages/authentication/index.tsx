@@ -28,7 +28,7 @@ function AuthPage() {
     try {
       const res = await authAPI.logIn(values);
       const payload = res.data;
-
+      console.log(payload);
       messageApi.success("เข้าสู่ระบบสำเร็จ");
       localStorage.setItem("isLogin", "true");
       localStorage.setItem("token_type", payload.token_type);

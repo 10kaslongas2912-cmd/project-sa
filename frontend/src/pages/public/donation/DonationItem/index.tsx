@@ -1,113 +1,110 @@
 import React, { useState, useEffect } from "react";
 import './style.css';
 import { useNavigate } from "react-router-dom";
-import type { ItemDonationInterface } from '../../../../interfaces/Donation'; // Import ItemDonationsInterface
+import { donationAPI } from "../../../../services/apis";
+import type { ItemDonationInterface, ItemInterface, UnitInterface } from '../../../../interfaces/Donation';
 
-interface DonationItem {
+interface DonationItemFormState {
   id: string;
-  itemName: string;
+  itemId: string;
   quantity: string;
-  unit: string;
+  unitId: string;
 }
 
-// รายการสิ่งของที่สามารถบริจาคได้
-const DONATION_ITEMS = [
-  "ข้าว",
-  "อาหารเม็ดสุนัข",
-  "อาหารกระป๋อง",
-  "เสื้อผ้าสุนัข",
-  "ผ้าห่ม",
-  "ของเล่น",
-  "อุปกรณ์การเรียน",
-  "ของเล่น",
-  "น้ำยาล้างมือ",
-  "น้ำยาถูพื้น",
-  "ถุงขยะ",
 
-];
-
-// หน่วยที่ใช้
-const UNITS = [
-  "กิโลกรัม",
-  "ชิ้น",
-  "กล่อง",
-  "ถุง",
-  "ขวด",
-  "แผ่น",
-  "ห่อ",
-  "แพ็ค",
-  "ลัง",
-  "ผืน",
-];
 
 // Helper to get initial state from sessionStorage
 const getInitialFormData = () => {
   try {
     const storedData = sessionStorage.getItem('donationItemsFormData');
-    return storedData ? JSON.parse(storedData) : {
-      donationItems: [{
-        id: '1',
-        itemName: '',
-        quantity: '',
-        unit: ''
-      }]
-    };
+    if (storedData) {
+      const parsedData = JSON.parse(storedData);
+      // Basic validation to ensure it's not empty or malformed
+      if (Array.isArray(parsedData.donationItems) && parsedData.donationItems.length > 0) {
+        return parsedData;
+      }
+    }
   } catch (error) {
     console.error("Error parsing stored form data:", error);
-    return {
-      donationItems: [{
-        id: '1',
-        itemName: '',
-        quantity: '',
-        unit: ''
-      }]
-    };
   }
+  // Default initial state
+  return {
+    donationItems: [{
+      id: '1',
+      itemId: '',
+      quantity: '',
+      unitId: ''
+    }]
+  };
 };
 
 const DonationItemsForm: React.FC = () => {
   const navigate = useNavigate();
   const initialData = getInitialFormData();
-  
-  const [donationItems, setDonationItems] = useState<DonationItem[]>(initialData.donationItems);
 
-  // Use useEffect to save data to sessionStorage whenever state changes
+  const [donationItems, setDonationItems] = useState<DonationItemFormState[]>(initialData.donationItems);
+  const [availableItems, setAvailableItems] = useState<ItemInterface[]>([]);
+  const [availableUnits, setAvailableUnits] = useState<UnitInterface[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  
+  // Fetch available items and units from the backend
+  useEffect(() => {
+    const fetchDonationOptions = async () => {
+      try {
+        setIsLoading(true);
+        const [itemsResponse, unitsResponse] = await Promise.all([
+          donationAPI.getAllItems(),
+          donationAPI.getAllUnits(),
+        ]);
+        setAvailableItems(itemsResponse || []);
+        setAvailableUnits(unitsResponse || []);
+        setError(null);
+      } catch (err) {
+        console.error("Failed to fetch donation options:", err);
+        setError("ไม่สามารถโหลดข้อมูลได้ กรุณาลองใหม่อีกครั้ง");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDonationOptions();
+  }, []);
+
+  // Save form data to sessionStorage whenever it changes
   useEffect(() => {
     const formData = { donationItems };
     sessionStorage.setItem('donationItemsFormData', JSON.stringify(formData));
   }, [donationItems]);
 
-  // เพิ่มรายการใหม่
   const addDonationItem = () => {
-    const newItem: DonationItem = {
+    const newItem: DonationItemFormState = {
       id: Date.now().toString(),
-      itemName: '',
+      itemId: '',
       quantity: '',
-      unit: ''
+      unitId: ''
     };
     setDonationItems([...donationItems, newItem]);
   };
 
-  // ลบรายการ
   const removeDonationItem = (id: string) => {
     if (donationItems.length > 1) {
       setDonationItems(donationItems.filter(item => item.id !== id));
     }
   };
 
-  // อัพเดทข้อมูลรายการ
-  const updateDonationItem = (id: string, field: keyof DonationItem, value: string) => {
-    setDonationItems(donationItems.map(item => 
+  const updateDonationItem = (id: string, field: keyof DonationItemFormState, value: string) => {
+    setDonationItems(donationItems.map(item =>
       item.id === id ? { ...item, [field]: value } : item
     ));
   };
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    
-    // ตรวจสอบว่าทุกรายการมีข้อมูลครบถ้วน
-    const isValid = donationItems.every(item => 
-      item.itemName && item.quantity && item.unit
+
+    const isValid = donationItems.every(item =>
+      item.itemId && item.quantity && item.unitId
     );
 
     if (!isValid) {
@@ -115,35 +112,43 @@ const DonationItemsForm: React.FC = () => {
       return;
     }
 
-    const formattedDonationItems: ItemDonationInterface[] = donationItems.map(item => ({
-      item_name: item.itemName,
-      quantity: Number(item.quantity), // Convert to number
-      unit: item.unit,
+    // Format data for submission according to the main interface
+    const formattedDonationItems: Partial<ItemDonationInterface>[] = donationItems.map(item => ({
+      item_id: Number(item.itemId),
+      quantity: Number(item.quantity),
+      unit_id: Number(item.unitId),
     }));
 
-    const formData = { donationItems: formattedDonationItems }; // Use formatted data
-    console.log('Donation Items Submitted:', formData);
-    
+    // Store the formatted data in sessionStorage for the summary page
+    const currentData = JSON.parse(sessionStorage.getItem('donationFormData') || '{}');
+    currentData.item_donation_details = formattedDonationItems;
+    sessionStorage.setItem('donationFormData', JSON.stringify(currentData));
+
+    console.log('Donation Items Submitted:', formattedDonationItems);
     navigate('/donation/summary');
   };
+
+  if (isLoading) {
+    return <div className="form-page-container"><div className="form-card">Loading...</div></div>;
+  }
+
+  if (error) {
+    return <div className="form-page-container"><div className="form-card">{error}</div></div>;
+  }
 
   return (
     <div className="form-page-container">
       <div className="form-card">
-        {/* ปุ่มย้อนกลับ */}
         <button
-          onClick={() => {
-            navigate('/donation/information');
-          }}
+          onClick={() => navigate('/donation/information')}
           className="back-link"
         >
           &lt; ย้อนกลับ
         </button>
-        
+
         <h1 className="form-title">บริจาคสิ่งของ</h1>
         <h1 className="form-subtitle">เลือกสิ่งของที่ต้องการบริจาค</h1>
 
-        {/* ฟอร์ม */}
         <form onSubmit={handleSubmit}>
           {donationItems.map((item, index) => (
             <div key={item.id} className="donation-item-group">
@@ -161,23 +166,21 @@ const DonationItemsForm: React.FC = () => {
                 )}
               </div>
 
-              {/* เลือกสิ่งของ */}
               <select
                 className="form-input"
-                value={item.itemName}
-                onChange={(e) => updateDonationItem(item.id, 'itemName', e.target.value)}
+                value={item.itemId}
+                onChange={(e) => updateDonationItem(item.id, 'itemId', e.target.value)}
                 required
               >
                 <option value="">เลือกสิ่งของที่ต้องการบริจาค</option>
-                {DONATION_ITEMS.map((itemName) => (
-                  <option key={itemName} value={itemName}>
-                    {itemName}
+                {availableItems.map((i) => (
+                  <option key={i.ID} value={String(i.ID)}>
+                    {i.name}
                   </option>
                 ))}
               </select>
 
               <div className="quantity-unit-row">
-                {/* จำนวน */}
                 <input
                   type="number"
                   min="1"
@@ -189,36 +192,23 @@ const DonationItemsForm: React.FC = () => {
                   required
                 />
 
-                {/* หน่วย */}
                 <select
                   className="form-input unit-input"
-                  value={item.unit}
-                  onChange={(e) => updateDonationItem(item.id, 'unit', e.target.value)}
+                  value={item.unitId}
+                  onChange={(e) => updateDonationItem(item.id, 'unitId', e.target.value)}
                   required
                 >
                   <option value="">หน่วย</option>
-                  {UNITS.map((unit) => (
-                    <option key={unit} value={unit}>
-                      {unit}
+                  {availableUnits.map((u) => (
+                    <option key={u.ID} value={String(u.ID)}>
+                      {u.name}
                     </option>
                   ))}
                 </select>
               </div>
-
-              {/* เพิ่มรายละเอียดเพิ่มเติมถ้าเลือก "อื่นๆ" */}
-              {item.itemName === 'อื่นๆ' && (
-                <input
-                  type="text"
-                  placeholder="ระบุสิ่งของที่บริจาค"
-                  className="form-input"
-                  onChange={(e) => updateDonationItem(item.id, 'itemName', e.target.value === '' ? 'อื่นๆ' : e.target.value)}
-                  required
-                />
-              )}
             </div>
           ))}
 
-          {/* ปุ่มเพิ่มรายการ */}
           <button
             type="button"
             onClick={addDonationItem}
@@ -227,7 +217,6 @@ const DonationItemsForm: React.FC = () => {
             + เพิ่มรายการบริจาค
           </button>
 
-          {/* ปุ่มส่งฟอร์ม */}
           <button type="submit" className="submit-button">
             ยืนยันการบริจาค
           </button>

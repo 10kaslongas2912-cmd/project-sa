@@ -30,7 +30,7 @@ export const authAPI = {
     Post("/users/signup", data, false),
 
   // ถ้า BE ใช้ /auth/me ให้เปลี่ยน path ตรงนี้ที่เดียว
-  me: () => Get("/users/me"),
+  me: () => Get("/users/me", true),
 
   // ถ้า BE ไม่มี endpoint นี้ ลบออกได้
   logout: () => Post("/user/logout", {}),
@@ -61,7 +61,7 @@ export const dogAPI = {
   getById: (id: number) => Get(`/dogs/${id}`),
   create:  (data: CreateDogRequest) => Post("/dogs", data),
   update:  (id: number, data: UpdateDogRequest) => Put(`/dogs/${id}`, data),
-  remove:  (id: number) => Delete(`/dogs/${id}`),
+  delete:  (id: number) => Delete(`/dogs/${id}`),
 };
 
 /** ---------- LOOKUPS ---------- */
@@ -83,6 +83,12 @@ export const animalSexAPI = {
   // getAll:  () => Get("/animal-sexs"),
   // getById: (id: number) => Get(`/animal-sex/${id}`),
 };
+
+export const animalSizeAPI = {
+  getAll: () => Get("/animal-sizes"),
+  getById: (id: number) => Get(`/animal-sizes/${id}`),
+
+}
 
 export const roleAPI = {
   getAll:  () => Get("/roles"),
@@ -183,6 +189,11 @@ export const donationAPI = {
   getById: (id: number) => Get(`/donations/${id}`),
   getMyDonations: () => Get("/donations/my"), // สำหรับดึงการบริจาคของผู้ใช้ที่ล็อกอิน
   create:  (data: CreateDonationRequest) => Post("/donations", data),
+  getItemById: (id: number) => Get(`/items/${id}`),
+  getAllItems: () => Get("/items"),
+  getUnitById: (id: number) => Get(`/units/${id}`),
+  getAllUnits: () => Get("/units"),
+  // ถ้า BE มี endpoint สำหรับ update/delete ค่อยเพิ่ม
   // update:  (id: number, data: UpdateDonationRequest) => Put(`/donations/${id}`, data),
   // remove:  (id: number) => Delete(`/donations/${id}`),
 };
@@ -241,6 +252,7 @@ export const api = {
   genderAPI,
   breedAPI,
   animalSexAPI,
+  animalSizeAPI,
   roleAPI,
   adopterAPI,
   paymentMethodAPI,
