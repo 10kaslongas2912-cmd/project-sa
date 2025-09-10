@@ -127,6 +127,7 @@ func main() {
 		protected.POST("/sponsorships/subscription", sponsorship.CreateSubscriptionSponsorship)
 		protected.GET("/my-adoptions", adopter.GetMyCurrentAdoptions)
 		protected.GET("/donations/my", donation.GetMyDonations)
+		protected.PUT("/donations/:id/status", donation.UpdateDonationStatus)
 
 	}
 

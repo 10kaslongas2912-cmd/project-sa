@@ -108,8 +108,22 @@ func CreateDonation(c *gin.Context) {
 		DonorID:      donorToUse.ID,
 		DonationType: payload.DonationType, // คาดว่า "money" | "item"
 		DonationDate: time.Now(),
-		Status:       "success",
+		Status:       "success",          // Default status
 	}
+
+	// Override status based on donation type and details
+	if payload.DonationType == "money" && payload.MoneyDonationDetails != nil {
+		if payload.MoneyDonationDetails.PaymentType == "monthly" {
+			donation.Status = "active"
+			payload.MoneyDonationDetails.Status = "success"
+		} else { // One-time donation
+			donation.Status = "complete"
+			payload.MoneyDonationDetails.Status = "success"
+		}
+	} else if payload.DonationType == "item" {
+		donation.Status = "complete"
+	}
+
 	if err := tx.Create(&donation).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create donation record: " + err.Error()})
@@ -140,6 +154,10 @@ func CreateDonation(c *gin.Context) {
 			}
 		}
 	default:
+		// ถ้าต้องการเข้มงวดกับค่า type ที่รองรับ ให้เปิดบล็อกนี้
+		// tx.Rollback()
+		// c.JSON(http.StatusBadRequest, gin.H{"error": "unsupported donation_type"})
+		// return
 	}
 
 	if err := tx.Commit().Error; err != nil {
@@ -211,3 +229,46 @@ func GetAllUnits(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, units)
 }
+
+func UpdateDonationStatus(c *gin.Context) {
+    id := c.Param("id")
+    var payload struct {
+        Status string `json:"status"`
+    }
+
+    if err := c.ShouldBindJSON(&payload); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body: " + err.Error()})
+        return
+    }
+
+    validStatuses := map[string]bool{
+        "active": true, "cancel": true, "success": true,
+        "complete": true, "pending": true, "failed": true,
+    }
+    if !validStatuses[payload.Status] {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid status value"})
+        return
+    }
+
+    var donation entity.Donation
+    if err := configs.DB().First(&donation, id).Error; err != nil {
+        if errors.Is(err, gorm.ErrRecordNotFound) {
+            c.JSON(http.StatusNotFound, gin.H{"error": "Donation not found"})
+            return
+        }
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error: " + err.Error()})
+        return
+    }
+
+    if err := configs.DB().Model(&donation).Update("status", payload.Status).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update donation status: " + err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{
+        "message":     "Status updated successfully",
+        "donation_id": id,
+        "new_status":  payload.Status,
+    })
+}
+
