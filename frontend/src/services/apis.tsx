@@ -97,9 +97,16 @@ export const paymentMethodAPI = {
 
 /** ---------- ZC MANAGEMENT ---------- */
 export const zcManagementAPI = {
-  getAll: () => Get("/zcmanagement"),
-  update: (id: number, data: UpdateZCManagementRequest) =>
-    Put(`/zcmanagement/${id}`, data),
+  getAll: () => Get('/zcmanagement'),
+  getZones: () => Get('/zones'),
+  getKennelsByZone: (zoneId: number) => Get(`/kennels/${zoneId}`),
+
+  // kennel ↔ dog ops
+  getDogsInKennel: (kennelId: number) => Get(`/kennel/${kennelId}/dog`),
+  assignDogToKennel: (kennelId: number, dogId: number) =>
+    Put(`/kennel/${kennelId}/dog`, { dog_id: dogId }),
+  removeDogFromKennel: (kennelId: number, dogId: number) =>
+    Delete(`/kennel/${kennelId}/dog?dog_id=${dogId}`),
 };
 
 /** ---------- VOLUNTEERS ---------- */
