@@ -12,6 +12,9 @@ const AdoptionPages = Loadable(lazy(() => import("../pages/public/adoption/admin
 const HealthRecords = Loadable(lazy(() => import("../pages/public/HealthRecord/SearchPage"))); // Placeholder for the health records component
 const CreateVisit = Loadable(lazy(() => import("../pages/dashboard/visit/createVisit")));
 const UpdateVisit = Loadable(lazy(() => import("../pages/dashboard/visit/updateVisit")));
+const ZoneCageManagementPage = Loadable(lazy(() => import("../pages/dashboard/ZoneCageManagement")));
+const Volunteer = Loadable(lazy(() => import("../pages/dashboard/Volunteer")));
+/// ==============================|| DASHBOARD ROUTING ||============================== //
 const DonationStaff = Loadable(lazy(() => import("../pages/dashboard/Donation/index")));
 // ==============================|| DASHBOARD ROUTING ||============================== //
 export const dashboardRoutes: RouteObject = {
@@ -72,10 +75,18 @@ export const dashboardRoutes: RouteObject = {
       element: <SingleDetailPageHealth />
     },
     {
+      path: "zone-cage-management",
+      element: <ZoneCageManagementPage />
+    },
+    {
+      path: "volunteer",
+      element: <Volunteer />
+    },
+    {
       path: "donation",
       element: <DonationStaff />
-    },
-  ],
+    }
+  ]
 };
 
 export const dashboardTestRoute1: RouteObject = {

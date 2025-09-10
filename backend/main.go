@@ -57,6 +57,9 @@ func main() {
 	r.POST("/dogs", dog.CreateDog)
 	r.PUT("/dogs/:id", dog.UpdateDog)	
 	r.DELETE("/dogs/:id", dog.DeleteDog)
+	// r.POST("/dogs", dogs.CreateDog)
+	// r.PUT("/dogs/:id", dogs.UpdateDog)
+	// r.DELETE("/dogs/:id", dogs.DeleteDog)
 
 	r.POST("/sponsorships/one-time", sponsorship.CreateOneTimeSponsorship)
 	r.GET("/genders", gender.GetAll)
@@ -110,6 +113,8 @@ func main() {
 	r.DELETE("/volunteer/:id", volunteers.DeleteVolunteer)
 	r.GET("/skills", volunteers.GetAllSkills)     //new
 	r.GET("/statusfv", volunteers.GetAllStatusFV) //new
+	r.PUT("/volunteer/:id/status", volunteers.UpdateVolunteerStatus)
+	
 	// 7) Routes (protected)
 	protected := r.Group("/")
 	protected.Use(middlewares.Authorizes())

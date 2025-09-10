@@ -153,6 +153,9 @@ export const volunteerAPI = {
       : Put(`/volunteer/${id}`, data),
 
   remove: (id: number) => Delete(`/volunteer/${id}`),
+
+    updateStatus: (id: number, status: "approved" | "rejected" | "pending") =>
+  axiosInstance.put(`/volunteer/${id}/status`, { status }),
 };
 
 /** ---------- SKILLS ---------- */
