@@ -12,6 +12,7 @@ import {
   BarChart3,
   Menu,
   X,
+  Play,
   Search,
   Bell,
   Mail,
