@@ -6,6 +6,7 @@ export interface KennelInterface {
     capacity?: number;
     color?: string;
     note?: string | null;
-    zones?: ZoneInterface[];
+    zone?: ZoneInterface[];
     dogs?: DogInterface[];
+    
 }
