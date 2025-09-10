@@ -21,7 +21,6 @@ const isFormData = (v: any): v is FormData =>
 const mpHeaders = { "Content-Type": "multipart/form-data" };
 import type { CreateAdoptionRequest, UpdateStatusRequest } from "../interfaces/Adoption";
 import type { CreateSponsorshipRequest } from "../interfaces/Sponsorship";
-import { s } from "framer-motion/client";
 
 /** ---------- AUTH ---------- */
 export const authAPI = {
@@ -219,9 +218,20 @@ export const visitAPI = {
 export const personalityAPI = {
   getAll: () => Get("/personalities"),
 }
-export const staffAPI = {
-  getAll: () => Get("/staffs"),
+
+export const manageAPI = { 
+  create: (data: any) => Post("/manages", data),
+  getAll: () => Get("/manages"),
+  getById: (id: number) => Get(`/manages/${id}`),
+  update: (id: number, data: any) => Put(`/manages/${id}`, data),
+  remove: (id: number) => Delete(`/manages/${id}`),
 }
+
+export const staffAPI = {
+  create: (data: any) => Post("/staffs", data),
+  getAll: () => Get("/staffs"),
+  getById: (id: number) => Get(`/staffs/${id}`),
+};
 
 
 export const api = {
@@ -242,5 +252,5 @@ export const api = {
   healthRecordAPI,
   vaccineAPI,
   visitAPI,
-  staffAPI,
+  manageAPI
 };
