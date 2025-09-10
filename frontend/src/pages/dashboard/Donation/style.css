@@ -1,0 +1,423 @@
+/* DonationHistory.css */
+.donation-history-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+  font-family: 'Anakotmai-Bold', sans-serif;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* ===== Header Section ===== */
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-title {
+  text-align: center;
+  margin-bottom: 15px !important;
+  color: #ff6600;
+  font-size: clamp(28px, 5vw, 42px);
+  font-family: 'Anakotmai-Bold' !important;
+}
+
+.title-underline {
+  height: 5px;
+  width: 100%;
+  max-width: 600px;
+  background-color: #253C90;
+  margin: 0 auto 30px;
+  border-radius: 2px;
+}
+
+/* ===== Page Controls ===== */
+.page-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.search-section {
+  flex: 1;
+  max-width: 600px;
+}
+
+.search-input {
+  border-radius: 25px !important;
+  border: 2px solid #e8e8e8 !important;
+  font-family: 'Anakotmai-Bold' !important;
+}
+
+.search-input:hover,
+.search-input:focus {
+  border-color: #253C90 !important;
+  box-shadow: 0 0 0 2px rgba(37, 60, 144, 0.1) !important;
+}
+
+/* ===== Main Card ===== */
+.donation-history-card {
+  border-radius: 20px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+  border: none !important;
+  background: #fff;
+}
+
+.donation-history-card .ant-card-body {
+  padding: 0 !important;
+}
+
+/* ===== Custom Tabs ===== */
+.tab-section {
+  padding: 0 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.tab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 60px;
+}
+
+.custom-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.tab-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.tab-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 24px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-family: 'Anakotmai-Bold';
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+  transition: all 0.3s ease;
+  position: relative;
+  min-height: 60px;
+}
+
+.tab-button:hover {
+  color: #253C90;
+  background-color: #f8f9ff;
+}
+
+.tab-button.active {
+  color: #253C90;
+  border-bottom-color: #253C90;
+  background-color: #f8f9ff;
+}
+
+.tab-button .anticon {
+  font-size: 18px;
+}
+
+.tab-count {
+  background-color: #e6f7ff;
+  color: #1890ff;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+}
+
+.tab-button.active .tab-count {
+  background-color: #253C90;
+  color: white;
+}
+
+/* ===== Tab Controls Styling ===== */
+.tab-controls .ant-select {
+  font-family: 'Anakotmai-Bold' !important;
+  border-radius: 8px !important;
+}
+
+.tab-controls .ant-select .ant-select-selector {
+  border-radius: 8px !important;
+  border-color: #d9d9d9 !important;
+  font-family: 'Anakotmai-Bold' !important;
+}
+
+.tab-controls .ant-select:hover .ant-select-selector,
+.tab-controls .ant-select.ant-select-focused .ant-select-selector {
+  border-color: #253C90 !important;
+  box-shadow: 0 0 0 2px rgba(37, 60, 144, 0.1) !important;
+}
+
+/* ===== Table Section ===== */
+.table-section {
+  padding: 24px;
+}
+
+.donation-table {
+  font-family: 'Anakotmai-Bold' !important;
+}
+
+.donation-table .ant-table {
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+.donation-table .ant-table-thead > tr > th {
+  background-color: #fafafa !important;
+  border-bottom: 2px solid #e8e8e8 !important;
+  font-family: 'Anakotmai-Bold' !important;
+  font-weight: 600 !important;
+  color: #333 !important;
+  padding: 16px 12px !important;
+}
+
+.donation-table .ant-table-tbody > tr > td {
+  padding: 16px 12px !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+  font-family: 'Anakotmai-Bold' !important;
+}
+
+.donation-table .ant-table-tbody > tr:hover > td {
+  background-color: #f8f9ff !important;
+}
+
+.donation-table .ant-table-tbody > tr:last-child > td {
+  border-bottom: none !important;
+}
+
+/* ===== Custom Badge Styles ===== */
+.ant-badge .ant-badge-status-dot {
+  width: 8px !important;
+  height: 8px !important;
+}
+
+.ant-badge-status-success {
+  background-color: #52c41a !important;
+}
+
+.ant-badge-status-error {
+  background-color: #ff4d4f !important;
+}
+
+.ant-badge-status-warning {
+  background-color: #faad14 !important;
+}
+
+.ant-badge-status-text {
+  font-family: 'Anakotmai-Bold' !important;
+  font-size: 13px !important;
+  margin-left: 8px !important;
+}
+
+/* ===== Tags ===== */
+.ant-tag {
+  border-radius: 6px !important;
+  padding: 4px 8px !important;
+  font-family: 'Anakotmai-Bold' !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+
+/* ===== Copy Text ===== */
+.ant-typography-copy {
+  margin-left: 8px !important;
+}
+
+/* ===== Pagination ===== */
+.custom-pagination {
+  margin-top: 24px !important;
+  text-align: center !important;
+}
+
+.custom-pagination .ant-pagination-item {
+  border-radius: 8px !important;
+  font-family: 'Anakotmai-Bold' !important;
+}
+
+.custom-pagination .ant-pagination-item-active {
+  background-color: #253C90 !important;
+  border-color: #253C90 !important;
+}
+
+.custom-pagination .ant-pagination-item-active a {
+  color: white !important;
+}
+
+.custom-pagination .ant-pagination-prev,
+.custom-pagination .ant-pagination-next {
+  border-radius: 8px !important;
+}
+
+.custom-pagination .ant-pagination-total-text {
+  font-family: 'Anakotmai-Bold' !important;
+  color: #666 !important;
+}
+
+/* ===== Button Overrides ===== */
+.ant-btn-primary {
+  background-color: #253C90 !important;
+  border-color: #253C90 !important;
+  border-radius: 8px !important;
+  font-family: 'Anakotmai-Bold' !important;
+  font-weight: 500 !important;
+}
+
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
+  background-color: #4863c3 !important;
+  border-color: #4863c3 !important;
+}
+
+.ant-btn {
+  font-family: 'Anakotmai-Bold' !important;
+  border-radius: 8px !important;
+}
+
+/* ===== Select Override ===== */
+.ant-select {
+  font-family: 'Anakotmai-Bold' !important;
+}
+
+.ant-select .ant-select-selector {
+  border-radius: 8px !important;
+}
+
+.ant-select-dropdown {
+  font-family: 'Anakotmai-Bold' !important;
+}
+
+/* ===== Checkbox Override ===== */
+.ant-checkbox-wrapper {
+  font-family: 'Anakotmai-Bold' !important;
+}
+
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #253C90 !important;
+  border-color: #253C90 !important;
+}
+
+/* ===== Dropdown Override ===== */
+.ant-dropdown-menu {
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+.ant-dropdown-menu-item {
+  font-family: 'Anakotmai-Bold' !important;
+  padding: 8px 16px !important;
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 1200px) {
+  .donation-history-page {
+    padding: 16px;
+  }
+  
+  .tab-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    padding: 16px 0;
+  }
+  
+  .custom-tabs {
+    justify-content: center;
+  }
+  
+  .tab-controls {
+    justify-content: center;
+  }
+  
+  .search-section {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .custom-tabs {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+  
+  .tab-button {
+    width: 100%;
+    justify-content: space-between;
+    padding: 12px 16px;
+  }
+  
+  .tab-controls {
+    width: 100%;
+    justify-content: stretch;
+  }
+  
+  .tab-controls .ant-select {
+    width: 100%;
+  }
+  
+  .donation-table .ant-table-thead > tr > th,
+  .donation-table .ant-table-tbody > tr > td {
+    padding: 12px 8px !important;
+  }
+  
+  .table-section {
+    padding: 16px 12px;
+  }
+}
+
+@media (max-width: 576px) {
+  .page-title {
+    font-size: 24px !important;
+  }
+  
+  .tab-section {
+    padding: 0 12px;
+  }
+  
+  .tab-button {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+  
+  .tab-button .anticon {
+    font-size: 16px;
+  }
+  
+  .tab-header {
+    padding: 12px 0;
+  }
+}
+
+/* ===== Loading and Empty States ===== */
+.ant-table-placeholder {
+  padding: 40px 16px !important;
+}
+
+.ant-table-placeholder .ant-empty-description {
+  font-family: 'Anakotmai-Bold' !important;
+  color: #999 !important;
+}
+
+/* ===== Scroll Indicator ===== */
+.ant-table-container::before {
+  box-shadow: inset 10px 0 8px -8px rgba(0, 0, 0, 0.06);
+}
+
+.ant-table-container::after {
+  box-shadow: inset -10px 0 8px -8px rgba(0, 0, 0, 0.06);
+}

@@ -8,6 +8,7 @@ import {
 import MyAdoptionsPage from '../public/adoption/useradopt';
 import MyDonations from '../userDashboard/HistoryDonation'; // <- ใช้ไฟล์ที่ทำไว้ก่อนหน้า
 import './style.css';
+import NavigationBarStatic from '../../components/NavigationBarStatic/index';
 
 const { Sider, Content, Header } = Layout;
 const { Title, Paragraph } = Typography;
@@ -76,33 +77,36 @@ const DonationsDashboard: React.FC = () => {
   };
 
   return (
-    <Layout className="db-root" style={{ fontFamily: 'Anakotmai' }}>
-      <Sider className="db-sider" width={240} breakpoint="lg" collapsedWidth={72}>
-        <div className="db-brand">
-          <div className="db-logo-dot" /> <span>Donor Center</span>
-        </div>
-        <Menu
-          mode="inline"
-          selectedKeys={[activeKey]}
-          onClick={(e) => setActiveKey(e.key as MenuKey)}
-          className="db-menu"
-          items={[
-            { key: 'donations', icon: <HistoryOutlined />, label: <span style={{ fontFamily: 'Anakotmai' }}>ประวัติการบริจาค</span> },
-            { key: 'sponsorship', icon: <HeartOutlined />, label: <span style={{ fontFamily: 'Anakotmai' }}>ประวัติการอุปถัมภ์</span> },
-            { key: 'adoption', icon: <TeamOutlined />, label: <span style={{ fontFamily: 'Anakotmai' }}>การรับเลี้ยง</span> },
-          ]}
-        />
-      </Sider>
+    <>
+      <NavigationBarStatic />
+      <Layout className="db-root" style={{ fontFamily: 'Anakotmai' }}>
+        <Sider className="db-sider" width={240} breakpoint="lg" collapsedWidth={72}>
+          <div className="db-brand">
+            <div className="db-logo-dot" /> <span>แดชบอร์ดของฉัน</span>
+          </div>
+          <Menu
+            mode="inline"
+            selectedKeys={[activeKey]}
+            onClick={(e) => setActiveKey(e.key as MenuKey)}
+            className="db-menu"
+            items={[
+              { key: 'donations', icon: <HistoryOutlined />, label: <span style={{ fontFamily: 'Anakotmai' }}>ประวัติการบริจาค</span> },
+              { key: 'sponsorship', icon: <HeartOutlined />, label: <span style={{ fontFamily: 'Anakotmai' }}>ประวัติการอุปถัมภ์</span> },
+              { key: 'adoption', icon: <TeamOutlined />, label: <span style={{ fontFamily: 'Anakotmai' }}>การรับเลี้ยง</span> },
+            ]}
+          />
+        </Sider>
 
-      <Layout className="db-main">
-        <Header className="db-header">
-          <Title level={3} className="db-header-title" style={{ fontFamily: 'Anakotmai' }}>Orders / History</Title>
-        </Header>
-        <Content className="db-content">
-          {renderContent()}
-        </Content>
+        <Layout className="db-main">
+          <Header className="db-header">
+            <Title level={3} className="db-header-title" style={{ fontFamily: 'Anakotmai',color:'#FF8800' }}>กิจกรรมทั้งหมด</Title>
+          </Header>
+          <Content className="db-content">
+            {renderContent()}
+          </Content>
+        </Layout>
       </Layout>
-    </Layout>
+    </>
   );
 };
 

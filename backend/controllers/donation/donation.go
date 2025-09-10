@@ -230,6 +230,23 @@ func GetAllUnits(c *gin.Context) {
 	c.JSON(http.StatusOK, units)
 }
 
+// GetAllDonations retrieves all donation records
+func GetAllDonations(c *gin.Context) {
+	var donations []entity.Donation
+	if err := configs.DB().
+		Preload("Donor").
+		Preload("MoneyDonations").
+		Preload("ItemDonations").
+		Preload("ItemDonations.Item").
+		Preload("ItemDonations.Unit").
+		Order("donation_date desc").
+		Find(&donations).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not fetch donations: " + err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, donations)
+}
+
 func UpdateDonationStatus(c *gin.Context) {
     id := c.Param("id")
     var payload struct {

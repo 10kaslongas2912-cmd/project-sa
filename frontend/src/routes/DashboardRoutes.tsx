@@ -15,6 +15,8 @@ const UpdateVisit = Loadable(lazy(() => import("../pages/dashboard/visit/updateV
 const ZoneCageManagementPage = Loadable(lazy(() => import("../pages/dashboard/ZoneCageManagement")));
 const Volunteer = Loadable(lazy(() => import("../pages/dashboard/Volunteer")));
 /// ==============================|| DASHBOARD ROUTING ||============================== //
+const DonationStaff = Loadable(lazy(() => import("../pages/dashboard/Donation/index")));
+// ==============================|| DASHBOARD ROUTING ||============================== //
 export const dashboardRoutes: RouteObject = {
   path: "dashboard",
   element: <DashboardLayout />,
@@ -79,8 +81,12 @@ export const dashboardRoutes: RouteObject = {
     {
       path: "volunteer",
       element: <Volunteer />
+    },
+    {
+      path: "donation",
+      element: <DonationStaff />
     }
-  ],
+  ]
 };
 
 export const dashboardTestRoute1: RouteObject = {
