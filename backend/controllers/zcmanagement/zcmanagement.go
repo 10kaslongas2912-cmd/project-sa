@@ -74,14 +74,11 @@ func UpdateDogInKennel(c *gin.Context) {
 }
 
 // DELETE /kennel/:kennel_id/dog   (?dog_id=) or { dog_id }
-// controllers/zcmanagement/kennel_dog.go
+// Option B: write 0 instead of NULL to "unassign" the kennel.
+// NOTE: Ensure you do NOT have a strict DB-level FK on dogs.kennel_id,
+// otherwise writing 0 will fail. (GORM doesn't add strict FKs by default.)
 func DeleteDogFromKennel(c *gin.Context) {
-	kidStr := c.Param("kennel_id")
-	kid64, err := strconv.ParseUint(kidStr, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid kennel_id"})
-		return
-	}
+	kid64, _ := strconv.ParseUint(c.Param("kennel_id"), 10, 64)
 	kennelID := uint(kid64)
 
 	var dogID uint
@@ -92,9 +89,9 @@ func DeleteDogFromKennel(c *gin.Context) {
 	}
 	if dogID == 0 {
 		var body struct {
-			DogID uint `json:"dog_id"`
+			DogID uint `json:"dog_id" form:"dog_id"`
 		}
-		_ = c.ShouldBind(&body) // form/query
+		_ = c.ShouldBind(&body)
 		if body.DogID == 0 {
 			_ = c.ShouldBindJSON(&body)
 		}
@@ -105,15 +102,17 @@ func DeleteDogFromKennel(c *gin.Context) {
 		return
 	}
 
+	// Keep the guard so we only unassign if the dog is in this kennel.
+	// If you want to allow “unassign regardless of current kennel”,
+	// change WHERE to only "id = ?".
 	res := configs.DB().Model(&entity.Dog{}).
 		Where("id = ? AND kennel_id = ?", dogID, kennelID).
-		Update("kennel_id", gorm.Expr("NULL"))
+		Update("kennel_id", 0)
 
 	if res.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "remove failed: " + res.Error.Error()})
 		return
 	}
-	// 200 even if 0 rows changed; the client can read "updated"
 	c.JSON(http.StatusOK, gin.H{"updated": res.RowsAffected, "dog_id": dogID, "kennel_id": kennelID})
 }
 

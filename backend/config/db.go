@@ -248,18 +248,4 @@ func SetupDatabase() {
 	db.FirstOrCreate(User, &entity.User{
 		Username: "sa",
 	})
-
-	// Seed Skills (idempotent)
-	skillDescs := []string{
-		"การดูแลสุนัข",
-		"การฝึกสุนัข",
-		"การจัดการเหตุฉุกเฉิน",
-		"การสื่อสารและการประชาสัมพันธ์",
-		"อื่นๆ",
-	}
-	for _, d := range skillDescs {
-		var s entity.Skill
-		db.FirstOrCreate(&s, entity.Skill{Description: d})
-	}
-
 }
