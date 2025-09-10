@@ -11,6 +11,7 @@ import {
   PawPrint,
   BarChart3,
   Menu,
+  Play,
   X,
   Search,
   Bell,
@@ -22,6 +23,7 @@ import {
   Plus,
   MoreVertical,
   Edit,
+  Captions,
 } from "lucide-react";
 import type { JSX } from "react/jsx-runtime";
 
@@ -135,6 +137,12 @@ const UpdatedDashboard: React.FC = () => {
       label: "จัดการข้อมูลสุนัข",
       icon: PawPrint,
       path: "/dashboard/dogs",
+    },
+    {
+      id: "manages",
+      label: "จัดการผู้ดูแล",
+      icon: Captions,
+      path: "/dashboard/manage",
     },
     {
       id: "health-records",

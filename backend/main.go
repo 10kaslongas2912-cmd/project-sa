@@ -7,20 +7,21 @@ import (
 	"example.com/project-sa/configs"
 	adopter "example.com/project-sa/controllers/adoption"
 	auth "example.com/project-sa/controllers/auth"
+	buildings "example.com/project-sa/controllers/building"
 	dog "example.com/project-sa/controllers/dog"
 	donation "example.com/project-sa/controllers/donation"
 	gender "example.com/project-sa/controllers/gender"
 	health_record "example.com/project-sa/controllers/health_record"
+	manage "example.com/project-sa/controllers/manage"
 	payment_method "example.com/project-sa/controllers/payment_method"
 	personalities "example.com/project-sa/controllers/personality"
 	sponsorship "example.com/project-sa/controllers/sponsorship"
+	staffs "example.com/project-sa/controllers/staff"
 	user "example.com/project-sa/controllers/user"
-	volunteers "example.com/project-sa/controllers/volunteerRegister"
-	zcmanagement "example.com/project-sa/controllers/zcmanagement"
 	vaccine "example.com/project-sa/controllers/vaccine"
 	visit "example.com/project-sa/controllers/visit"
-	manage "example.com/project-sa/controllers/manage"
-	staffs "example.com/project-sa/controllers/staff"
+	volunteers "example.com/project-sa/controllers/volunteerRegister"
+	zcmanagement "example.com/project-sa/controllers/zcmanagement"
 	"example.com/project-sa/middlewares"
 	"example.com/project-sa/migrations"
 	"example.com/project-sa/seeds"
@@ -94,6 +95,7 @@ func main() {
 	r.PUT("/staffs/:id", staffs.UpdateStaff)
 	r.DELETE("/staffs/:id", staffs.DeleteStaff)
 
+	r.GET("/buildings", buildings.GetAllBuildings)
 
 
 	r.GET("/personalities", personalities.GetAllPersonalities)

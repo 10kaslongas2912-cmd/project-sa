@@ -4,7 +4,7 @@ import { EditOutlined, DeleteOutlined, EyeOutlined, SearchOutlined } from "@ant-
 import "./style.css";
 import type { DogInterface } from "../../../../interfaces/Dog";
 import { ageText } from "../../../../utils/date";
-import { useDogs } from "../../../../hooks/useDogs_jia";
+import { useDogs } from "../../../../hooks/useDogs";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
 import { visitAPI } from "../../../../services/apis";
@@ -422,7 +422,7 @@ const handleDelete = async (visitId: number) => {
             {/* การ์ดหลัก: รายการการเยี่ยมชม */}
             <Card className="visit-form-card">
                 <div className="form-header">
-                    <Title level={2}>จัดการการเยี่ยมชมน้องหมา</Title>
+                    <Title level={1}>จัดการการเยี่ยมชมน้องหมา</Title>
                 </div>
                     {/* เพิ่ม Input ค้นหาชื่อการเยี่ยมชม */}
             <Form.Item label="ค้นหาชื่อการเยี่ยมชม">
@@ -563,6 +563,7 @@ const handleDelete = async (visitId: number) => {
                     <Form.Item className="form-actions">
                         <Space size="large">
                             <Button
+                                className="btn-action"
                                 type="primary"
                                 htmlType="submit"
                                 loading={submitting}
@@ -572,7 +573,7 @@ const handleDelete = async (visitId: number) => {
                             >
                                 {submitting ? "กำลังอัพเดท..." : "อัพเดทการเยี่ยมชม"}
                             </Button>
-                            <Button onClick={handleModalClose} size="large" disabled={submitting}>
+                            <Button onClick={handleModalClose} size="large" disabled={submitting} style={{ borderRadius: 20 }}>
                                 ยกเลิก
                             </Button>
                         </Space>
