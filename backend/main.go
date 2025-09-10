@@ -57,11 +57,7 @@ func main() {
 	r.POST("/dogs", dog.CreateDog)
 	r.PUT("/dogs/:id", dog.UpdateDog)	
 	r.DELETE("/dogs/:id", dog.DeleteDog)
-	// r.POST("/dogs", dogs.CreateDog)
-	// r.PUT("/dogs/:id", dogs.UpdateDog)
-	// r.DELETE("/dogs/:id", dogs.DeleteDog)
-	r.PUT("/dogs/:id", dog.UpdateDog)
-	r.DELETE("/dogs/:id", dog.DeleteDog)
+
 	r.POST("/sponsorships/one-time", sponsorship.CreateOneTimeSponsorship)
 	r.GET("/genders", gender.GetAll)
 	r.GET("/vaccines", vaccine.GetAll)
