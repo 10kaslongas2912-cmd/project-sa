@@ -88,11 +88,11 @@ const DonationSummaryPage: React.FC = () => {
       }
 
       const transactionNumber = `SA-ITEM-${Date.now()}`;
-      const itemDetails: ItemDonationInterface[] = itemDetailsRaw.donationItems.map((item: DonationItem) => ({
-        item_name: item.itemName,
+      const itemDetails: ItemDonationInterface[] = itemDetailsRaw.donationItems.map((item: any) => ({
+        item_id: Number(item.itemId),
         quantity: Number(item.quantity),
-        unit: item.unit,
-        item_ref: `${transactionNumber}-${item.itemName}`
+        unit_id: Number(item.unitId),
+        item_ref: `${transactionNumber}-${item.itemId}`
       }));
 
       const payload: CreateDonationRequest = {

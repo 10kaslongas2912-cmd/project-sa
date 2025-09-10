@@ -10,7 +10,7 @@ import type {
   UpdateUserRequest,
 } from "../interfaces/User";
 import type { CreateDonationRequest } from "../interfaces/Donation";
-import type { UpdateZCManagementRequest, ZcManagementInterface } from "../interfaces/ZcManagement";
+import type { UpdateZCManagementRequest } from "../interfaces/zcManagement";
 import type { CreateVolunteerPayload } from "../interfaces/Volunteer";
 import type { SkillInterface } from "../interfaces/Skill";
 
@@ -21,6 +21,7 @@ const isFormData = (v: any): v is FormData =>
 const mpHeaders = { "Content-Type": "multipart/form-data" };
 import type { CreateAdoptionRequest, UpdateStatusRequest } from "../interfaces/Adoption";
 import type { CreateSponsorshipRequest } from "../interfaces/Sponsorship";
+import { s } from "framer-motion/client";
 
 /** ---------- AUTH ---------- */
 export const authAPI = {
@@ -176,6 +177,11 @@ export const donationAPI = {
   getById: (id: number) => Get(`/donations/${id}`),
   getMyDonations: () => Get("/donations/my"), // สำหรับดึงการบริจาคของผู้ใช้ที่ล็อกอิน
   create:  (data: CreateDonationRequest) => Post("/donations", data),
+  getItemById: (id: number) => Get(`/items/${id}`),
+  getAllItems: () => Get("/items"),
+  getUnitById: (id: number) => Get(`/units/${id}`),
+  getAllUnits: () => Get("/units"),
+  // ถ้า BE มี endpoint สำหรับ update/delete ค่อยเพิ่ม
   // update:  (id: number, data: UpdateDonationRequest) => Put(`/donations/${id}`, data),
   // remove:  (id: number) => Delete(`/donations/${id}`),
 };
@@ -202,10 +208,17 @@ export const vaccineAPI = {
 };
 export const visitAPI = {
   createVisit: (data: any) => Post("/visits", data),
+  getAllVisits: () => Get("/visits"),
+  getVisitById: (id: number) => Get(`/visits/${id}`),
+  updateVisit: (id: number, data: any) => Put(`/visits/${id}`, data),
+  deleteVisit: (id: number) => Delete(`/visits/${id}`),
 };
 
 export const personalityAPI = {
   getAll: () => Get("/personalities"),
+}
+export const staffAPI = {
+  getAll: () => Get("/staffs"),
 }
 
 
@@ -267,4 +280,5 @@ export const api = {
   healthRecordAPI,
   vaccineAPI,
   visitAPI,
+  staffAPI,
 };
