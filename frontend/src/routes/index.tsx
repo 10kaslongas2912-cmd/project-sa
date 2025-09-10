@@ -9,6 +9,7 @@ import AdoptionRoutes from "./AdoptionRoutes";
 import EventRoutes from "./EventRoutes";
 import VisitRoutes from "./VisitRoutes";
 import UserDashboardRoute from "./UserDashboardRouts";
+import ZCmanagementRoutes from "./ZCmanagementRoutes";
 
 // ==============================|| ROUTING RENDER ||============================== //
 
@@ -24,5 +25,6 @@ export default function ThemeRoutes() {
     EventRoutes(),
     VisitRoutes(),
     UserDashboardRoute(),
+    ZCmanagementRoutes(),
   ]);
 }

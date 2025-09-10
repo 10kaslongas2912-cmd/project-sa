@@ -3,10 +3,9 @@ import { lazy } from 'react';
 
 import Loadable from "../components/third-patry/Loadable";
 import FirstPage from "../pages/public/firstpage";
+const ZoneCageManagementPage = Loadable(lazy(() => import("../pages/public/ZoneCageManagement")));
 
-const VolunteerPage = Loadable(lazy(() => import("../pages/public/Volunteer")));
-
-const VolunteerRoutes = (): RouteObject => {
+const ZCmanagementRoutes = (): RouteObject => {
   return {
     path: "/",
     children: [
@@ -15,11 +14,11 @@ const VolunteerRoutes = (): RouteObject => {
         element: <FirstPage />,
       },
       {
-        path: "volunteer",
-        element: <VolunteerPage />,
+        path: "zone-cage-management",
+        element: <ZoneCageManagementPage />,
       },
     ],
   };
 };
 
-export default VolunteerRoutes;
+export default ZCmanagementRoutes;
