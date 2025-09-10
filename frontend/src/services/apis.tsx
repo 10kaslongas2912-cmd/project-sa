@@ -30,7 +30,7 @@ export const authAPI = {
     Post("/users/signup", data, false),
 
   // ถ้า BE ใช้ /auth/me ให้เปลี่ยน path ตรงนี้ที่เดียว
-  me: () => Get("/users/me"),
+  me: () => Get("/users/me", true),
 
   // ถ้า BE ไม่มี endpoint นี้ ลบออกได้
   logout: () => Post("/user/logout", {}),

@@ -196,19 +196,18 @@ func SignIn(c *gin.Context) {
 		out = user
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": gin.H{
+	c.JSON(http.StatusOK,gin.H{
 			"token_type": "Bearer",
 			"token":      signedToken,
 			"user": gin.H{
 				"id":        out.ID, // ใช้ gorm.Model => ฟิลด์ ID ใหญ่
 				"username":  out.Username,
-				"firstname": out.FirstName,
-				"lastname":  out.LastName,
+				"first_name": out.FirstName,
+				"last_name":  out.LastName,
 				"email":     out.Email,
 				"phone":     out.Phone,
 				"gender":    out.Gender, // ถ้า entity.Gender มี json tag ถูก จะ serialize เป็น object
 			},
 		},
-	})
+	)
 }
