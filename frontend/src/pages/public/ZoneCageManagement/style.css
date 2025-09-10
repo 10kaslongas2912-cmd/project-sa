@@ -230,3 +230,102 @@
   padding: 20px 0;
   order: 0; /* This moves boxes above other content */
 }
+
+.form-group select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-panel {
+  width: min(900px, 92vw);
+  max-height: 85vh;
+  overflow: auto;
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px 18px 12px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.35);
+}
+
+.modal-panel h3 {
+  margin: 0 0 12px;
+  color: #1f3b8a;
+}
+
+.dog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  padding: 6px;
+}
+
+.dog-card {
+  border: 2px solid #e6e6e6;
+  background: #fdfdfd;
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  cursor: pointer;
+}
+
+.dog-card:hover {
+  box-shadow: 0 4px 14px rgba(0,0,0,.12);
+}
+
+.dog-card.selected {
+  border-color: #ff8c00;
+  box-shadow: 0 0 0 3px rgba(255,140,0,.25);
+}
+
+.dog-card-name {
+  font-weight: 700;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 12px;
+}
+
+.modal-actions .ghost {
+  background: #fff;
+  border: 1px solid #ddd;
+}
+
+.modal-actions button {
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: none;
+  background: #ff8c00;
+  color: #000000;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modal-actions button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+/* Pending-remove visual */
+.info-box.pending-remove {
+  opacity: 0.6;
+  background: #fff7f7;
+  border: 1px solid #f8c4c4;
+}
+
+.delete-btn.undo {
+  background: #6b7280; /* gray */
+}

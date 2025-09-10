@@ -130,3 +130,4 @@ export const Delete = async (
 export const axiosInstance = axios.create({
   baseURL: API_URL,
 });
+

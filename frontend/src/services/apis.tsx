@@ -10,7 +10,6 @@ import type {
   UpdateUserRequest,
 } from "../interfaces/User";
 import type { CreateDonationRequest } from "../interfaces/Donation";
-import type { UpdateZCManagementRequest } from "../interfaces/zcManagement";
 import type { CreateVolunteerPayload } from "../interfaces/Volunteer";
 import type { SkillInterface } from "../interfaces/Skill";
 import type { LoginStaffRequest } from "../interfaces/Staff";
@@ -105,13 +104,6 @@ export const paymentMethodAPI = {
 };
 
 
-/** ---------- ZC MANAGEMENT ---------- */
-export const zcManagementAPI = {
-  getAll: () => Get("/zcmanagement"),
-  update: (id: number, data: UpdateZCManagementRequest) =>
-    Put(`/zcmanagement/${id}`, data),
-};
-
 /** ---------- VOLUNTEERS ---------- */
 type StatusKind = "none" | "pending" | "approved" | "rejected" | "unknown";
 
@@ -193,11 +185,12 @@ export const donationAPI = {
   getAll:  () => Get("/donations"),
   getById: (id: number) => Get(`/donations/${id}`),
   getMyDonations: () => Get("/donations/my"), // สำหรับดึงการบริจาคของผู้ใช้ที่ล็อกอิน
-  create:  (data: CreateDonationRequest) => Post("/donations", data),
+  create:  (data: CreateDonationRequest) => Post("/donations", data, true),
   getItemById: (id: number) => Get(`/items/${id}`),
   getAllItems: () => Get("/items"),
   getUnitById: (id: number) => Get(`/units/${id}`),
   getAllUnits: () => Get("/units"),
+  updateStatus: (id: number, data: { status: string }) => Put(`/donations/${id}/status`, data),
   // ถ้า BE มี endpoint สำหรับ update/delete ค่อยเพิ่ม
   // update:  (id: number, data: UpdateDonationRequest) => Put(`/donations/${id}`, data),
   // remove:  (id: number) => Delete(`/donations/${id}`),
@@ -247,6 +240,46 @@ export const staffAPI = {
   create: (data: any) => Post("/staffs", data),
   getAll: () => Get("/staffs"),
   getById: (id: number) => Get(`/staffs/${id}`),
+};
+
+
+let _KENNEL_00_ID: number | null = null;
+
+const resolveKennel00Id = async (): Promise<number> => {
+  if (_KENNEL_00_ID !== null) return _KENNEL_00_ID;
+
+  const res: any = await Get("/zcmanagement");
+  const payload = (res && "data" in res) ? (res as any).data : res;
+  const ks: any[] = Array.isArray(payload?.kennels) ? payload.kennels : [];
+
+  const k00 = ks.find(k => String(k?.name ?? "").trim() === "00");
+  const id = Number(k00?.id ?? k00?.ID ?? 0) || 0;
+  _KENNEL_00_ID = id;  // cache
+  return id;
+};
+
+export const zcManagementAPI = {
+  getAll: () => Get("/zcmanagement"),
+  getZones: () => Get("/zones"),
+  getKennelsByZone: (zoneId: number) => Get(`/kennels/${Number(zoneId)}`),
+
+  // List dogs in a kennel
+  getDogsInKennel: (kennelId: number) =>
+    Get(`/dogs?kennel_id=${Number(kennelId)}`),
+
+  // Assign: set dog's kennel_id = kennelId
+  assignDogToKennel: (kennelId: number, dogId: number) =>
+    dogAPI.update(Number(dogId), { kennel_id: Number(kennelId) } as UpdateDogRequest),
+
+  // "Unassign": move dog into kennel named "00"
+  removeDogFromKennel: async (_kennelId: number, dogId: number) => {
+    const k00 = await resolveKennel00Id();
+    if (!k00) throw new Error('Kennel "00" not found. Seed it first.');
+    return dogAPI.update(Number(dogId), { kennel_id: k00 } as UpdateDogRequest);
+  },
+
+  // Optional helper if you need the id elsewhere (e.g. to list "uncaged" dogs)
+  getUnassignedKennelId: () => resolveKennel00Id(),
 };
 
 

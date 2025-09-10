@@ -48,3 +48,29 @@ func Authorizes() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+// middlewares/optional_auth.go
+func OptionalAuthorize() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		auth := c.GetHeader("Authorization")
+		if auth == "" { c.Next(); return }
+
+		parts := strings.SplitN(auth, " ", 2)
+		if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") {
+			c.Next(); return
+		}
+
+		j := services.JwtWrapper{
+			SecretKey: "SvNQpBN8y3qlVrsGAYYWoJJk56LtzFHx",
+			Issuer:    "AuthService",
+		}
+		if claims, err := j.ValidateToken(strings.TrimSpace(parts[1])); err == nil {
+			c.Set("user_id", claims.ID)
+			c.Set("username", claims.Username)
+			c.Set("user_email", claims.Email)
+			c.Set("kind", "user")
+		}
+		c.Next()
+	}
+}
+

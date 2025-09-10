@@ -31,7 +31,7 @@ const EmployeeLoginPage: React.FC = () => {
       const payload = res.data; // { token_type, token, staff: {...} }
 
       messageApi.success("เข้าสู่ระบบสำเร็จ");
-        sessionStorage.clear();
+    sessionStorage.clear();
       sessionStorage.setItem("isLogin", "true");
       sessionStorage.setItem("userType", "staff"); // ใช้ "staff" ให้ตรงกับ hook/useStaffMe
       sessionStorage.setItem("token_type", payload.token_type);

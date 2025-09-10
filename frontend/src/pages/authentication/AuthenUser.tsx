@@ -41,7 +41,6 @@ const AuthPage: React.FC = () => {
 
       // ✅ ใช้ sessionStorage ให้หมด
       // เคลียร์ค่าค้างในแท็บก่อน (กันเคสสลับ role ภายในแท็บเดียว)
-      sessionStorage.clear();
       sessionStorage.setItem("isLogin", "true");
       sessionStorage.setItem("userType", "user");
       sessionStorage.setItem("token_type", payload.token_type);
@@ -50,6 +49,7 @@ const AuthPage: React.FC = () => {
 
       // ✅ อ่าน returnTo จาก sessionStorage เท่านั้น
       const returnTo = sessionStorage.getItem("returnTo");
+      console.log(returnTo);
       if (returnTo) {
         sessionStorage.removeItem("returnTo");
         navigate(returnTo, { replace: true });
