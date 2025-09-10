@@ -583,7 +583,7 @@ const ManageComponent: React.FC = () => {
   return (
     <div style={{ padding: '24px', backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
       <div style={{ marginBottom: '24px' }}>
-        <Title level={1} style={{ margin: 0, color: '#ff8800' }}>
+        <Title level={1} style={{ margin: 0, color: '#ff6600' }}>
           ระบบจัดการผู้ดูแล
         </Title>
         <Text type="secondary">
