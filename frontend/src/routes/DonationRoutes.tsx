@@ -13,7 +13,6 @@ const ItemSummaryPage = Loadable(lazy(() => import("../pages/public/donation/Ite
 const CreditCardPaymentPage = Loadable(lazy(() => import("../pages/public/donation/creditCardPayment")));
 const ScanBankPage = Loadable(lazy(() => import("../pages/public/donation/scanBank/mobileBanking")));
 const ThankYouPage = Loadable(lazy(() => import("../pages/public/donation/thankPage")));
-
 const DonationRoutes = (): RouteObject => {
   return {
     path: 'donation',

@@ -23,3 +23,19 @@ export function ageText(dob?: string | null): string {
     const m = months > 0 ? `${months} เดือน` : '';
     return [y, m].filter(Boolean).join(' ');
 }
+
+
+export  function calculateAge(birthDate: string) {
+    if (!birthDate) return "";
+    const today = new Date();
+    const birth = new Date(birthDate);
+    const diffDays = Math.ceil(Math.abs(today.getTime() - birth.getTime()) / (1000 * 60 * 60 * 24));
+    if (diffDays < 365) {
+      const months = Math.floor(diffDays / 30);
+      return months > 0 ? `${months} เดือน` : `${diffDays} วัน`;
+    } else {
+      const years = Math.floor(diffDays / 365);
+      const remainingMonths = Math.floor((diffDays % 365) / 30);
+      return remainingMonths > 0 ? `${years} ปี ${remainingMonths} เดือน` : `${years} ปี`;
+    }
+  };

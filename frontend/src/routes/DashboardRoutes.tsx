@@ -11,6 +11,12 @@ const Dogs = Loadable(lazy(() => import("../pages/dashboard/Dogs"))); // Placeho
 const AdoptionPages = Loadable(lazy(() => import("../pages/public/adoption/adminadoption"))); // Placeholder for the users component
 const HealthRecords = Loadable(lazy(() => import("../pages/public/HealthRecord/SearchPage"))); // Placeholder for the health records component
 const EventadminPage = Loadable(lazy(() => import("../pages/public/event/evenadmid"))); //หน้า Admin Adoption
+const CreateVisit = Loadable(lazy(() => import("../pages/dashboard/visit/createVisit")));
+const UpdateVisit = Loadable(lazy(() => import("../pages/dashboard/visit/updateVisit")));
+const ZoneCageManagementPage = Loadable(lazy(() => import("../pages/dashboard/ZoneCageManagement")));
+const Volunteer = Loadable(lazy(() => import("../pages/dashboard/Volunteer")));
+/// ==============================|| DASHBOARD ROUTING ||============================== //
+const DonationStaff = Loadable(lazy(() => import("../pages/dashboard/Donation/index")));
 // ==============================|| DASHBOARD ROUTING ||============================== //
 export const dashboardRoutes: RouteObject = {
   path: "dashboard",
@@ -51,8 +57,16 @@ export const dashboardRoutes: RouteObject = {
         {
           path: "record/:recordId",
           element: <SingleDetailPageHealth />
-        }
+        },
       ]
+    },
+    {
+        path: 'create-visit',
+        element: <CreateVisit />
+    },
+    {
+        path: 'update-visit',
+        element: <UpdateVisit />
     },
     {
       path: "health-record/dog/:id",
@@ -65,8 +79,20 @@ export const dashboardRoutes: RouteObject = {
     {
       path: "health-record/record/:recordId",
       element: <SingleDetailPageHealth />
+    },
+    {
+      path: "zone-cage-management",
+      element: <ZoneCageManagementPage />
+    },
+    {
+      path: "volunteer",
+      element: <Volunteer />
+    },
+    {
+      path: "donation",
+      element: <DonationStaff />
     }
-  ],
+  ]
 };
 
 export const dashboardTestRoute1: RouteObject = {

@@ -42,8 +42,8 @@
   border-radius:10px;
 }
 .db-menu .ant-menu-item-selected{
-  background: rgba(37,60,144,0.09) !important;
-  color: var(--blue) !important;
+  background: rgba(194, 165, 78, 0.09) !important;
+  color: var(--orange) !important;
 }
 
 /* Main */
@@ -55,7 +55,7 @@
 }
 .db-header-title{
   margin:0 !important;
-  color:var(--blue) !important;
+  color:var(--orange) !important;
 }
 
 /* Page title block */
@@ -89,6 +89,6 @@
   margin:0 0 12px 0;
 }
 .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn{
-  color:var(--blue) !important;
+  color:var(--orange) !important;
 }
 .ant-tabs-ink-bar{ background:var(--orange) !important; }

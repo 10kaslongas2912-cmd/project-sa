@@ -4,16 +4,24 @@ import type { RouteObject } from "react-router-dom";
 
 import Loadable from "../components/third-patry/Loadable";
 
-const LoginPages = Loadable(lazy(() => import("../pages/authentication")));
-
+const UserAuthPages = Loadable(
+  lazy(() => import("../pages/authentication/AuthenUser"))
+);
+const StaffAuthPage = Loadable(lazy(() => import("../pages/authentication/AuthenStaff")))
 const AuthRoutes = (): RouteObject => {
-
   return {
-
     path: "auth",
-    element: <LoginPages />,
+    children: [
+      {
+        path: "users",
+        element: <UserAuthPages />,
+      },
+      {
+        path: "staffs",
+        element: <StaffAuthPage/>,
+      },
+    ],
   };
-
 };
 
 export default AuthRoutes;

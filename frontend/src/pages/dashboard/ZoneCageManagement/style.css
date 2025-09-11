@@ -1,0 +1,314 @@
+/* ====== Layout ====== */
+.zone-cage-management-container {
+  /* Changed to single column layout with the form on top */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
+  background: transparent;
+  color: #111827; /* neutral-900 */
+  font-family: 'Anakotmai', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+/* responsive: maintain single column on smaller screens */
+@media (max-width: 1024px) {
+  .zone-cage-management-container {
+    gap: 16px;
+    padding: 16px;
+  }
+}
+
+/* ====== Top Card (form) ====== */
+.zone-cage-management-form {
+  background: #fff;
+  width: 100%;
+  padding: 20px 18px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb; /* gray-200 */
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  position: relative;
+}
+
+.zone-cage-management-form h1 {
+  text-align: center;
+  color: #ff6600;            /* indigo-800 */
+  font-size: 40px;
+  line-height: 1.25;
+  font-weight: 700;
+  margin: 6px 0 18px;
+}
+
+/* Container for zone and cage dropdowns to be on the same line */
+.form-controls-row {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+/* Individual form groups within the row */
+.form-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 0; /* Remove bottom margin since we're using gap in parent */
+  flex: 1;
+  min-width: 200px; /* Ensure minimum width for responsive behavior */
+}
+
+.form-group label {
+  margin: 0;
+  min-width: 48px;
+  text-align: right;
+  font-size: 14px;
+  color: #111827;
+  flex-shrink: 0;
+}
+
+.form-group select {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 38px;
+  padding: 0 10px;
+  color: #111827;
+  background: #fff;
+  border: 1px solid #d1d5db; /* gray-300 */
+  border-radius: 10px;
+}
+
+.form-group select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Container for capacity and buttons */
+.form-bottom-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* capacity helper text */
+.capacity-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 12px;
+  border-radius: 999px;
+  background: #f3f4f6; /* gray-100 */
+  color: #374151;      /* gray-700 */
+}
+
+/* buttons */
+.zone-cage-management-form button {
+  background: #f59e0b; /* amber-500 */
+  color: #111827;
+  padding: 9px 16px;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.zone-cage-management-form button:hover {
+  background: #fbbf24; /* amber-400 */
+}
+
+/* ====== Bottom Card (info) ====== */
+.information-zone-container {
+  background: #fff;
+  border: 1px solid #e5e7eb; /* gray-200 */
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  padding: 16px;
+  min-height: 420px;
+  min-width: 0;  /* critical so grid children can shrink */
+  display: flex;
+  flex-direction: column;
+}
+
+.information-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+}
+
+.information-form h2 {
+  margin: 4px 0 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e40af; /* indigo-800 */
+  text-align: left;
+}
+
+/* loader block */
+.loader-container {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  gap: 10px;
+}
+
+.loader {
+  width: 40px;
+  aspect-ratio: 1;
+  outline: 2px solid #fff;
+  background:
+    radial-gradient(farthest-side,#000 90%,#0000) 0 0/8px 8px no-repeat,
+    conic-gradient(from  90deg at 10px 10px,#0000 90deg,#fff 0),
+    conic-gradient(from -90deg at 30px 30px,#0000 90deg,#fff 0);
+  animation: l3 1s infinite;
+}
+@keyframes l3 {
+  0%   {background-position:0 0;clip-path:circle(15px at left 4px top 4px)}
+  25%  {background-position:100% 0;clip-path:circle(15px at right 4px top 4px)}
+  50%  {background-position:100% 100%;clip-path:circle(15px at right 4px bottom 4px)}
+  75%  {background-position:0 100%;clip-path:circle(15px at left 4px bottom 4px)}
+  100% {background-position:0 0;clip-path:circle(15px at left 4px top 4px)}
+}
+
+/* grid of dog cards */
+.boxes-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  width: 100%;
+  padding: 6px 4px 10px;
+}
+
+/* dog card */
+.info-box {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 140px;
+}
+
+.info-box.pending-remove {
+  opacity: 0.6;
+  background: #fff7f7;
+  border-color: #f8c4c4;
+}
+
+.info-box p { margin: 0; }
+
+/* buttons in info card */
+.information-form button {
+  background: #e11d48; /* rose-600 (delete) default) */
+  color: #fff;
+  border: 1px solid #e11d48;
+  border-radius: 8px;
+  padding: 9px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.information-form .add-btn {
+  background: #f59e0b;      /* amber-500 */
+  border-color: #f59e0b;
+  color: #111827;
+}
+.information-form .delete-btn:hover { background: #be123c; } /* rose-700 */
+.information-form .add-btn:hover { background: #fbbf24; }   /* amber-400 */
+
+.delete-btn.undo {
+  background: #6b7280; /* gray-500 */
+  border-color: #6b7280;
+}
+
+/* Modal (unchanged visually, just tightened) */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(17,24,39,.5); /* gray-900/50 */
+  display: grid; place-items: center;
+  z-index: 50;
+}
+
+.modal-panel {
+  width: min(900px, 92vw);
+  max-height: 85vh;
+  overflow: auto;
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px 18px 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 12px 40px rgba(0,0,0,.35);
+}
+
+.modal-panel h3 {
+  margin: 0 0 12px;
+  color: #1e40af;
+}
+
+.dog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  width: 100%;
+  padding: 6px 4px 10px;
+}
+
+.dog-card {
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  cursor: pointer;
+}
+.dog-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,.08); }
+.dog-card.selected {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245,158,11,.25);
+}
+
+.dog-card-name { font-weight: 700; }
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 12px;
+}
+
+.modal-actions .ghost {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  color: #111827;
+}
+
+.modal-actions button {
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: none;
+  background: #f59e0b;
+  color: #111827;
+  font-weight: 600;
+  cursor: pointer;
+}
+.modal-actions button:disabled { opacity: .6; cursor: not-allowed; }
+
+/* Make the info card a positioning context for the overlay */
+.information-zone-container { position: relative; }
+
+/* Full-panel loading overlay */
+.panel-loading{
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(255,255,255,0.6);
+  border-radius: 12px;
+  z-index: 5;
+}

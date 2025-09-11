@@ -23,19 +23,19 @@ type LoginRequest struct {
 }
 
 type LoginUserDTO struct {
-	ID        uint              `json:"ID"`
-	Username  string            `json:"username"`
-	FirstName string            `json:"first_name"`
-	LastName  string            `json:"last_name"`
-	Email     string            `json:"email"`
-	Phone     string            `json:"phone"`
-	Gender    *entity.Gender    `json:"gender,omitempty"`
+	ID        uint           `json:"ID"`
+	Username  string         `json:"username"`
+	FirstName string         `json:"first_name"`
+	LastName  string         `json:"last_name"`
+	Email     string         `json:"email"`
+	Phone     string         `json:"phone"`
+	Gender    *entity.Gender `json:"gender,omitempty"`
 }
 
 type LoginResponse struct {
-	TokenType string        `json:"token_type"`
-	Token     string        `json:"token"`
-	User      LoginUserDTO  `json:"user"`
+	TokenType string       `json:"token_type"`
+	Token     string       `json:"token"`
+	User      LoginUserDTO `json:"user"`
 }
 
 type SignUpRequest struct {
@@ -48,7 +48,6 @@ type SignUpRequest struct {
 	Username    string `json:"username"     binding:"required"`
 	Password    string `json:"password"     binding:"required"`
 }
-
 
 /* ===== Helpers ===== */
 
@@ -103,7 +102,7 @@ func SignUp(c *gin.Context) {
 		return
 	}
 
-	// บันทึก
+	
 	user := entity.User{
 		FirstName:   req.FirstName,
 		LastName:    req.LastName,
@@ -183,7 +182,7 @@ func SignIn(c *gin.Context) {
 		signedToken, err = generateForUser.GenerateTokenForUser(user.ID, user.Username, user.Email)
 	} else {
 		// Fallback: ใช้ของเดิมที่รับ string เดียว (เดิมคุณรับ email; ถ้าของเดิมยังรับ email ให้เปลี่ยนเป็น user.Email)
-		signedToken, err = jwtWrapper.GenerateToken(user.ID,user.Username,user.Email)
+		signedToken, err = jwtWrapper.GenerateToken(user.ID, user.Username, user.Email)
 	}
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "error signing token"})
@@ -196,18 +195,18 @@ func SignIn(c *gin.Context) {
 		out = user
 	}
 
-	resp := LoginResponse{
-        TokenType: "Bearer",
-        Token:     signedToken,
-        User: LoginUserDTO{
-            ID:        out.ID,
-            Username:  out.Username,
-            FirstName: out.FirstName,
-            LastName:  out.LastName,
-            Email:     out.Email,
-            Phone:     out.Phone,
-            Gender:    out.Gender,
-        },
-	}
-	c.JSON(http.StatusOK, resp);
+	c.JSON(http.StatusOK,gin.H{
+			"token_type": "Bearer",
+			"token":      signedToken,
+			"user": gin.H{
+				"id":        out.ID, // ใช้ gorm.Model => ฟิลด์ ID ใหญ่
+				"username":  out.Username,
+				"first_name": out.FirstName,
+				"last_name":  out.LastName,
+				"email":     out.Email,
+				"phone":     out.Phone,
+				"gender":    out.Gender, // ถ้า entity.Gender มี json tag ถูก จะ serialize เป็น object
+			},
+		},
+	)
 }

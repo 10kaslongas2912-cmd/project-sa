@@ -1,10 +1,6 @@
-
-@font-face {
-  font-family: 'Anakotmai';
-  src: url('../../../../assets/fonts/Anakotmai-Bold.woff2') format('woff2');
-  font-weight: bold;
-  font-style: normal;
-}
+@font-face { font-family:'Anakotmai'; src:url('.../Anakotmai-Regular.woff2') format('woff2'); font-weight:400; font-style:normal; font-display:swap; }
+@font-face { font-family:'Anakotmai'; src:url('.../Anakotmai-Bold.woff2') format('woff2'); font-weight:700; font-style:normal; font-display:swap; }
+html { font-synthesis:none; }
 
 .page-container {
   background-image: url('../../../../assets/donate_background.webp');
@@ -57,7 +53,7 @@
   margin-left: auto;
   margin-right: auto;
   margin-top: 60px;
-  margin-bottom: 30px;
+  margin-bottom: 50px;
 }
 
 
@@ -87,19 +83,13 @@
   background-color: #1976d2;
 }
 
-button h1{
-  font-size: 2.5em; /* Increased font size for h1 */
-  color: #ffffff;
-  margin-bottom: 20px;
-  line-height: 1.3;
-  text-align: center; /* Center the text within h1 */
+.button h1, .button h2 {
+  all: unset;          /* strip UA & global heading styles */
+  display:block;
+  color:#fff;
+  line-height:1.2;
 }
-button h2 {
-  font-size: 1.5em; /* Font size for h2 */
-  color: #ffffff;
-  margin-bottom: 20px;
-  line-height: 1.2;
-  white-space: nowrap; /* Keep text on a single line */
-  text-align: center; /* Center the text within h2 */
-  margin-top: 10px;
-}
+.button h1 { font-size:3rem; font-weight:700; margin:0 0 10px; }
+.button h2 { font-size:1.3rem; font-weight:400; margin:-6px 0 0; }
+
+

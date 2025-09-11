@@ -4,8 +4,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-
 	"example.com/project-sa/configs"
 	adopter "example.com/project-sa/controllers/adoption"
 	auth "example.com/project-sa/controllers/auth"
@@ -14,15 +12,20 @@ import (
 	gender "example.com/project-sa/controllers/gender"
 	health_record "example.com/project-sa/controllers/health_record"
 	payment_method "example.com/project-sa/controllers/payment_method"
+	personalities "example.com/project-sa/controllers/personality"
 	sponsorship "example.com/project-sa/controllers/sponsorship"
 	user "example.com/project-sa/controllers/user"
 	event "example.com/project-sa/controllers/event"
 	vaccine "example.com/project-sa/controllers/vaccine"
 	visit "example.com/project-sa/controllers/visit"
-	personalities "example.com/project-sa/controllers/personality"
+	manage "example.com/project-sa/controllers/manage"
+	staffs "example.com/project-sa/controllers/staff"
+	volunteers "example.com/project-sa/controllers/volunteerRegister"
+	zcmanagement "example.com/project-sa/controllers/zcmanagement"
 	"example.com/project-sa/middlewares"
 	"example.com/project-sa/migrations"
 	"example.com/project-sa/seeds"
+	"github.com/gin-gonic/gin"
 )
 
 const (
@@ -53,13 +56,20 @@ func main() {
 
 	r.GET("/dogs", dog.GetAllDogs)
 	r.GET("/dogs/:id", dog.GetDogById)
+	r.POST("/dogs", dog.CreateDog)
+	r.PUT("/dogs/:id", dog.UpdateDog)	
+	r.DELETE("/dogs/:id", dog.DeleteDog)
 	// r.POST("/dogs", dogs.CreateDog)
 	// r.PUT("/dogs/:id", dogs.UpdateDog)
 	// r.DELETE("/dogs/:id", dogs.DeleteDog)
+
 	r.POST("/sponsorships/one-time", sponsorship.CreateOneTimeSponsorship)
 	r.GET("/genders", gender.GetAll)
 	r.GET("/vaccines", vaccine.GetAll)
 	r.GET("/paymentMethods", payment_method.GetAll)
+
+	r.GET("/items", donation.GetAllItems)
+	r.GET("/units", donation.GetAllUnits)
 
 	r.GET("/health-records/dog/:id", health_record.GetHealthRecordsByDogId)
 	r.POST("/health-records", health_record.CreateHealthRecord)
@@ -67,7 +77,34 @@ func main() {
 	r.DELETE("/health-records/:id", health_record.DeleteHealthRecord)
 	r.GET("/health-records/:id", health_record.GetHealthRecordById)
 	r.POST("/visits", visit.CreateVisit)
+
+	r.GET("/animal-sexes",dog.GetAllAnimalSexes)
+	r.GET("/animal-sizes",dog.GetAllAnimalSizes)
+	r.GET("/visits", visit.GetAllVisits)
+	r.GET("/visits/:id", visit.GetVisit)
+	r.PUT("/visits/:id", visit.UpdateVisit)
+	r.DELETE("/visits/:id", visit.DeleteVisit)
+
+	r.POST("/manages", manage.CreateManage)
+	r.GET("/manages", manage.GetAllManages)
+	r.GET("/manages/:id", manage.GetManageByID)
+	r.PUT("/manages/:id", manage.UpdateManage)
+	r.DELETE("/manages/:id", manage.DeleteManage)
+
+	// Staff routes
+	r.POST("/staffs/auth",staffs.StaffSignIn)
+	r.POST("/staffs/signup",staffs.StaffSignUp)
+	r.GET("/staffs", staffs.GetAllStaffs)
+	r.GET("/staffs/:id", staffs.GetStaffById)
+	r.PUT("/staffs/:id", staffs.UpdateStaff)
+	r.DELETE("/staffs/:id", staffs.DeleteStaff)
+
+
+
+
 	r.GET("/personalities", personalities.GetAllPersonalities)
+	r.GET("/breeds", dog.GetAllBreeds)
+
 
 // Events 
 	r.GET("/events", event.GetAllEvents)        
@@ -77,12 +114,32 @@ func main() {
 	r.PUT("/events/:id", event.UpdateEvent)
 	r.DELETE("/events/:id", event.DeleteEvent)
 	r.POST("/events/upload-image", event.UploadEventImage)
+
 	// 7) Routes (protected)
+	r.PUT("/kennels/:id", zcmanagement.UpdateDogInKennel)
+	r.DELETE("/kennels/:id", zcmanagement.DeleteDogFromKennel)
+	r.GET("/kennels", zcmanagement.GetDogInKennel)
+	r.GET("/zcmanagement", zcmanagement.GetAll)
+
+	r.GET("/volunteers", volunteers.GetAllVolunteers)
+	r.GET("/volunteer/:id", volunteers.GetVolunteerByID)
+	r.GET("/volunteers/user/:user_id", volunteers.GetVolunteersByUserID)
+	r.POST("/volunteer", volunteers.CreateVolunteer)
+	r.PUT("/volunteer/:id", volunteers.UpdateVolunteer)
+	r.DELETE("/volunteer/:id", volunteers.DeleteVolunteer)
+	r.GET("/skills", volunteers.GetAllSkills)     //new
+	r.GET("/statusfv", volunteers.GetAllStatusFV) //new
+
+	r.POST("/donations/guest", donation.CreateDonation)
+	r.PUT("/volunteer/:id/status", volunteers.UpdateVolunteerStatus)
+		// 7) Routes (protected)
+
 	protected := r.Group("/")
 	protected.Use(middlewares.Authorizes())
 	{
-		protected.POST("/donations", donation.CreateDonation)
+		// protected.POST("/donations", donation.CreateDonation)
 		protected.GET("/users/me", user.Me)
+		protected.GET("/staffs/me", staffs.Me)
 		protected.PUT("/users/:id", user.UpdateUser)
 		protected.GET("/users", user.GetAllUsers)
 		protected.GET("/users/:id", user.GetUserById)
@@ -90,7 +147,13 @@ func main() {
 		protected.POST("/sponsorships/subscription", sponsorship.CreateSubscriptionSponsorship)
 		protected.GET("/my-adoptions", adopter.GetMyCurrentAdoptions)
 		protected.GET("/donations/my", donation.GetMyDonations)
+		protected.GET("/donations", donation.GetAllDonations)
+		protected.PUT("/donations/:id/status", donation.UpdateDonationStatus)
 
+	}
+	don := r.Group("/donations", middlewares.OptionalAuthorize())
+	{
+		don.POST("", donation.CreateDonation)
 	}
 
 	// health
@@ -112,7 +175,7 @@ func main() {
 
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")	
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")

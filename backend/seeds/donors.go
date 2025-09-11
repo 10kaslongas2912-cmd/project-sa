@@ -12,12 +12,14 @@ func seedDonors(db *gorm.DB) error {
 		LastName:  pointer.P("Doe"),
 		Email:     pointer.P("john.doe@example.com"),
 		Phone:     pointer.P("0812345678"),
+		DonorType: pointer.P("guest"),
 	}
 	Donor2 := entity.Donor{
 		FirstName: pointer.P("Jane"),
 		LastName:  pointer.P("Smith"),
 		Email:     pointer.P("jane.smith@example.com"),
 		Phone:     pointer.P("0898765432"),
+		DonorType: pointer.P("guest"),
 	}
 
 	// if err := db.FirstOrCreate(&Donor1).Error; err != nil { return nil }
