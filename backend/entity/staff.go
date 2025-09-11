@@ -23,6 +23,5 @@ type Staff struct {
 	Gender *Gender `gorm:"foreignKey:GenderID" json:"gender"`
 
 	KennelManagements []KennelManagement `gorm:"foreignKey:StaffID" json:"kennel_managements"`
-	Events           []Event           `gorm:"foreignKey:StaffID" json:"events"`
 	MedicalRecords   []MedicalRecord   `gorm:"foreignKey:StaffID" json:"medical_records"`
 }

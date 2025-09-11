@@ -45,4 +45,4 @@ func AutoMigrate(db *gorm.DB) error {
 		&entity.Visit{},
 		&entity.VisitDetail{},
 	)
-}
+}	
