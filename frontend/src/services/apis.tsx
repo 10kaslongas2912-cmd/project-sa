@@ -194,6 +194,7 @@ export const donationAPI = {
   getUnitById: (id: number) => Get(`/units/${id}`),
   getAllUnits: () => Get("/units"),
   updateStatus: (id: number, data: { status: string }) => Put(`/donations/${id}/status`, data),
+  remove: (id: number) => Delete(`/donations/${id}`),
   // ถ้า BE มี endpoint สำหรับ update/delete ค่อยเพิ่ม
   // update:  (id: number, data: UpdateDonationRequest) => Put(`/donations/${id}`, data),
   // remove:  (id: number) => Delete(`/donations/${id}`),

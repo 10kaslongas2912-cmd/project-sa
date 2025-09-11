@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { 
-  Input, 
+import {
+  Input,
   Card,
   Typography,
   Table,
@@ -12,24 +12,30 @@ import {
   Checkbox,
   Tag,
   Spin,
-  Alert
+  Alert,
+  Modal,
+  message,
+  Descriptions,
+  Popconfirm
 } from 'antd';
-import { 
-  SearchOutlined, 
+import {
+  SearchOutlined,
   MoreOutlined,
   CalendarOutlined,
   DollarOutlined,
-  GiftOutlined
+  GiftOutlined,
+  DeleteOutlined,
+  EyeOutlined
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { donationAPI } from "../../../services/apis";
 import type {
-    DonorInterface,
-    DonationInterface,
-    MoneyDonationInterface,
-    ItemDonationInterface,
-    ItemInterface,
-    UnitInterface
+  DonorInterface,
+  DonationInterface,
+  MoneyDonationInterface,
+  ItemDonationInterface,
+  ItemInterface,
+  UnitInterface
 } from "../../../interfaces/Donation";
 import "./style.css";
 
@@ -71,6 +77,10 @@ const DonationHistory: React.FC = () => {
   const [filteredData, setFilteredData] = useState<ApiDonationResponse[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Modal states - เหลือแค่ view modal
+  const [viewModalVisible, setViewModalVisible] = useState(false);
+  const [selectedDonation, setSelectedDonation] = useState<ApiDonationResponse | null>(null);
+
   // Constants
   const STATUS_MAP: Record<string, StatusConfig> = {
     complete: { text: 'สำเร็จ', color: 'success' },
@@ -82,8 +92,8 @@ const DonationHistory: React.FC = () => {
   };
 
   const TYPE_MAP: Record<string, TypeConfig> = {
-    money: { text: 'เงิน', color: 'blue', icon: <DollarOutlined /> },
-    item: { text: 'สิ่งของ', color: 'green', icon: <GiftOutlined /> },
+    money: { text: 'เงิน', color: '#253C90', icon: <DollarOutlined /> },
+    item: { text: 'สิ่งของ', color: '#ff6600', icon: <GiftOutlined /> },
   };
 
   // Fetch data from API
@@ -134,6 +144,30 @@ const DonationHistory: React.FC = () => {
     setCurrentPage(1);
   }, [activeTab, searchQuery, sortOrder, allDonations]);
 
+  // Action handlers
+  const handleView = (record: ApiDonationResponse) => {
+    setSelectedDonation(record);
+    setViewModalVisible(true);
+  };
+
+  const handleDelete = async (record: ApiDonationResponse) => {
+    try {
+      setLoading(true);
+
+      // เรียก API ลบจริง
+      await donationAPI.remove(record.ID!);
+
+      // ลบจาก state
+      setAllDonations(prev => prev.filter(item => item.ID !== record.ID));
+      message.success('ลบการบริจาคเรียบร้อยแล้ว');
+    } catch (err) {
+      console.error('Failed to delete donation:', err);
+      message.error('ไม่สามารถลบการบริจาคได้');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Utility functions
   const getDonorFullName = (donor: DonorInterface): string => {
     return `${donor?.first_name || ''} ${donor?.last_name || ''}`.trim();
@@ -141,22 +175,22 @@ const DonationHistory: React.FC = () => {
 
   const formatDate = (dateString: string | Date | undefined): string => {
     if (!dateString) return 'ไม่ระบุวันที่';
-    
+
     const date = new Date(dateString);
-    return isNaN(date.getTime()) 
+    return isNaN(date.getTime())
       ? 'วันที่ไม่ถูกต้อง'
       : date.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' });
   };
 
   const getStatusBadge = (status: string | undefined) => {
-    const statusInfo = STATUS_MAP[status?.toLowerCase() || ''] || 
+    const statusInfo = STATUS_MAP[status?.toLowerCase() || ''] ||
       { text: status || 'ไม่ระบุสถานะ', color: 'default' as const };
     return <Badge color={statusInfo.color} text={statusInfo.text} />;
   };
 
   const getTypeTag = (type: string | undefined) => {
     const typeInfo = TYPE_MAP[type?.toLowerCase() || ''];
-    
+
     if (!typeInfo) {
       return <Tag>{type || 'ไม่ระบุ'}</Tag>;
     }
@@ -168,11 +202,9 @@ const DonationHistory: React.FC = () => {
     );
   };
 
-
-
   const handleCheckboxChange = (recordId: number, checked: boolean) => {
-    setSelectedRecords(prev => 
-      checked 
+    setSelectedRecords(prev =>
+      checked
         ? [...prev, recordId]
         : prev.filter(id => id !== recordId)
     );
@@ -183,7 +215,107 @@ const DonationHistory: React.FC = () => {
     return allDonations.filter(r => r.donation_type === type).length;
   };
 
-  // Table columns
+  // Render donation details in view modal
+  const renderDonationDetails = (donation: ApiDonationResponse) => {
+    return (
+      <div>
+        <Descriptions title={<div style={{ fontFamily: 'Anakotmai', color: '#253C90', fontSize: '20px' }}>รายละเอียดผู้บริจาค</div>} bordered column={2}>
+          <Descriptions.Item label="ชื่อ-นามสกุล">
+            {getDonorFullName(donation.donor)}
+          </Descriptions.Item>
+          <Descriptions.Item label="อีเมล">
+            {donation.donor?.email || 'ไม่ระบุ'}
+          </Descriptions.Item>
+          <Descriptions.Item label="เบอร์โทรศัพท์">
+            {donation.donor?.phone || 'ไม่ระบุ'}
+          </Descriptions.Item>
+          <Descriptions.Item label="ประเภทผู้บริจาค">
+            {donation.donor?.donor_type === 'user' ? 'สมาชิก' : 'ผู้บริจาคทั่วไป'}
+          </Descriptions.Item>
+        </Descriptions>
+
+        <Descriptions title={<div style={{ fontFamily: 'Anakotmai', color: '#253C90', fontSize: '20px' }}>รายละเอียดการบริจาค</div>} bordered column={2} style={{ marginTop: 16 }}>
+          <Descriptions.Item label="รหัสการบริจาค">
+            {donation.ID}
+          </Descriptions.Item>
+          <Descriptions.Item label="วันที่บริจาค">
+            {formatDate(donation.donation_date)}
+          </Descriptions.Item>
+          <Descriptions.Item label="ประเภทการบริจาค">
+            {getTypeTag(donation.donation_type)}
+          </Descriptions.Item>
+          <Descriptions.Item label="สถานะ">
+            {getStatusBadge(donation.status)}
+          </Descriptions.Item>
+          <Descriptions.Item label="คำอธิบาย" span={2}>
+            {donation.description || 'ไม่มีคำอธิบาย'}
+          </Descriptions.Item>
+        </Descriptions>
+
+        {/* Money donation details */}
+        {donation.money_donations && donation.money_donations.length > 0 && (
+          <Descriptions title={<div style={{ fontFamily: 'Anakotmai', color: '#253C90', fontSize: '20px' }}>รายละเอียดการบริจาคเงิน</div>} bordered column={2} style={{ marginTop: 16 }}>
+            {donation.money_donations.map((money, index) => (
+              <React.Fragment key={index}>
+                <Descriptions.Item label="จำนวนเงิน">
+                  {money.amount?.toLocaleString()} บาท
+                </Descriptions.Item>
+                <Descriptions.Item label="ประเภทการชำระ">
+                  {money.payment_type === 'one-time' ? 'ครั้งเดียว' : 'รายเดือน'}
+                </Descriptions.Item>
+                <Descriptions.Item label="หมายเลขอ้างอิง">
+                  {money.transaction_ref || 'ไม่มี'}
+                </Descriptions.Item>
+                <Descriptions.Item label="สถานะการชำระ">
+                  <Badge
+                    color={money.status === 'success' || money.status === 'complete' ? 'green' : 'orange'}
+                    text={money.status === 'success' || money.status === 'complete' ? 'สำเร็จ' : 'รอดำเนินการ'}
+                  />
+                </Descriptions.Item>
+              </React.Fragment>
+            ))}
+          </Descriptions>
+        )}
+
+        {/* Item donation details */}
+        {donation.item_donations && donation.item_donations.length > 0 && (
+          <div style={{ marginTop: 16 }}>
+            <Title level={5} style={{ fontFamily: 'Anakotmai', color: '#253C90', fontSize: '20px' }}>รายละเอียดสิ่งของที่บริจาค</Title>
+            <Table
+              dataSource={donation.item_donations}
+              rowKey="ID"
+              pagination={false}
+              size="small"
+              columns={[
+                {
+                  title: 'ชื่อสิ่งของ',
+                  dataIndex: ['item', 'name'],
+                  key: 'itemName'
+                },
+                {
+                  title: 'จำนวน',
+                  dataIndex: 'quantity',
+                  key: 'quantity'
+                },
+                {
+                  title: 'หน่วย',
+                  dataIndex: ['unit', 'name'],
+                  key: 'unitName'
+                },
+                {
+                  title: 'หมายเลขอ้างอิง',
+                  dataIndex: 'item_ref',
+                  key: 'itemRef'
+                }
+              ]}
+            />
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Table columns - ลบคอลัมน์แก้ไขออก
   const columns: ColumnsType<ApiDonationResponse> = [
     {
       title: '',
@@ -237,13 +369,42 @@ const DonationHistory: React.FC = () => {
     {
       title: 'การดำเนินการ',
       key: 'action',
-      render: () => (
+      render: (_, record) => (
         <Dropdown
           menu={{
             items: [
-              { key: 'view', label: 'ดูรายละเอียด' },
-              { key: 'edit', label: 'แก้ไข' },
-              { key: 'delete', label: 'ลบ', danger: true }
+              {
+                key: 'view',
+                label: (
+                  <Space>
+                    <EyeOutlined />
+                    ดูรายละเอียด
+                  </Space>
+                ),
+                onClick: () => handleView(record)
+              },
+              {
+                type: 'divider'
+              },
+              {
+                key: 'delete',
+                label: (
+                  <Popconfirm
+                    title="ยืนยันการลบ"
+                    description="คุณต้องการลบการบริจาคนี้หรือไม่?"
+                    okText="ลบ"
+                    cancelText="ยกเลิก"
+                    okButtonProps={{ danger: true }}
+                    onConfirm={() => handleDelete(record)}
+                  >
+                    <Space style={{ color: '#ff4d4f' }}>
+                      <DeleteOutlined />
+                      ลบ
+                    </Space>
+                  </Popconfirm>
+                ),
+                danger: true,
+              }
             ]
           }}
           trigger={['click']}
@@ -266,11 +427,11 @@ const DonationHistory: React.FC = () => {
   return (
     <div className="donation-history-page">
       <div className="page-header">
-        <Title level={2} className="page-title" style={{ fontFamily: 'Anakotmai', color: '#ff6600' , fontSize: '50px',marginTop: '-20px'}}>
+        <Title level={2} className="page-title" style={{ fontFamily: 'Anakotmai', color: '#ff6600', fontSize: '50px', marginTop: '-20px' }}>
           ประวัติการบริจาค
         </Title>
         <div className="title-underline"></div>
-        
+
         <div className="page-controls">
           <div className="search-section">
             <Input
@@ -280,7 +441,7 @@ const DonationHistory: React.FC = () => {
               prefix={<SearchOutlined />}
               size="large"
               className="search-input"
-              style={{ width: '2500px', maxWidth: '100%',marginLeft: '2px' }}
+              style={{ width: '2500px', maxWidth: '100%', marginLeft: '2px' }}
             />
           </div>
         </div>
@@ -298,7 +459,7 @@ const DonationHistory: React.FC = () => {
                 <span>ประวัติทั้งหมด</span>
                 <span className="tab-count">{getTabCount('all')}</span>
               </button>
-              
+
               <button
                 className={`tab-button ${activeTab === 'money' ? 'active' : ''}`}
                 onClick={() => handleTabChange('money')}
@@ -307,7 +468,7 @@ const DonationHistory: React.FC = () => {
                 <span>บริจาคเงิน</span>
                 <span className="tab-count">{getTabCount('money')}</span>
               </button>
-              
+
               <button
                 className={`tab-button ${activeTab === 'item' ? 'active' : ''}`}
                 onClick={() => handleTabChange('item')}
@@ -317,7 +478,7 @@ const DonationHistory: React.FC = () => {
                 <span className="tab-count">{getTabCount('item')}</span>
               </button>
             </div>
-            
+
             <div className="tab-controls">
               <Select
                 value={sortOrder}
@@ -354,6 +515,21 @@ const DonationHistory: React.FC = () => {
           </Spin>
         </div>
       </Card>
+
+      {/* View Modal - เหลือแค่ modal ดูรายละเอียด */}
+      <Modal
+        title={<div style={{ fontFamily: 'Anakotmai', color: '#ff6600', fontSize: '30px' }}>รายละเอียดการบริจาค</div>}
+        open={viewModalVisible}
+        onCancel={() => setViewModalVisible(false)}
+        footer={[
+          <Button key="close" onClick={() => setViewModalVisible(false)}>
+            ปิด
+          </Button>
+        ]}
+        width={800}
+      >
+        {selectedDonation && renderDonationDetails(selectedDonation)}
+      </Modal>
     </div>
   );
 };

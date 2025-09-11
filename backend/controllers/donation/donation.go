@@ -312,3 +312,65 @@ func UpdateDonationStatus(c *gin.Context) {
 		"new_status":  payload.Status,
 	})
 }
+func DeleteDonation(c *gin.Context) {
+	id := c.Param("id")
+	db := configs.DB()
+
+	// เริ่ม transaction
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "panic: rolled back"})
+		}
+	}()
+
+	// ตรวจสอบว่ามี donation นี้อยู่หรือไม่
+	var donation entity.Donation
+	if err := tx.First(&donation, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			tx.Rollback()
+			c.JSON(http.StatusNotFound, gin.H{"error": "Donation not found"})
+			return
+		}
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error: " + err.Error()})
+		return
+	}
+
+	// ลบ money donations ที่เกี่ยวข้อง (ถ้ามี)
+	if donation.DonationType == "money" {
+		if err := tx.Where("donation_id = ?", donation.ID).Delete(&entity.MoneyDonation{}).Error; err != nil {
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete money donations: " + err.Error()})
+			return
+		}
+	}
+
+	// ลบ item donations ที่เกี่ยวข้อง (ถ้ามี)
+	if donation.DonationType == "item" {
+		if err := tx.Where("donation_id = ?", donation.ID).Delete(&entity.ItemDonation{}).Error; err != nil {
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete item donations: " + err.Error()})
+			return
+		}
+	}
+
+	// ลบ donation หลัก
+	if err := tx.Delete(&donation).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete donation: " + err.Error()})
+		return
+	}
+
+	// commit transaction
+	if err := tx.Commit().Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Transaction commit failed: " + err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":     "Donation deleted successfully",
+		"donation_id": id,
+	})
+}

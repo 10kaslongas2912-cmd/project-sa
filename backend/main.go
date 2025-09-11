@@ -130,9 +130,11 @@ func main() {
 		protected.DELETE("/users/:id", user.DeleteUser)
 		protected.POST("/sponsorships/subscription", sponsorship.CreateSubscriptionSponsorship)
 		protected.GET("/my-adoptions", adopter.GetMyCurrentAdoptions)
+		
 		protected.GET("/donations/my", donation.GetMyDonations)
 		protected.GET("/donations", donation.GetAllDonations)
 		protected.PUT("/donations/:id/status", donation.UpdateDonationStatus)
+		protected.DELETE("/donations/:id", donation.DeleteDonation)
 
 	}
 	don := r.Group("/donations", middlewares.OptionalAuthorize())
