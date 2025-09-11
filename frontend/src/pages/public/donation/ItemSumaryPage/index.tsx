@@ -4,12 +4,19 @@ import { useNavigate } from "react-router-dom";
 import { message } from "antd";
 
 import { donationAPI } from "../../../../services/apis";
-import type { DonorInterface, ItemDonationInterface, CreateDonationRequest } from "../../../../interfaces/Donation";
+import type { DonorInterface, ItemDonationInterface, CreateDonationRequest, ItemInterface, UnitInterface } from "../../../../interfaces/Donation";
 
 interface DonationItem { 
   itemName: string;
   quantity: string;
   unit: string;
+}
+
+interface DonationItemFormState {
+  id: string;
+  itemId: string;
+  quantity: string;
+  unitId: string;
 }
 
 // Helper to get donation data from sessionStorage
@@ -29,6 +36,12 @@ const DonationSummaryPage: React.FC = () => {
   const [createAccount, setCreateAccount] = useState<boolean | null>(null);
   const [summaryData] = useState(getDonationData());
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
+  // เพิ่ม state สำหรับเก็บข้อมูล items และ units
+  const [availableItems, setAvailableItems] = useState<ItemInterface[]>([]);
+  const [availableUnits, setAvailableUnits] = useState<UnitInterface[]>([]);
+  const [donationItemsWithNames, setDonationItemsWithNames] = useState<DonationItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');
@@ -36,6 +49,45 @@ const DonationSummaryPage: React.FC = () => {
       setIsLoggedIn(true);
     }
   }, []);
+
+  // Fetch available items และ units จาก backend
+  useEffect(() => {
+    const fetchDonationOptions = async () => {
+      try {
+        setIsLoading(true);
+        const [itemsResponse, unitsResponse] = await Promise.all([
+          donationAPI.getAllItems(),
+          donationAPI.getAllUnits(),
+        ]);
+        setAvailableItems(itemsResponse || []);
+        setAvailableUnits(unitsResponse || []);
+      } catch (err) {
+        console.error("Failed to fetch donation options:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDonationOptions();
+  }, []);
+
+  // แปลงข้อมูลจาก ID เป็นชื่อ
+  useEffect(() => {
+    if (availableItems.length > 0 && availableUnits.length > 0 && summaryData.donationItems) {
+      const itemsWithNames: DonationItem[] = summaryData.donationItems.map((item: DonationItemFormState) => {
+        const itemData = availableItems.find(i => i.ID === Number(item.itemId));
+        const unitData = availableUnits.find(u => u.ID === Number(item.unitId));
+        
+        return {
+          itemName: itemData?.name || 'ไม่พบข้อมูล',
+          quantity: item.quantity,
+          unit: unitData?.name || 'ไม่พบข้อมูล'
+        };
+      });
+      
+      setDonationItemsWithNames(itemsWithNames);
+    }
+  }, [availableItems, availableUnits, summaryData]);
 
   const handleNext = async () => {
     if (!isLoggedIn && createAccount === null) {
@@ -67,7 +119,7 @@ const DonationSummaryPage: React.FC = () => {
     const donationType = sessionStorage.getItem('donationType');
 
     if (!donorInfoString || !itemDetailsString || donationType !== 'item') {
-      messageApi.open({ type: "error", content: "ข้อมูลการบริจาคไม่สมบูรณ์ กรุณาเริ่มต้นใหม่" });
+      messageApi.open({ type: "error", content: "ข้อมูลการบริจาคไม่สมบูรณ์ กรุณาเริ่มต้นใหม่อีกครั้ง" });
       navigate('/donation/options');
       return;
     }
@@ -97,11 +149,10 @@ const DonationSummaryPage: React.FC = () => {
       }));
 
       const payload: CreateDonationRequest = {
-              donor_info: donorInfo,                         // <-- เพิ่มข้อมูลผู้บริจาค
-              donation_type: donationType,                   // <-- แก้ชื่อ key
-              //money_donation_details: moneyDetails,         // << รวมไว้ในก้อนเดียว
-              item_donation_details: itemDetails,     // ถ้ามีของ (กรณี item) ใส่ภายหลัง
-            };
+        donor_info: donorInfo,
+        donation_type: donationType,
+        item_donation_details: itemDetails,
+      };
       
       const result = await donationAPI.create(payload);
 
@@ -125,6 +176,16 @@ const DonationSummaryPage: React.FC = () => {
     navigate('/donation/item');
   };
 
+  if (isLoading) {
+    return (
+      <div className="summary-page-container">
+        <div className="summary-content">
+          <div>กำลังโหลดข้อมูล...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       {contextHolder}
@@ -137,8 +198,8 @@ const DonationSummaryPage: React.FC = () => {
           <div className="summary-box">
             <h2 className="summary-section-title">สรุปรายการบริจาคสิ่งของ</h2>
             <ul className="donation-list">
-              {summaryData.donationItems && summaryData.donationItems.length > 0 ? (
-                summaryData.donationItems.map((item: DonationItem, index: number) => (
+              {donationItemsWithNames.length > 0 ? (
+                donationItemsWithNames.map((item: DonationItem, index: number) => (
                   <li key={index} className="donation-list-item">
                     {item.itemName} จำนวน {item.quantity} {item.unit}
                   </li>
@@ -154,8 +215,8 @@ const DonationSummaryPage: React.FC = () => {
               ท่านสามารถนำมาบริจาคด้วยตนเองหรือส่งมาให้ได้ จ่าหน้าถึง <strong>DOG CARE (ของบริจาค)</strong>
             </p>
             <p className="delivery-address">
-              เลขที่ 15/1 ม.1 ซ.พระมหาการุณย์25 ถ.ติวานนท์-ปากเกร็ด56 ต.บ้านใหม่ อ.ปากเกร็ด จ.นนทบุรี 11120<br />
-              โทร.02-584-4896 หรือมือถือ 065-887-4888
+              111 ถนนมหาวิทยาลัย ตำบลสุรนารี อำเภอเมือง จังหวัดนครราชสีมา 30000<br />
+              โทร.0-4422-3000
             </p>
           </div>
           {!isLoggedIn && (
