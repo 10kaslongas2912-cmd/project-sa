@@ -20,6 +20,9 @@ const isFormData = (v: any): v is FormData =>
 const mpHeaders = { "Content-Type": "multipart/form-data" };
 import type { CreateAdoptionRequest, UpdateStatusRequest } from "../interfaces/Adoption";
 import type { CreateSponsorshipRequest } from "../interfaces/Sponsorship";
+import type { CreateManageRequest,UpdateManageRequest } from "../interfaces/Manage";
+import { g } from "framer-motion/client";
+
 import type { CreateEventRequest, UpdateEventRequest } from "../interfaces/Event";
 /** ---------- AUTH ---------- */
 export const authAPI = {
@@ -40,7 +43,7 @@ export const staffAuthAPI = {
 
 };
 
-// ฐานพหูพจน์ + /:id
+// การพหูพจน์ + /:id
 export const userAPI = {
   getAll:  () => Get("/users"),
   getById: (id: number) => Get(`/users/${id}`),
@@ -272,18 +275,29 @@ export const personalityAPI = {
   getAll: () => Get("/personalities"),
 }
 
+// ส่วนของ buildingAPI และ manageAPI ที่แก้ไขแล้ว
+
+export const buildingAPI = {
+  getAll: () => Get("/buildings"),
+};
+
+// ✅ แก้ไข manageAPI ให้มี error handling ที่ดีกว่า
 export const manageAPI = { 
-  create: (data: any) => Post("/manages", data),
+  create: (data: CreateManageRequest) => Post("/manages", data),
   getAll: () => Get("/manages"),
   getById: (id: number) => Get(`/manages/${id}`),
-  update: (id: number, data: any) => Put(`/manages/${id}`, data),
+  update: (id: number, data: UpdateManageRequest) => Put(`/manages/${id}`, data),
   remove: (id: number) => Delete(`/manages/${id}`),
-}
+  
+};
 
+// ✅ แก้ไข staffAPI ให้มี error handling ที่ดีกว่า
 export const staffAPI = {
-  create: (data: any) => Post("/staffs", data),
   getAll: () => Get("/staffs"),
   getById: (id: number) => Get(`/staffs/${id}`),
+  create: (data: any) => Post("/staffs", data),
+  update: (id: number, data: any) => Put(`/staffs/${id}`, data),
+  remove: (id: number) => Delete(`/staffs/${id}`),
 };
 
 
@@ -367,6 +381,8 @@ export const api = {
   healthRecordAPI,
   vaccineAPI,
   visitAPI,
+  manageAPI,
+  staffAPI,
+  buildingAPI,
   eventAPI,
-  manageAPI
 };

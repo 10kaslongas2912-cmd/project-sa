@@ -3,6 +3,8 @@ package manages
 import (
 	"net/http"
 	"time"
+	"fmt"
+	"log"
 
 	"github.com/gin-gonic/gin"
 	"example.com/project-sa/entity"
@@ -21,13 +23,34 @@ type CreateManageRequest struct {
 func CreateManage(c *gin.Context) {
 	var req CreateManageRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		log.Printf("Binding error: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Invalid request data: %v", err.Error())})
 		return
 	}
 
+	log.Printf("Received manage request: %+v", req)
+
+	// Validate date format
 	dateTask, err := time.Parse("2006-01-02", req.DateTask)
 	if err != nil {
+		log.Printf("Date parsing error: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid date_task format, use YYYY-MM-DD"})
+		return
+	}
+
+	// Check if staff exists
+	var staff entity.Staff
+	if err := configs.DB().First(&staff, req.StaffID).Error; err != nil {
+		log.Printf("Staff not found: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "staff not found"})
+		return
+	}
+
+	// Check if building exists - NOW ENABLED
+	var building entity.Building
+	if err := configs.DB().First(&building, req.BuildingID).Error; err != nil {
+		log.Printf("Building not found: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "building not found"})
 		return
 	}
 
@@ -39,11 +62,20 @@ func CreateManage(c *gin.Context) {
 		BuildingID: req.BuildingID,
 	}
 
+	log.Printf("Creating manage: %+v", manage)
+
 	if err := configs.DB().Create(&manage).Error; err != nil {
+		log.Printf("Database error: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create manage"})
 		return
 	}
 
+	// Load relations for response
+	if err := configs.DB().Preload("Staff").Preload("Building").First(&manage, manage.ID).Error; err != nil {
+		log.Printf("Failed to load relations: %v", err)
+	}
+
+	log.Printf("Successfully created manage with ID: %d", manage.ID)
 	c.JSON(http.StatusCreated, gin.H{"message": "manage created successfully", "data": manage})
 }
 
@@ -51,9 +83,12 @@ func CreateManage(c *gin.Context) {
 func GetAllManages(c *gin.Context) {
 	var manages []entity.Manage
 	if err := configs.DB().Preload("Staff").Preload("Building").Find(&manages).Error; err != nil {
+		log.Printf("Database error: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch manages"})
 		return
 	}
+	
+	log.Printf("Found %d manages", len(manages))
 	c.JSON(http.StatusOK, manages)
 }
 
@@ -79,13 +114,28 @@ func UpdateManage(c *gin.Context) {
 
 	var req CreateManageRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		log.Printf("Update binding error: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Invalid request data: %v", err.Error())})
 		return
 	}
 
 	dateTask, err := time.Parse("2006-01-02", req.DateTask)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid date_task format, use YYYY-MM-DD"})
+		return
+	}
+
+	// Check if staff exists
+	var staff entity.Staff
+	if err := configs.DB().First(&staff, req.StaffID).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "staff not found"})
+		return
+	}
+
+	// Check if building exists - NOW ENABLED
+	var building entity.Building
+	if err := configs.DB().First(&building, req.BuildingID).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "building not found"})
 		return
 	}
 
@@ -96,8 +146,14 @@ func UpdateManage(c *gin.Context) {
 	manage.BuildingID = req.BuildingID
 
 	if err := configs.DB().Save(&manage).Error; err != nil {
+		log.Printf("Update error: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update manage"})
 		return
+	}
+
+	// Load relations for response
+	if err := configs.DB().Preload("Staff").Preload("Building").First(&manage, manage.ID).Error; err != nil {
+		log.Printf("Failed to load relations: %v", err)
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "manage updated successfully", "data": manage})
@@ -107,6 +163,7 @@ func UpdateManage(c *gin.Context) {
 func DeleteManage(c *gin.Context) {
 	id := c.Param("id")
 	if err := configs.DB().Delete(&entity.Manage{}, id).Error; err != nil {
+		log.Printf("Delete error: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete manage"})
 		return
 	}

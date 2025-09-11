@@ -13,6 +13,7 @@ const HealthRecords = Loadable(lazy(() => import("../pages/public/HealthRecord/S
 const EventadminPage = Loadable(lazy(() => import("../pages/public/event/evenadmid"))); //หน้า Admin Adoption
 const CreateVisit = Loadable(lazy(() => import("../pages/dashboard/visit/createVisit")));
 const UpdateVisit = Loadable(lazy(() => import("../pages/dashboard/visit/updateVisit")));
+const Manage = Loadable(lazy(() => import("../pages/dashboard/manage")));
 const ZoneCageManagementPage = Loadable(lazy(() => import("../pages/dashboard/ZoneCageManagement")));
 const Volunteer = Loadable(lazy(() => import("../pages/dashboard/Volunteer")));
 /// ==============================|| DASHBOARD ROUTING ||============================== //
@@ -67,6 +68,10 @@ export const dashboardRoutes: RouteObject = {
     {
         path: 'update-visit',
         element: <UpdateVisit />
+    },
+    {
+        path: 'manage',
+        element: <Manage />
     },
     {
       path: "health-record/dog/:id",

@@ -4,7 +4,7 @@ import { CalendarOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import "./style.css";
 import type { DogInterface } from "../../../../interfaces/Dog";
 import { ageText } from "../../../../utils/date";
-import { useDogs } from "../../../../hooks/useDogs_jia";
+import { useDogs } from "../../../../hooks/useDogs";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
 import { visitAPI } from "../../../../services/apis";
@@ -112,16 +112,6 @@ const DogVisitForm: React.FC = () => {
         });
     };
 
-    const handleClearForm = () => {
-        form.resetFields();
-        setSelectedDogs([]);
-        setSearchTerm("");
-        message.info({
-            content: "ล้างข้อมูลเรียบร้อยแล้ว",
-            duration: 2
-        });
-    };
-
     const renderDogCard = (dog: DogInterface) => (
         <Card
             key={dog.ID}
@@ -179,10 +169,10 @@ const DogVisitForm: React.FC = () => {
     return (
   <div className="dog-visit-form-container" style={{ display: "flex", gap: "24px", alignItems: "flex-start" }}>
     {/* การ์ด 1: ฟอร์มสร้างการเยี่ยมชม */}
-    <Card className="visit-form-card" style={{ flex: 1 }}>
+    <Card className="visit-form-card" style={{ flex: 1, minWidth: 300 }}>
       <div className="form-header">
         
-        <Title level={2}>สร้างการเยี่ยมชมน้องหมา</Title>
+        <Title level={1}>สร้างการเยี่ยมชมน้องหมา</Title>
       </div>
 
       <Form
@@ -286,6 +276,7 @@ const DogVisitForm: React.FC = () => {
         <Form.Item className="form-actions">
           <Space size="large">
             <Button
+              className="btn-action"
               type="primary"
               htmlType="submit"
               loading={submitting}
@@ -295,9 +286,7 @@ const DogVisitForm: React.FC = () => {
             >
               {submitting ? "กำลังสร้าง..." : "สร้างการเยี่ยมชม"}
             </Button>
-            <Button onClick={handleClearForm} size="large" disabled={submitting}>
-              ล้างข้อมูล
-            </Button>
+            
           </Space>
         </Form.Item>
       </Form>

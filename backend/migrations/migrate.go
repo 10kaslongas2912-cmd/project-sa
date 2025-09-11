@@ -41,8 +41,9 @@ func AutoMigrate(db *gorm.DB) error {
 		&entity.Volunteer{},
 		&entity.Skill{},
 		&entity.StatusFV{},
-		&entity.Visitor{},
+		&entity.Manage{},
 		&entity.Visit{},
 		&entity.VisitDetail{},
+		
 	)
 }	
