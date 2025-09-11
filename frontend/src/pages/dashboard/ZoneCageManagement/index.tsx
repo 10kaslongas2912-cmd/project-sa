@@ -1,6 +1,5 @@
 import './style.css';
 import React from 'react';
-import NavigationBar from '../../../components/NavigationBar';
 import type { ZoneInterface } from '../../../interfaces/Zone';
 import type { KennelInterface } from '../../../interfaces/Kennel';
 import type { DogInterface } from '../../../interfaces/Dog';
@@ -15,7 +14,7 @@ interface Box {
   photo?: string;  // dog photo url (optional)
 }
 
-/* ------------ robust extractors (tolerate different backend shapes) ------------ */
+/* ------------ helpers ------------ */
 const getId = (o: any): string => String(o?.ID ?? o?.id ?? '').trim();
 
 const getZoneIdFromCage = (c: any): string =>
@@ -52,7 +51,12 @@ const getDogKennelIdRaw = (d: any) =>
   d?.Kennel?.ID ??
   d?.Kennel?.id;
 
-/* -------------------------------- Component -------------------------------- */
+// loader paint helpers
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+const nextFrame = () =>
+  new Promise<void>((r) => requestAnimationFrame(() => r()));
+const MIN_SPINNER_MS = 700; // 👈 adjust loader minimum visible time (ms)
+
 const ZoneCageManagementPage = () => {
   // selections (string IDs)
   const [selectedZone, setSelectedZone] = React.useState<string | null>(null);
@@ -160,6 +164,7 @@ const ZoneCageManagementPage = () => {
   /* ----------------- load dogs when zone & cage both chosen ----------------- */
   React.useEffect(() => {
     let cancelled = false;
+
     const run = async () => {
       if (selectedZone == null || selectedCage == null) {
         setShowLoader(false);
@@ -170,37 +175,50 @@ const ZoneCageManagementPage = () => {
         return;
       }
       try {
+        // turn spinner on and clear content
         setShowLoader(true);
         setLoadingComplete(false);
+        await nextFrame(); // ensure the spinner paints at least once
+
+        const started = performance.now();
 
         const res = await zcManagementAPI.getDogsInKennel(Number(selectedCage));
-        const dogs: DogInterface[] = Array.isArray(res) ? (res as any) : (res as any)?.data ?? [];
+        const dogs: DogInterface[] =
+          Array.isArray(res) ? (res as any) : (res as any)?.data ?? [];
 
-        if (!cancelled) {
-          const mapped = dogs.map((d: any) => ({
-            id: Number(getDogId(d)),
-            zone: selectedZone!,
-            cage: selectedCage!,
-            data: getDogName(d),
-            photo: getDogPhoto(d),
-          }));
-          setBoxes(mapped);
-          // capture original set for this cage
-          originalDogIdsRef.current = new Set(mapped.map((m) => m.id));
-          setMarkedForDeletion(new Set());
-          setLoadingComplete(true);
-        }
+        if (cancelled) return;
+
+        const mapped = dogs.map((d: any) => ({
+          id: Number(getDogId(d)),
+          zone: selectedZone!,
+          cage: selectedCage!,
+          data: getDogName(d),
+          photo: getDogPhoto(d),
+        }));
+        setBoxes(mapped);
+        // capture original set for this cage
+        originalDogIdsRef.current = new Set(mapped.map((m) => m.id));
+        setMarkedForDeletion(new Set());
+
+        // keep spinner visible for a minimum time
+        const elapsed = performance.now() - started;
+        if (elapsed < MIN_SPINNER_MS) await sleep(MIN_SPINNER_MS - elapsed);
+
+        if (cancelled) return;
+        setLoadingComplete(true);
       } catch (e) {
         console.error('load dogs', e);
         if (!cancelled) {
           setBoxes([]);
           originalDogIdsRef.current = new Set();
           setMarkedForDeletion(new Set());
+          setLoadingComplete(false);
         }
       } finally {
         if (!cancelled) setShowLoader(false);
       }
     };
+
     run();
     return () => {
       cancelled = true;
@@ -282,7 +300,7 @@ const ZoneCageManagementPage = () => {
 
     const after = originalCount - removed.length + added.length;
     if (after > capacityForSelected) {
-      alert(`This cage can hold ${capacityForSelected} dog(s). You’re trying to keep ${after}.`);
+      alert(`This cage can hold ${capacityForSelected} dog(s). You're trying to keep ${after}.`);
       return;
     }
 
@@ -304,7 +322,8 @@ const ZoneCageManagementPage = () => {
 
       // SUCCESS → refetch to sync & set new baseline
       const ref = await zcManagementAPI.getDogsInKennel(Number(selectedCage));
-      const dogs: DogInterface[] = Array.isArray(ref) ? (ref as any) : (ref as any)?.data ?? [];
+      const dogs: DogInterface[] =
+        Array.isArray(ref) ? (ref as any) : (ref as any)?.data ?? [];
       const mapped = dogs.map((d: any) => ({
         id: Number(getDogId(d)),
         zone: selectedZone!,
@@ -460,74 +479,79 @@ const ZoneCageManagementPage = () => {
 
   return (
     <>
-      <NavigationBar />
-
       <div className="zone-cage-management-container">
+        {/* Top form section */}
         <div className="zone-cage-management-form">
           <h1>Zone and Cage management</h1>
 
-          <div className="form-group">
-            <label>Zone : </label>
-            <select value={selectedZone ?? ''} onChange={handleZoneChange}>
-              <option key="__zph" value="">
-                Select zone
-              </option>
-              {zones.map((zone) => {
-                const zId = getId(zone);
-                return (
-                  <option key={zId || String((zone as any).name)} value={zId}>
-                    {(zone as any).name}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label>Cage : </label>
-            <select
-              value={selectedCage ?? ''}
-              onChange={handleCageChange}
-              disabled={!selectedZone}
-              aria-disabled={!selectedZone}
-              title={!selectedZone ? 'Select a zone first' : undefined}
-            >
-              <option key="__cph" value="">
-                {!selectedZone ? 'Select a zone first' : 'Select cage'}
-              </option>
-              {filteredCages.map((c: any) => {
-                const cId = getId(c);
-                return (
-                  <option key={cId || String(c?.name)} value={cId}>
-                    {String(c?.name ?? '')}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-
-          {bothSelected && (
-            <div style={{ fontSize: 12, opacity: 0.8, marginTop: -6, marginBottom: 10 }}>
-              Capacity:{' '}
-              {Number.isFinite(capacityForSelected)
-                ? `${plannedCount}/${capacityForSelected}`
-                : 'unknown'}
+          {/* Zone and Cage dropdowns on the same line */}
+          <div className="form-controls-row">
+            <div className="form-group">
+              <label>Zone :</label>
+              <select value={selectedZone ?? ''} onChange={handleZoneChange}>
+                <option key="__zph" value="">
+                  Select zone
+                </option>
+                {zones.map((zone) => {
+                  const zId = getId(zone);
+                  return (
+                    <option key={zId || String((zone as any).name)} value={zId}>
+                      {(zone as any).name}
+                    </option>
+                  );
+                })}
+              </select>
             </div>
-          )}
 
-          {showEdit && <button onClick={handleEdit}>Edit</button>}
-          {showOtherButtons && (
-            <>
-              <button onClick={handleRedo} disabled={saving}>
-                Redo
-              </button>
-              <button onClick={handleSave} disabled={saving}>
-                {saving ? 'Saving…' : 'Save'}
-              </button>
-            </>
-          )}
+            <div className="form-group">
+              <label>Cage :</label>
+              <select
+                value={selectedCage ?? ''}
+                onChange={handleCageChange}
+                disabled={!selectedZone}
+                aria-disabled={!selectedZone}
+                title={!selectedZone ? 'Select a zone first' : undefined}
+              >
+                <option key="__cph" value="">
+                  {!selectedZone ? 'Select a zone first' : 'Select cage'}
+                </option>
+                {filteredCages.map((c: any) => {
+                  const cId = getId(c);
+                  return (
+                    <option key={cId || String(c?.name)} value={cId}>
+                      {String(c?.name ?? '')}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+          </div>
+
+          {/* Capacity and buttons section */}
+          <div className="form-bottom-section">
+            {bothSelected && (
+              <span className="capacity-pill">
+                Capacity: {Number.isFinite(capacityForSelected)
+                  ? `${plannedCount}/${capacityForSelected}`
+                  : 'unknown'}
+              </span>
+            )}
+
+            {showEdit && <button onClick={handleEdit}>Edit</button>}
+            {showOtherButtons && (
+              <>
+                <button onClick={handleRedo} disabled={saving}>
+                  Redo
+                </button>
+                <button onClick={handleSave} disabled={saving}>
+                  {saving ? 'Saving…' : 'Save'}
+                </button>
+              </>
+            )}
+          </div>
         </div>
 
+        {/* Bottom information section */}
         <div className="information-zone-container">
           <div className="information-form">
             <h2>Information</h2>

@@ -3,8 +3,28 @@ import React, { useState, useRef, useEffect } from "react";
 import "./style.css";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import {
-  Home, Heart, DollarSign, Calendar, Stethoscope, Shield, PawPrint,
-  BarChart3, Menu, X, Play, Search, Bell, Mail, Settings, LogOut, Plus, Edit,
+  Home,
+  Heart,
+  DollarSign,
+  Calendar,
+  Stethoscope,
+  Shield,
+  PawPrint,
+  BarChart3,
+  Menu,
+  X,
+  Play,
+  Search,
+  Bell,
+  Mail,
+  Settings,
+  LogOut,
+  ChevronRight,
+  ChevronLeft,
+  Plus,
+  MoreVertical,
+  Edit,
+  Users,
 } from "lucide-react";
 
 // ✅ เพิ่ม: ใช้ hook ดึงโปรไฟล์พนักงาน
@@ -80,6 +100,17 @@ const UpdatedDashboard: React.FC = () => {
     { id: "visits", label: "ตารางการเยี่ยมชม", icon: Calendar, path: "/dashboard/visits" },
     { id: "support", label: "การอุปถัมภ์สนับสนุน", icon: Shield, path: "/dashboard/support" },
     { id: "reports", label: "รายงานสถิติ", icon: BarChart3, path: "/dashboard/reports" },
+    { id: "zone-cage-management", 
+      label: "จัดการโซนและกรง", 
+      icon: X, 
+      path: "/dashboard/zone-cage-management" 
+    },
+    {
+      id: "volunteer",
+      label: "อาสาสมัคร",
+      icon: Users,
+      path: "/dashboard/volunteer"
+    }
   ];
 
   useEffect(() => {
