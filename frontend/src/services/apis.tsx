@@ -286,6 +286,27 @@ export const zcManagementAPI = {
 };
 
 
+
+export const fileAPI = {
+  uploadDogImage: async (file: File) => {
+    const fd = new FormData();
+    fd.append("file", file);
+
+    const token = sessionStorage.getItem("token");
+    const tokenType = sessionStorage.getItem("token_type") || "Bearer";
+
+    const res = await axiosInstance.post("/files/dogs", fd, {
+      headers: {
+        ...(token ? { Authorization: `${tokenType} ${token}` } : {}),
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    // คาดหวัง { url, filename }
+    return res.data as { url: string; filename: string };
+  },
+};
+
+
 export const api = {
   authAPI,
   userAPI,

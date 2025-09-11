@@ -233,7 +233,6 @@ func GetAllVisits(c *gin.Context) {
                     "name":          vd.Dog.Name,
                     "photo_url":     vd.Dog.PhotoURL,
                     "date_of_birth": vd.Dog.DateOfBirth,
-                    "character":     vd.Dog.Character,
                     "animal_sex":    vd.Dog.AnimalSex,
                     "breed":         vd.Dog.Breed,
                 })

@@ -134,6 +134,9 @@ func main() {
 		protected.GET("/donations", donation.GetAllDonations)
 		protected.PUT("/donations/:id/status", donation.UpdateDonationStatus)
 
+
+		protected.POST("/files/dogs", /* middlewares.Authorizes(), */ dog.UploadDogImage)
+
 	}
 	don := r.Group("/donations", middlewares.OptionalAuthorize())
 	{
