@@ -25,6 +25,7 @@ import {
   MoreVertical,
   Edit,
   Users,
+  Columns4,
 } from "lucide-react";
 
 // ✅ เพิ่ม: ใช้ hook ดึงโปรไฟล์พนักงาน
@@ -102,7 +103,7 @@ const UpdatedDashboard: React.FC = () => {
     { id: "reports", label: "รายงานสถิติ", icon: BarChart3, path: "/dashboard/reports" },
     { id: "zone-cage-management", 
       label: "จัดการโซนและกรง", 
-      icon: X, 
+      icon: Columns4, 
       path: "/dashboard/zone-cage-management" 
     },
     {

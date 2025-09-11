@@ -8,6 +8,7 @@ import treatment from "../../../assets/treat.png";
 import shelter from "../../../assets/shelter.png";
 import adoption from "../../../assets/adopt.png";
 import NavigationBar from '../../../components/NavigationBar';
+import { Link } from 'react-router-dom';
 const carouselImages = [
     'https://longwoodvetcenter.com/wp-content/uploads/2023/05/Animal-Shelters-in-Pennsylvania.jpg',
     'https://media.4-paws.org/4/8/2/0/4820f570a119f3e8bd1b6db470d0c6a65445dcf1/VIER_PFOTEN_2023-02-15_00002-2895x2004-1300x900.jpg?_jtsuid=22804175291243065431299',
@@ -57,7 +58,8 @@ function FirstPage() {
                         <p>Every dog deserves a loving home! We have around 300 dogs at our shelter that either yearn for a family to adopt them or who need a sponsor to pay for their stay at the shelter. Just scroll down and click ADOPT A DOG or SPONSOR A DOG. We are in the process of updating these lists, please bear with us. If you already have a wish in mind, about how your ideal dog should be, just contact us and we will come back to you with a suggestion. Currently we adopt out around 50 dogs per year, mainly in Thailand and a few to Europe. Unfortunately since Covid people are not so interested anymore in adopting from abroad. But we can assure you it is possible and we have good experience with it.</p>
                     </div>
                 </div>
-                <a href="#" className='action-link'>TAKE ACTION TO SAVE LIVES AND BRING HOPE FOR STREET DOGS IN NEED</a>
+                <Link to="/volunteer" className='action-link'>หัวใจคุณเปลี่ยนโลกเล็กๆ ของพวกเขาได้ — ร่วมเป็นส่วนหนึ่งขององค์กรของเรา</Link>
+                
             </div>
             <div className='content'>
                 <img src="https://imgs.search.brave.com/Ut0yXavhm_4br42Lv3nJInSNie2Gmq4ypQps-mxuSxU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMTAz/NDYxMzAxMi9waG90/by9naXJsLWh1Z2dp/bmctaGVyLWRvZy5q/cGc_cz02MTJ4NjEy/Jnc9MCZrPTIwJmM9/MWo0TmtLRlVBTWtf/UlI0R1kwT0dMTUFR/ZkNmSVJqRHNMMm1V/U1drYzM1az0" alt="dog" />
