@@ -1,3 +1,4 @@
+// middlewares/authorization.go
 package middlewares
 
 import (
@@ -8,41 +9,68 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var HashKey = []byte("very-secret")
-var BlockKey = []byte("a-lot-secret1234")
-
-// Authorization เป็นฟังก์ชั่นตรวจเช็ค Cookie
 func Authorizes() gin.HandlerFunc {
 	return func(c *gin.Context) {
-
-		clientToken := c.Request.Header.Get("Authorization")
-		if clientToken == "" {
+		authz := c.Request.Header.Get("Authorization")
+		if authz == "" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "No Authorization header provided"})
 			return
 		}
-
-		extractedToken := strings.Split(clientToken, "Bearer ")
-		if len(extractedToken) != 2 {
+		parts := strings.Split(authz, "Bearer ")
+		if len(parts) != 2 {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Incorrect Format of Authorization Token"})
 			return
 		}
-
-		clientToken = strings.TrimSpace(extractedToken[1])
+		tokenStr := strings.TrimSpace(parts[1])
 
 		jwtWrapper := services.JwtWrapper{
-			SecretKey: "SvNQpBN8y3qlVrsGAYYWoJJk56LtzFHx",
+			SecretKey: "SvNQpBN8y3qlVrsGAYYWoJJk56LtzFHx", // TODO: os.Getenv("JWT_SECRET")
 			Issuer:    "AuthService",
 		}
-
-		claims, err := jwtWrapper.ValidateToken(clientToken)
+		claims, err := jwtWrapper.ValidateToken(tokenStr)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			return
 		}
 
-		c.Set("user_id", claims.ID)
-		c.Set("username", claims.Username)
-		c.Set("user_email", claims.Email)
+		// set ตาม kind
+		switch claims.Kind {
+		case "staff":
+			c.Set("staff_id", claims.ID)
+			c.Set("staff_username", claims.Username)
+			c.Set("staff_email", claims.Email)
+		default: // ค่าเดิม/ว่าง → user
+			c.Set("user_id", claims.ID)
+			c.Set("username", claims.Username)
+			c.Set("user_email", claims.Email)
+		}
+		c.Set("kind", claims.Kind)
 		c.Next()
 	}
 }
+
+// middlewares/optional_auth.go
+func OptionalAuthorize() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		auth := c.GetHeader("Authorization")
+		if auth == "" { c.Next(); return }
+
+		parts := strings.SplitN(auth, " ", 2)
+		if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") {
+			c.Next(); return
+		}
+
+		j := services.JwtWrapper{
+			SecretKey: "SvNQpBN8y3qlVrsGAYYWoJJk56LtzFHx",
+			Issuer:    "AuthService",
+		}
+		if claims, err := j.ValidateToken(strings.TrimSpace(parts[1])); err == nil {
+			c.Set("user_id", claims.ID)
+			c.Set("username", claims.Username)
+			c.Set("user_email", claims.Email)
+			c.Set("kind", "user")
+		}
+		c.Next()
+	}
+}
+

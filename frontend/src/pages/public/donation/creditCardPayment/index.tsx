@@ -43,8 +43,8 @@ const CreditCardPaymentForm: React.FC = () => {
       let moneyDetails: MoneyDonationInterface = JSON.parse(moneyDetailsString);
 
       // 2) enrich donorInfo from login status
-      const token = localStorage.getItem("token");
-      const userId = localStorage.getItem("ID");
+      const token = sessionStorage.getItem("token");
+      const userId = sessionStorage.getItem("ID");
       donorInfo.donor_type = token ? "user" : "guest";
       if (token && userId) {
         donorInfo.user_id = parseInt(userId, 10);
@@ -56,11 +56,11 @@ const CreditCardPaymentForm: React.FC = () => {
 
       moneyDetails = {
         ...moneyDetails,
-        status: isMonthly ? "active" : "complete",
+        status: isMonthly ? "success" : "complete",
         transaction_ref: transactionNumber,
       };
 
-      // 5) Combine payload for CreateDonationRequest
+      // 5) Combine payload for CreateDonationRequest 
       const payload: CreateDonationRequest = {
         donor_info: donorInfo,
         donation_type: donationType,

@@ -1,6 +1,6 @@
 // src/components/Button/index.tsx
 import React from "react";
-import "./style.css"
+import "./style.css";
 // รองรับ props ของ <button> ทั้งหมด + htmlType แบบ antd
 export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   htmlType?: "button" | "submit" | "reset";
@@ -13,9 +13,15 @@ const ButtonComponent = React.forwardRef<HTMLButtonElement, ButtonProps>(
       (htmlType as any) ?? (type as any) ?? "button";
 
     return (
-      <button ref={ref} type={resolvedType} {...rest}>
-        {children}
-      </button>
+      <div className="button-component">
+        <button
+          ref={ref}
+          type={resolvedType}
+          {...rest}
+        >
+          {children}
+        </button>
+      </div>
     );
   }
 );

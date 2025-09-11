@@ -13,7 +13,7 @@ const DonationPage: React.FC = () => {
   };
 
   const handleCreateAccountLoginClick = () => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (token) {
       navigate('/donation/options');
     } else {

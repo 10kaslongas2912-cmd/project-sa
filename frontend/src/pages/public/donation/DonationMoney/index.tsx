@@ -32,7 +32,7 @@ const DonationMoneyForm: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (token) {
       setIsLoggedIn(true);
     }
@@ -121,8 +121,9 @@ const fetchPaymentMethods = async () => {
       // For one-time, we come back here to be redirected again by navigateToNextPage.
       const returnTo = isMonthly ? '/donation/payment/creditcard' : '/donation/money';
       sessionStorage.setItem('returnTo', returnTo);
+      console.log(returnTo);
       
-      navigate('/auth');
+      navigate('/auth/users');
     } else {
       // If not signing up, proceed to payment directly
       navigateToNextPage(type, values.paymentMethod);

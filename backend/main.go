@@ -89,7 +89,8 @@ func main() {
 	r.DELETE("/manages/:id", manage.DeleteManage)
 
 	// Staff routes
-	r.POST("/staffs", staffs.CreateStaff)
+	r.POST("/staffs/auth",staffs.StaffSignIn)
+	r.POST("/staffs/signup",staffs.StaffSignUp)
 	r.GET("/staffs", staffs.GetAllStaffs)
 	r.GET("/staffs/:id", staffs.GetStaffById)
 	r.PUT("/staffs/:id", staffs.UpdateStaff)
@@ -113,14 +114,16 @@ func main() {
 	r.DELETE("/volunteer/:id", volunteers.DeleteVolunteer)
 	r.GET("/skills", volunteers.GetAllSkills)     //new
 	r.GET("/statusfv", volunteers.GetAllStatusFV) //new
+
+	r.POST("/donations/guest", donation.CreateDonation)
 	r.PUT("/volunteer/:id/status", volunteers.UpdateVolunteerStatus)
-	
-	// 7) Routes (protected)
+		// 7) Routes (protected)
 	protected := r.Group("/")
 	protected.Use(middlewares.Authorizes())
 	{
-		protected.POST("/donations", donation.CreateDonation)
+		// protected.POST("/donations", donation.CreateDonation)
 		protected.GET("/users/me", user.Me)
+		protected.GET("/staffs/me", staffs.Me)
 		protected.PUT("/users/:id", user.UpdateUser)
 		protected.GET("/users", user.GetAllUsers)
 		protected.GET("/users/:id", user.GetUserById)
@@ -131,6 +134,10 @@ func main() {
 		protected.GET("/donations", donation.GetAllDonations)
 		protected.PUT("/donations/:id/status", donation.UpdateDonationStatus)
 
+	}
+	don := r.Group("/donations", middlewares.OptionalAuthorize())
+	{
+		don.POST("", donation.CreateDonation)
 	}
 
 	// health

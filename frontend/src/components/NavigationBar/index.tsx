@@ -101,7 +101,7 @@ const NavigationBar: React.FC = () => {
             </div>
           )
         ) : (
-          <Link to="/auth" className="btn btn-action login-btn"><span>เข้าสู่ระบบ</span></Link>
+          <Link to="/auth/users" className="btn btn-action login-btn"><span>เข้าสู่ระบบ</span></Link>
         )}
       </div>
     </header>

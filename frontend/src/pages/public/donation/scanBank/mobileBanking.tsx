@@ -71,8 +71,8 @@ const MobileBankingPage: React.FC = () => {
       let moneyDetails: MoneyDonationInterface = JSON.parse(moneyDetailsString); // PARSE CORRECT DATA
 
       // 2. Determine donor_type
-      const token = localStorage.getItem('token');
-      const userId = localStorage.getItem('id');
+      const token = sessionStorage.getItem('token');
+      const userId = sessionStorage.getItem('id');
       donorInfo.donor_type = token ? "user" : "guest";
       if (token && userId) {
         donorInfo.user_id = parseInt(userId, 10);

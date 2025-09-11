@@ -6,6 +6,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -13,6 +14,7 @@ import (
 
 	"example.com/project-sa/configs"
 	"example.com/project-sa/entity"
+	"example.com/project-sa/utils/pointer"
 )
 
 // ----------- Payload -----------
@@ -29,10 +31,28 @@ type CombinedDonationPayload struct {
 // CreateDonation
 // - ถ้ามี token → ใช้ user_id จาก context เสมอ (ignore user_id ที่ client ส่งมา)
 // - ถ้าไม่มี token → ถือเป็น guest; match ด้วย first_name + last_name + user_id IS NULL
+func tryUserIDFromContext(c *gin.Context) *uint {
+	if v, ok := c.Get("user_id"); ok {
+		if id, ok2 := v.(uint); ok2 && id > 0 {
+			return &id
+		}
+	}
+	return nil
+}
+
+// ===== Handlers =====
 func CreateDonation(c *gin.Context) {
 	var payload CombinedDonationPayload
 	if err := c.ShouldBindJSON(&payload); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON format: " + err.Error()})
+		return
+	}
+
+	// validate donation_type ให้เหลือเฉพาะ money|item
+	switch strings.ToLower(payload.DonationType) {
+	case "money", "item":
+	default:
+		c.JSON(http.StatusBadRequest, gin.H{"error": "unsupported donation_type"})
 		return
 	}
 
@@ -45,59 +65,56 @@ func CreateDonation(c *gin.Context) {
 		}
 	}()
 
-	// --- ดึง user_id จาก token context ถ้ามี ---
-	var authedUserID *uint
-	if v, ok := c.Get("user_id"); ok {
-		if u, ok2 := v.(uint); ok2 && u > 0 {
-			authedUserID = &u
-		}
-	}
+	// --- user vs guest: อาศัย context ที่ตั้งโดย OptionalAuthorize ---
+	authedUserID := tryUserIDFromContext(c)
 
-	// --- หา/สร้าง Donor ที่จะใช้ ---
 	incoming := payload.DonorInfo
 	var donorToUse entity.Donor
 
 	if authedUserID != nil {
-		// ✅ ผู้ใช้ล็อกอิน → ยึด user_id จาก token เสมอ
+		// ✅ ผู้ใช้ล็อกอิน → ยึด user_id จาก token เสมอ (ignore user_id ใน payload)
 		if err := tx.Where("user_id = ?", *authedUserID).First(&donorToUse).Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				// ยังไม่มี → สร้างใหม่ให้ user นี้ (เก็บข้อมูลโปรไฟล์จาก payload ถ้ามี)
+				// ยังไม่มี donor สำหรับ user นี้ → สร้างใหม่
 				donorToUse = entity.Donor{
 					UserID:    authedUserID,
 					FirstName: incoming.FirstName,
 					LastName:  incoming.LastName,
 					Email:     incoming.Email,
 					Phone:     incoming.Phone,
-					DonorType: incoming.DonorType,
+					DonorType: pointer.P("user"),
 				}
 				if err := tx.Create(&donorToUse).Error; err != nil {
 					tx.Rollback()
-					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create donor for user: " + err.Error()})
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create donor for user: " + err.Error()})
 					return
 				}
 			} else {
 				tx.Rollback()
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to find donor by user_id: " + err.Error()})
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to find donor by user_id: " + err.Error()})
 				return
 			}
 		}
 	} else {
-		// 🟨 Guest case → match ด้วยชื่อ-สกุล + user_id IS NULL
-		if err := tx.Where("first_name = ? AND last_name = ? AND user_id IS NULL",
-			incoming.FirstName, incoming.LastName).
-			First(&donorToUse).Error; err != nil {
+		// 🟨 guest → match โดยชื่อ-สกุล(+อีเมล) และ user_id IS NULL
+		q := tx.Where("first_name = ? AND last_name = ? AND user_id IS NULL", incoming.FirstName, incoming.LastName)
+		if strings.TrimSpace(*incoming.Email) != "" {
+			q = q.Where("email = ?", incoming.Email)
+		}
+		if err := q.First(&donorToUse).Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				donorToUse = incoming
 				donorToUse.ID = 0
 				donorToUse.UserID = nil
+				donorToUse.DonorType = pointer.P("guest")
 				if err := tx.Create(&donorToUse).Error; err != nil {
 					tx.Rollback()
-					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create guest donor: " + err.Error()})
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create guest donor: " + err.Error()})
 					return
 				}
 			} else {
 				tx.Rollback()
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to find guest donor: " + err.Error()})
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to find guest donor: " + err.Error()})
 				return
 			}
 		}
@@ -106,66 +123,59 @@ func CreateDonation(c *gin.Context) {
 	// --- สร้าง Donation หลัก ---
 	donation := entity.Donation{
 		DonorID:      donorToUse.ID,
-		DonationType: payload.DonationType, // คาดว่า "money" | "item"
+		DonationType: strings.ToLower(payload.DonationType), // "money" | "item"
 		DonationDate: time.Now(),
-		Status:       "success",          // Default status
+		Status:       "success", // default
 	}
 
-	// Override status based on donation type and details
-	if payload.DonationType == "money" && payload.MoneyDonationDetails != nil {
+	// ตั้งสถานะตามประเภท
+	if donation.DonationType == "money" && payload.MoneyDonationDetails != nil {
 		if payload.MoneyDonationDetails.PaymentType == "monthly" {
 			donation.Status = "active"
 			payload.MoneyDonationDetails.Status = "success"
-		} else { // One-time donation
+		} else { // one-time
 			donation.Status = "complete"
 			payload.MoneyDonationDetails.Status = "success"
 		}
-	} else if payload.DonationType == "item" {
+	} else if donation.DonationType == "item" {
 		donation.Status = "complete"
 	}
 
 	if err := tx.Create(&donation).Error; err != nil {
 		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create donation record: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create donation record: " + err.Error()})
 		return
 	}
 
 	// --- แนบรายละเอียดตามประเภท ---
-	switch payload.DonationType {
+	switch donation.DonationType {
 	case "money":
 		if payload.MoneyDonationDetails != nil {
 			md := payload.MoneyDonationDetails
 			md.DonationID = donation.ID
 			if err := tx.Create(md).Error; err != nil {
 				tx.Rollback()
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create money donation: " + err.Error()})
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create money donation: " + err.Error()})
 				return
 			}
 		}
 	case "item":
-		if payload.ItemDonationDetails != nil {
-			for i := range payload.ItemDonationDetails {
-				payload.ItemDonationDetails[i].DonationID = donation.ID
-				if err := tx.Create(&payload.ItemDonationDetails[i]).Error; err != nil {
-					tx.Rollback()
-					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create item donation: " + err.Error()})
-					return
-				}
+		for i := range payload.ItemDonationDetails {
+			payload.ItemDonationDetails[i].DonationID = donation.ID
+			if err := tx.Create(&payload.ItemDonationDetails[i]).Error; err != nil {
+				tx.Rollback()
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create item donation: " + err.Error()})
+				return
 			}
 		}
-	default:
-		// ถ้าต้องการเข้มงวดกับค่า type ที่รองรับ ให้เปิดบล็อกนี้
-		// tx.Rollback()
-		// c.JSON(http.StatusBadRequest, gin.H{"error": "unsupported donation_type"})
-		// return
 	}
 
 	if err := tx.Commit().Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Transaction commit failed: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "transaction commit failed: " + err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Donation created successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Donation created successfully", "donation_id": donation.ID})
 }
 
 // GetMyDonations
@@ -248,44 +258,43 @@ func GetAllDonations(c *gin.Context) {
 }
 
 func UpdateDonationStatus(c *gin.Context) {
-    id := c.Param("id")
-    var payload struct {
-        Status string `json:"status"`
-    }
+	id := c.Param("id")
+	var payload struct {
+		Status string `json:"status"`
+	}
 
-    if err := c.ShouldBindJSON(&payload); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body: " + err.Error()})
-        return
-    }
+	if err := c.ShouldBindJSON(&payload); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body: " + err.Error()})
+		return
+	}
 
-    validStatuses := map[string]bool{
-        "active": true, "cancel": true, "success": true,
-        "complete": true, "pending": true, "failed": true,
-    }
-    if !validStatuses[payload.Status] {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid status value"})
-        return
-    }
+	validStatuses := map[string]bool{
+		"active": true, "cancel": true, "success": true,
+		"complete": true, "pending": true, "failed": true,
+	}
+	if !validStatuses[payload.Status] {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid status value"})
+		return
+	}
 
-    var donation entity.Donation
-    if err := configs.DB().First(&donation, id).Error; err != nil {
-        if errors.Is(err, gorm.ErrRecordNotFound) {
-            c.JSON(http.StatusNotFound, gin.H{"error": "Donation not found"})
-            return
-        }
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error: " + err.Error()})
-        return
-    }
+	var donation entity.Donation
+	if err := configs.DB().First(&donation, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Donation not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error: " + err.Error()})
+		return
+	}
 
-    if err := configs.DB().Model(&donation).Update("status", payload.Status).Error; err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update donation status: " + err.Error()})
-        return
-    }
+	if err := configs.DB().Model(&donation).Update("status", payload.Status).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update donation status: " + err.Error()})
+		return
+	}
 
-    c.JSON(http.StatusOK, gin.H{
-        "message":     "Status updated successfully",
-        "donation_id": id,
-        "new_status":  payload.Status,
-    })
+	c.JSON(http.StatusOK, gin.H{
+		"message":     "Status updated successfully",
+		"donation_id": id,
+		"new_status":  payload.Status,
+	})
 }
-
