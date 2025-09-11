@@ -7,20 +7,21 @@ import (
 	"example.com/project-sa/configs"
 	adopter "example.com/project-sa/controllers/adoption"
 	auth "example.com/project-sa/controllers/auth"
+	buildings "example.com/project-sa/controllers/building"
 	dog "example.com/project-sa/controllers/dog"
 	donation "example.com/project-sa/controllers/donation"
 	gender "example.com/project-sa/controllers/gender"
 	health_record "example.com/project-sa/controllers/health_record"
+	manage "example.com/project-sa/controllers/manage"
 	payment_method "example.com/project-sa/controllers/payment_method"
 	personalities "example.com/project-sa/controllers/personality"
 	sponsorship "example.com/project-sa/controllers/sponsorship"
+	staffs "example.com/project-sa/controllers/staff"
 	user "example.com/project-sa/controllers/user"
 	event "example.com/project-sa/controllers/event"
 	dashboard "example.com/project-sa/controllers/dashboard"
 	vaccine "example.com/project-sa/controllers/vaccine"
 	visit "example.com/project-sa/controllers/visit"
-	manage "example.com/project-sa/controllers/manage"
-	staffs "example.com/project-sa/controllers/staff"
 	volunteers "example.com/project-sa/controllers/volunteerRegister"
 	zcmanagement "example.com/project-sa/controllers/zcmanagement"
 	"example.com/project-sa/middlewares"
@@ -105,6 +106,7 @@ func main() {
 	r.PUT("/staffs/:id", staffs.UpdateStaff)
 	r.DELETE("/staffs/:id", staffs.DeleteStaff)
 
+	r.GET("/buildings", buildings.GetAllBuildings)
 
 
 
@@ -152,9 +154,14 @@ func main() {
 		protected.DELETE("/users/:id", user.DeleteUser)
 		protected.POST("/sponsorships/subscription", sponsorship.CreateSubscriptionSponsorship)
 		protected.GET("/my-adoptions", adopter.GetMyCurrentAdoptions)
+		
 		protected.GET("/donations/my", donation.GetMyDonations)
 		protected.GET("/donations", donation.GetAllDonations)
 		protected.PUT("/donations/:id/status", donation.UpdateDonationStatus)
+		protected.DELETE("/donations/:id", donation.DeleteDonation)
+
+
+		protected.POST("/files/dogs", /* middlewares.Authorizes(), */ dog.UploadDogImage)
 
 	}
 	don := r.Group("/donations", middlewares.OptionalAuthorize())

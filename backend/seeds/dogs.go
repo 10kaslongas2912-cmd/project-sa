@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"example.com/project-sa/entity"
+	"example.com/project-sa/utils/pointer"
 	"gorm.io/gorm"
 )
 
@@ -47,19 +48,16 @@ func seedDogs(db *gorm.DB) error {
 		return err
 	}
 
-	
 	dogs := []entity.Dog{
 		{
 			Name:          "Tor",
 			AnimalSexID:   sexMale.ID,
 			AnimalSizeID:  sizeSmall.ID,
 			BreedID:       golden.ID,
-			KennelID:      kenA.ID,
+			KennelID:      pointer.P(kenA.ID),
 			DateOfBirth:   "2020-02-14",
-			DateOfArrived: "2020-02-14",
 			IsAdopted:     false,
 			ReadyToAdopt:  true,
-			Character:     "Playful",
 			PhotoURL:      fmt.Sprintf("%s/static/images/dog/dog1.jpg", PublicBaseURL),
 		},
 		{
@@ -67,12 +65,10 @@ func seedDogs(db *gorm.DB) error {
 			AnimalSexID:   sexFemale.ID,
 			AnimalSizeID:  sizeMedium.ID,
 			BreedID:       poodle.ID,
-			KennelID:      kenB.ID,
+			KennelID:      pointer.P(kenB.ID),
 			DateOfBirth:   "2020-02-14",
-			DateOfArrived: "2020-02-14",
 			IsAdopted:     false,
 			ReadyToAdopt:  true,
-			Character:     "Calm",
 			PhotoURL:      fmt.Sprintf("%s/static/images/dog/dog2.jpg", PublicBaseURL),
 		},
 		{
@@ -80,12 +76,10 @@ func seedDogs(db *gorm.DB) error {
 			AnimalSexID:   sexMale.ID,
 			AnimalSizeID:  sizeLarge.ID,
 			BreedID:       bulldog.ID,
-			KennelID:      kenA.ID,
+			KennelID:      pointer.P(kenA.ID),
 			DateOfBirth:   "2020-02-14",
-			DateOfArrived: "2020-02-14",
 			IsAdopted:     false,
 			ReadyToAdopt:  true,
-			Character:     "Energetic",
 			PhotoURL:      fmt.Sprintf("%s/static/images/dog/dog3.jpg", PublicBaseURL),
 		},
 		{
@@ -93,12 +87,10 @@ func seedDogs(db *gorm.DB) error {
 			AnimalSexID:   sexMale.ID,
 			AnimalSizeID:  sizeLarge.ID,
 			BreedID:       bulldog.ID,
-			KennelID:      kenA.ID,
+			KennelID:      pointer.P(kenA.ID),
 			DateOfBirth:   "2020-02-14",
-			DateOfArrived: "2020-02-14",
 			IsAdopted:     false,
 			ReadyToAdopt:  true,
-			Character:     "Energetic",
 			PhotoURL:      fmt.Sprintf("%s/static/images/dog/dog5.jpg", PublicBaseURL),
 		},
 		{
@@ -106,13 +98,11 @@ func seedDogs(db *gorm.DB) error {
 			AnimalSexID:   sexMale.ID,
 			AnimalSizeID:  sizeLarge.ID,
 			BreedID:       bulldog.ID,
-			KennelID:      kenA.ID,
+			KennelID:      pointer.P(kenA.ID),
 			DateOfBirth:   "2020-02-14",
-			DateOfArrived: "2020-02-14",
 			IsAdopted:     false,
 			ReadyToAdopt:  true,
-			Character:     "Energetic",
-			PhotoURL: fmt.Sprintf("%s/static/images/dog/dog6.jpg", PublicBaseURL),
+			PhotoURL:      fmt.Sprintf("%s/static/images/dog/dog6.jpg", PublicBaseURL),
 		},
 	}
 

@@ -108,7 +108,7 @@ const styles = {
     width: '90%',
     maxWidth: '600px',
     maxHeight: '90vh',
-    overflowY: 'auto',
+    overflowY: 'auto' as const,
     boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
   },
   modalHeader: {
@@ -146,7 +146,6 @@ const styles = {
     borderRadius: '6px',
     fontSize: '14px',
     transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
-    boxSizing: 'border-box',
     fontFamily: 'Anakotmai, sans-serif'
   },
   formInputDisabled: {
@@ -156,7 +155,6 @@ const styles = {
     borderRadius: '6px',
     fontSize: '14px',
     transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
-    boxSizing: 'border-box',
     backgroundColor: '#f5f5f5',
     color: '#999',
     cursor: 'not-allowed',
@@ -730,7 +728,7 @@ const EventManagement: React.FC = () => {
   };
 
   if (loading) {
-    return <div style={styles.eventLoading}>กำลังโหลดกิจกรรม...</div>;
+    return <div style={styles.eventLoading as React.CSSProperties}>กำลังโหลดกิจกรรม...</div>;
   }
   
   return (
@@ -748,14 +746,14 @@ const EventManagement: React.FC = () => {
 
       {/* Related Data Overview */}
       <div style={styles.relatedDataOverview}>
-        <div style={styles.dataCard}>
+        <div style={styles.dataCard as React.CSSProperties}>
           <Activity size={24} />
           <div className="data-info">
             <h3 style={styles.cardTitle}>การนัดหมายทั้งหมด</h3>
             <p style={styles.cardSubtitle}>{visits.length} การนัดหมายที่มีอยู่</p>
           </div>
         </div>
-        <div style={styles.dataCard}>
+        <div style={styles.dataCard as React.CSSProperties}>
           <Stethoscope size={24} />
           <div className="data-info">
             <h3 style={styles.cardTitle}>บันทึกการรักษา</h3>
@@ -766,7 +764,7 @@ const EventManagement: React.FC = () => {
 
       {/* Event Form Modal */}
       {showForm && (
-        <div style={styles.modalOverlay}>
+        <div style={styles.modalOverlay as React.CSSProperties}>
           <div style={styles.modal}>
             <div style={styles.modalHeader}>
               <h2 style={styles.title}>{editingEvent ? 'แก้ไขกิจกรรม' : 'สร้างกิจกรรมใหม่'}</h2>
@@ -783,7 +781,7 @@ const EventManagement: React.FC = () => {
                   value={formData.name}
                   onChange={handleInputChange}
                   required
-                  style={styles.formInput}
+                  style={styles.formInput as React.CSSProperties}
                   placeholder="กรอกชื่อกิจกรรม"
                 />
               </div>
@@ -796,7 +794,7 @@ const EventManagement: React.FC = () => {
                   value={formData.description}
                   onChange={handleInputChange}
                   rows={3}
-                  style={styles.formTextarea}
+                  style={styles.formTextarea as React.CSSProperties}
                   placeholder="กรอกรายละเอียดกิจกรรม"
                 />
               </div>
@@ -811,7 +809,7 @@ const EventManagement: React.FC = () => {
                     value={formData.startDate}
                     onChange={handleInputChange}
                     required
-                    style={styles.formInput}
+                    style={styles.formInput as React.CSSProperties}
                   />
                 </div>
                 <div style={styles.formGroup}>
@@ -823,7 +821,7 @@ const EventManagement: React.FC = () => {
                     value={formData.startTime}
                     onChange={handleInputChange}
                     required
-                    style={styles.formInput}
+                    style={styles.formInput as React.CSSProperties}
                   />
                 </div>
               </div>
@@ -838,7 +836,7 @@ const EventManagement: React.FC = () => {
                     value={formData.endDate}
                     onChange={handleInputChange}
                     required
-                    style={styles.formInput}
+                    style={styles.formInput as React.CSSProperties}
                   />
                 </div>
                 <div style={styles.formGroup}>
@@ -850,7 +848,7 @@ const EventManagement: React.FC = () => {
                     value={formData.endTime}
                     onChange={handleInputChange}
                     required
-                    style={styles.formInput}
+                    style={styles.formInput as React.CSSProperties}
                   />
                 </div>
               </div>
@@ -864,7 +862,7 @@ const EventManagement: React.FC = () => {
                     name="location"
                     value={formData.location}
                     onChange={handleInputChange}
-                    style={styles.formInput}
+                    style={styles.formInput as React.CSSProperties}
                     placeholder="สถานที่จัดกิจกรรม"
                   />
                 </div>
@@ -876,7 +874,7 @@ const EventManagement: React.FC = () => {
                     name="organizer"
                     value={formData.organizer}
                     onChange={handleInputChange}
-                    style={styles.formInput}
+                    style={styles.formInput as React.CSSProperties}
                     placeholder="ชื่อผู้จัดกิจกรรม"
                   />
                 </div>
@@ -891,7 +889,7 @@ const EventManagement: React.FC = () => {
                     name="contactInfo"
                     value={formData.contactInfo}
                     onChange={handleInputChange}
-                    style={styles.formInput}
+                    style={styles.formInput as React.CSSProperties}
                     placeholder="เบอร์โทร, อีเมล หรือข้อมูลติดต่อ"
                   />
                 </div>
@@ -904,7 +902,7 @@ const EventManagement: React.FC = () => {
                     value={formData.capacity}
                     onChange={handleInputChange}
                     min="0"
-                    style={styles.formInput}
+                    style={styles.formInput as React.CSSProperties}
                     placeholder="จำนวนผู้เข้าร่วมสูงสุด"
                   />
                 </div>
@@ -918,7 +916,7 @@ const EventManagement: React.FC = () => {
                     name="visitId"
                     value={formData.visitId}
                     onChange={handleInputChange}
-                    style={formData.medicalRecordId ? styles.formInputDisabled : styles.formInput}
+                    style={(formData.medicalRecordId ? styles.formInputDisabled : styles.formInput) as React.CSSProperties}
                     disabled={!!formData.medicalRecordId}
                   >
                     <option value="">เลือกการนัดหมาย</option>
@@ -962,13 +960,13 @@ const EventManagement: React.FC = () => {
               {/* Image Upload Section */}
               <div style={styles.formGroup}>
                 <label style={styles.label}>รูปภาพกิจกรรม (ถ้ามี)</label>
-                <div style={styles.imageUploadContainer}>
+                <div style={styles.imageUploadContainer as React.CSSProperties}>
                   {imagePreview ? (
-                    <div style={styles.imagePreview}>
+                    <div style={styles.imagePreview as React.CSSProperties}>
                       <img src={imagePreview} alt="ตัวอย่างรูปกิจกรรม" style={styles.previewImage} />
                       <button
                         type="button"
-                        style={styles.removeImageBtn}
+                        style={styles.removeImageBtn as React.CSSProperties}
                         onClick={removeImage}
                         title="ลบรูปภาพ"
                       >
@@ -976,13 +974,13 @@ const EventManagement: React.FC = () => {
                       </button>
                     </div>
                   ) : (
-                    <div style={styles.imageUploadPlaceholder}>
+                    <div style={styles.imageUploadPlaceholder as React.CSSProperties}>
                       <ImageIcon size={48} style={{ color: '#dee2e6' }} />
                       <p style={styles.placeholderText}>ยังไม่ได้เลือกรูปภาพ</p>
                     </div>
                   )}
                   
-                  <div style={styles.imageUploadActions}>
+                  <div style={styles.imageUploadActions as React.CSSProperties}>
                     <input
                       ref={fileInputRef}
                       type="file"
@@ -999,7 +997,7 @@ const EventManagement: React.FC = () => {
                       <Upload size={16} />
                       {uploadingImage ? 'กำลังอัปโหลด...' : 'เลือกรูปภาพ'}
                     </button>
-                    <small style={styles.uploadHint}>
+                    <small style={styles.uploadHint as React.CSSProperties}>
                       ขนาดไฟล์สูงสุด: 10MB รองรับ: JPEG, PNG, GIF, WebP
                     </small>
                   </div>
@@ -1022,7 +1020,7 @@ const EventManagement: React.FC = () => {
       {/* Events List */}
       <div style={styles.eventsList}>
         {events.length === 0 ? (
-          <div style={styles.emptyState}>
+          <div style={styles.emptyState as React.CSSProperties}>
             <Calendar size={64} />
             <h3 style={styles.emptyTitle}>ไม่พบกิจกรรม</h3>
             <p style={styles.emptyText}>สร้างกิจกรรมแรกของคุณเพื่อเริ่มต้น</p>
@@ -1036,7 +1034,7 @@ const EventManagement: React.FC = () => {
                   <img 
                     src={event.image_url} 
                     alt={event.name} 
-                    style={styles.eventCardImage}
+                    style={styles.eventCardImage as React.CSSProperties}
                     onMouseOver={(e) => {
                       e.currentTarget.style.transform = 'scale(1.02)';
                     }}

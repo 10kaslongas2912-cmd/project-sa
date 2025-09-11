@@ -5,7 +5,7 @@ import sponsorImage from "../../../../assets/sponsor/ChatGPT Image Jul 31, 2025,
 import type { DogInterface } from "../../../../interfaces/Dog";
 import { ageText } from "../../../../utils/date";
 import { useDogs } from "../../../../hooks/useDogs";
-
+import { publicUrl } from "../../../../utils/publicUrl";
 type DogCardProps = {
   dog: DogInterface;
 };
@@ -21,7 +21,7 @@ function DogCard({ dog }: DogCardProps) {
       <div className="card img">
         {dog.photo_url ? (
           <Link to={`${dog.ID}/dog-info`}>
-            <img src={dog.photo_url} alt={`รูปภาพของ ${dog.name}`} className="dog-image" loading="lazy" />
+            <img src={publicUrl(dog.photo_url)} alt={`รูปภาพของ ${dog.name}`} className="dog-image" loading="lazy" />
           </Link>
         ) : (
           <div className="dog-image-placeholder">
@@ -68,6 +68,11 @@ const SponsorPage: React.FC = () => {
           <div className="content">
             <h1>ร่วมอุปถัมภ์น้องๆ</h1>
             <p>
+              <br/>
+              <br/>
+              <br/>
+              <br/>
+              <br/>
               สำหรับพวกเขา เราอาจเป็นแค่ช่วงหนึ่งของชีวิต <br />
               แต่สำหรับเรา พวกเขากลับเป็นดวงใจหัวใจ <br />
               จงเปิดใจให้ปังปอนด์ได้เข้ามาในความรักของคุณ <br />

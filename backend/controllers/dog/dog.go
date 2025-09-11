@@ -21,12 +21,9 @@ type DogCreateRequest struct {
 	AnimalSexID   uint   `json:"animal_sex_id" binding:"required"`
 	AnimalSizeID  uint   `json:"animal_size_id" binding:"required"`
 	BreedID       uint   `json:"breed_id" binding:"required"`
-	KennelID      uint   `json:"kennel_id" binding:"required"`
 	DateOfBirth   string `json:"date_of_birth"` // "YYYY-MM-DD"
-	DateOfArrived string `json:"date_arrived"`  // "YYYY-MM-DD"
 	IsAdopted     bool   `json:"is_adopted"`
 	PhotoURL      string `json:"photo_url"`
-	Character     string `json:"character"`
 
 	// ✅ เพิ่ม personalities (IDs) ตอนสร้าง
 	PersonalityIDs []uint `json:"personality_ids"`
@@ -40,10 +37,8 @@ type DogUpdateRequest struct {
 	BreedID       *uint   `json:"breed_id,omitempty"`
 	KennelID      *uint   `json:"kennel_id,omitempty"`
 	DateOfBirth   *string `json:"date_of_birth,omitempty"`   // "YYYY-MM-DD"
-	DateOfArrived *string `json:"date_of_arrived,omitempty"` // "YYYY-MM-DD"
 	IsAdopted     *bool   `json:"is_adopted,omitempty"`
 	PhotoURL      *string `json:"photo_url,omitempty"`
-	Character     *string `json:"character,omitempty"`
 
 	// ✅ เพิ่ม personalities (IDs) ตอนแก้ไข
 	// ใช้ pointer เพื่อตีความ: ไม่ส่ง = ไม่แตะ, ส่ง [] = เคลียร์ทั้งหมด
@@ -94,12 +89,9 @@ func CreateDog(c *gin.Context) {
 			AnimalSexID:   req.AnimalSexID,
 			AnimalSizeID:  req.AnimalSizeID,
 			BreedID:       req.BreedID,
-			KennelID:      req.KennelID,
 			DateOfBirth:   req.DateOfBirth,
-			DateOfArrived: req.DateOfArrived,
 			IsAdopted:     req.IsAdopted,
 			PhotoURL:      req.PhotoURL,
-			Character:     req.Character,
 		}
 		if err := tx.Create(&d).Error; err != nil {
 			return err
@@ -227,22 +219,13 @@ func UpdateDog(c *gin.Context) {
 		if req.PhotoURL != nil {
 			updates["photo_url"] = *req.PhotoURL
 		}
-		if req.Character != nil {
-			updates["character"] = *req.Character
-		}
+		
 		if req.DateOfBirth != nil {
 			if _, err := parseYMD(*req.DateOfBirth); err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{"error": "invalid date_of_birth (YYYY-MM-DD)"})
 				return nil
 			}
 			updates["date_of_birth"] = *req.DateOfBirth
-		}
-		if req.DateOfArrived != nil {
-			if _, err := parseYMD(*req.DateOfArrived); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "invalid date_arrived (YYYY-MM-DD)"})
-				return nil
-			}
-			updates["date_arrived"] = *req.DateOfArrived
 		}
 
 		if len(updates) > 0 {

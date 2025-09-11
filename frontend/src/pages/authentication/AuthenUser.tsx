@@ -240,7 +240,6 @@ const AuthPage: React.FC = () => {
 
             <div className="btn">
               <ButtonComponent className="btn-primary" htmlType="submit" disabled={submitting}>
-                {submitting ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
                 สมัครสมาชิก
               </ButtonComponent>
             </div>
@@ -290,8 +289,8 @@ const AuthPage: React.FC = () => {
             </div>
 
             <div className="btn">
-              <ButtonComponent className="btn-primary" htmlType="submit">
-                เข้าสู่ระบบ
+              <ButtonComponent className="btn-primary" htmlType="submit" disabled={submitting}>
+                {submitting ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
               </ButtonComponent>
             </div>
 

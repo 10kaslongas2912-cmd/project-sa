@@ -29,9 +29,9 @@ body {
   color: #ff6b6b;
 }
 
-.form-header h2 {
+.form-header h1 {
   margin: 0;
-  color: #2c3e50;
+  color: #ff6600;
 }
 
 .visit-form {
@@ -144,8 +144,8 @@ body {
   transition: transform 0.2s, box-shadow 0.2s;
   border-radius: 12px;
   overflow: hidden;
-  height: 220px;
-  width: 220px;
+
+  max-width: 100%;
 }
 
 .dog-card:hover {
@@ -288,6 +288,57 @@ body {
 .ant-input-affix-wrapper-focused {
   border-color: #f5a507;
   box-shadow: 0 0 0 2px rgba(245, 165, 7, 0.2);
+}
+.btn-action {
+  font-weight: bold;
+  padding: 12px 25px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #FBB03B !important;
+  color: #fff !important;
+  background-color: #fcfcfc !important;
+  box-shadow: 2px 2px 5px rgba(114, 96, 96, 0.3);
+  transition: all 0.3s ease-in-out;
+}
+
+
+.btn-action:hover {
+  background-color: #faa51a !important;
+  border-color: #faa51a !important;
+  color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 4px 4px 8px rgba(0,0,0,0.4);
+}
+
+
+.btn-action::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background-color: #faa51a;
+  /* hover gradient หรือสี hover */
+  transition: transform 0.3s ease-in-out;
+  transform: translateX(0);
+}
+
+.btn-action:active {
+  transform: translateY(-2px);
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
+  background-color: #faa51a !important;
+  border-color: #faa51a !important;
+  color: #fff !important;
+}
+
+.btn-action:hover::before {
+  transform: translateX(100%);
 }
 
 /* Pagination */
