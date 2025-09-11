@@ -1,6 +1,7 @@
 // services/api/index.ts
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // service/api/index.ts
+import type { DashboardStats, RecentUpdate } from "../interfaces/Dashboard";
 import { Get, Post, Put, Delete } from "./https";
 import { axiosInstance } from "./https";
 import type { CreateDogRequest, UpdateDogRequest } from "../interfaces/Dog";
@@ -30,6 +31,11 @@ export const authAPI = {
 
   me: () => Get("/users/me", true),
 
+};
+
+export const dashboardAPI = {
+  getStats: (): Promise<{ data: DashboardStats }> => Get("/dashboard/stats"),
+  getRecentUpdates: (): Promise<{ data: RecentUpdate[] }> => Get("/dashboard/recent-updates"),
 };
 
 export const staffAuthAPI = {
@@ -346,5 +352,6 @@ export const api = {
   vaccineAPI,
   visitAPI,
   eventAPI,
-  manageAPI
+  manageAPI,
+  dashboardAPI,
 };

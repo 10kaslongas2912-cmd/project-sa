@@ -102,7 +102,6 @@ const UpdatedDashboard: React.FC = () => {
     { id: "support", label: "การอุปถัมภ์สนับสนุน", icon: Shield, path: "/dashboard/support" },
     { id: "reports", label: "รายงานสถิติ", icon: BarChart3, path: "/dashboard/reports" },
     { id: "zone-cage-management", label: "จัดการโซนและกรง", icon: Columns4, path: "/dashboard/zone-cage-management" },
-    {id: "health-records",label: "บันทึกสุขภาพสุนัข",icon: Stethoscope,path: "/dashboard/health-record",},
     {id: "manageevent",label: "จัดการกิจกรรม",icon: Calendar,path: "/dashboard/manageevent",},
     {id: "volunteer",label: "อาสาสมัคร",icon: Users,path: "/dashboard/volunteer" }
   ];

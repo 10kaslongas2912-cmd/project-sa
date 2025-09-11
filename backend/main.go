@@ -16,6 +16,7 @@ import (
 	sponsorship "example.com/project-sa/controllers/sponsorship"
 	user "example.com/project-sa/controllers/user"
 	event "example.com/project-sa/controllers/event"
+	dashboard "example.com/project-sa/controllers/dashboard"
 	vaccine "example.com/project-sa/controllers/vaccine"
 	visit "example.com/project-sa/controllers/visit"
 	manage "example.com/project-sa/controllers/manage"
@@ -62,6 +63,11 @@ func main() {
 	// r.POST("/dogs", dogs.CreateDog)
 	// r.PUT("/dogs/:id", dogs.UpdateDog)
 	// r.DELETE("/dogs/:id", dogs.DeleteDog)
+	
+
+  r.GET("/dashboard/stats", dashboard.GetDashboardStats)
+	r.GET("/dashboard/recent-updates", dashboard.GetDashboardRecentUpdates)
+
 
 	r.POST("/sponsorships/one-time", sponsorship.CreateOneTimeSponsorship)
 	r.GET("/genders", gender.GetAll)
