@@ -31,7 +31,7 @@ const DonationSummaryPage: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (token) {
       setIsLoggedIn(true);
     }
@@ -48,20 +48,21 @@ const DonationSummaryPage: React.FC = () => {
       if (donorInfoString) {
         const donorInfo = JSON.parse(donorInfoString);
         const signupPrefillData = {
-          firstname: donorInfo.firstname,
-          lastname: donorInfo.lastname,
+          first_name: donorInfo.first_name,
+          last_name: donorInfo.last_name,
           email: donorInfo.email,
           phone: donorInfo.phone,
         };
         sessionStorage.setItem('signupPrefillData', JSON.stringify(signupPrefillData));
       }
       sessionStorage.setItem('returnTo', '/donation/summary');
-      navigate('/auth');
+      navigate('/auth/users');
       return;
     }
 
     // API Call Logic
     const donorInfoString = sessionStorage.getItem('donationInfoFormData');
+    console.log(donorInfoString);
     const itemDetailsString = sessionStorage.getItem('donationItemsFormData');
     const donationType = sessionStorage.getItem('donationType');
 
@@ -80,8 +81,8 @@ const DonationSummaryPage: React.FC = () => {
       const donorInfo: DonorInterface = JSON.parse(donorInfoString);
       const itemDetailsRaw = JSON.parse(itemDetailsString);
 
-      const token = localStorage.getItem('token');
-      const userId = localStorage.getItem('id');
+      const token = sessionStorage.getItem('token');
+      const userId = sessionStorage.getItem('id');
       donorInfo.donor_type = token ? "user" : "guest";
       if (token && userId) {
         donorInfo.user_id = parseInt(userId, 10);

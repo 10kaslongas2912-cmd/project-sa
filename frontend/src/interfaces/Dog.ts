@@ -3,6 +3,7 @@ import type { AnimalSexInterface } from "./AnimalSex";
 import type { AnimalSizeInterface } from "./AnimalSize";
 import type { BreedInterface } from "./Breed";
 import type { DogPersonalityInterface } from "./Personality";
+import type { KennelInterface } from "./Kennel";
 
 export interface DogInterface {
   age: any;
@@ -22,6 +23,9 @@ export interface DogInterface {
   breed?: BreedInterface
   story?: string;
   dog_personalities?: DogPersonalityInterface[];
+  kennel_id?: number | null;          // <— add
+  kennel?: KennelInterface | null;    // <— add
+
 }
 
 export interface CreateDogRequest {

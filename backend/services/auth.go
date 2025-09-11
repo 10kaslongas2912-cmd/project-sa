@@ -1,10 +1,10 @@
-//service\auth.go
-
+// services/auth.go
 package services
 
 import (
 	"errors"
 	"time"
+
 	jwt "github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -15,65 +15,62 @@ func HashPassword(password string) (string, error) {
 }
 
 func CheckPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)) == nil
 }
 
-// JwtWrapper wraps the signing key and the issuer
 type JwtWrapper struct {
 	SecretKey       string
 	Issuer          string
 	ExpirationHours int64
 }
 
-// JwtClaim adds email as a claim to the token
 type JwtClaim struct {
-	ID uint `json:"ID"`
+	ID       uint   `json:"ID"`
 	Username string `json:"username"`
-	Email string `json:"email"`
+	Email    string `json:"email"`
+	Kind     string `json:"kind,omitempty"` // "user" | "staff"
 	jwt.StandardClaims
 }
 
-// Generate Token generates a jwt token
-func (j *JwtWrapper) GenerateToken(userID uint, username string, email string) (signedToken string, err error) {
+func (j *JwtWrapper) GenerateTokenWithKind(userID uint, username, email, kind string) (string, error) {
 	claims := &JwtClaim{
-		ID: userID,
+		ID:       userID,
 		Username: username,
-		Email: email,
+		Email:    email,
+		Kind:     kind,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(j.ExpirationHours)).Unix(),
 			Issuer:    j.Issuer,
 		},
 	}
-
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signedToken, err = token.SignedString([]byte(j.SecretKey))
-	if err != nil {
-		return
-	}
-	return
+	return token.SignedString([]byte(j.SecretKey))
 }
 
-// Validate Token validates the jwt token
+// เดิม: default เป็น "user" (เพื่อ compatibility)
+func (j *JwtWrapper) GenerateToken(userID uint, username, email string) (string, error) {
+	return j.GenerateTokenWithKind(userID, username, email, "user")
+}
+
+// สะดวกใช้ฝั่ง staff
+func (j *JwtWrapper) GenerateStaffToken(userID uint, username, email string) (string, error) {
+	return j.GenerateTokenWithKind(userID, username, email, "staff")
+}
+
 func (j *JwtWrapper) ValidateToken(signedToken string) (claims *JwtClaim, err error) {
 	token, err := jwt.ParseWithClaims(
-		signedToken,
-		&JwtClaim{},
-		func(token *jwt.Token) (interface{}, error) {
-			return []byte(j.SecretKey), nil
-		},
+		signedToken, &JwtClaim{},
+		func(token *jwt.Token) (interface{}, error) { return []byte(j.SecretKey), nil },
 	)
-
 	if err != nil {
 		return
 	}
-
-	claims, ok := token.Claims.(*JwtClaim)
+	var ok bool
+	claims, ok = token.Claims.(*JwtClaim)
 	if !ok {
 		err = errors.New("Couldn't parse claims")
 		return
 	}
-
 	if claims.ExpiresAt < time.Now().Local().Unix() {
 		err = errors.New("JWT is expired")
 		return

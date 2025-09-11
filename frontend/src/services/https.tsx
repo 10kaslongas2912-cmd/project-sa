@@ -15,16 +15,21 @@ const getCookie = (name: string): string | null => {
   return null;
 };
 
+// ✅ แก้: อ่านจาก sessionStorage ก่อน แล้วค่อย fallback
 const getToken = (): string | null => {
   return (
+    sessionStorage.getItem("token") ||
     localStorage.getItem("token") ||
     getCookie("0195f494-feaa-734a-92a6-05739101ede9") ||
     null
   );
 };
 
+// ✅ แก้: token_type ก็อ่านจาก sessionStorage ก่อน
 const getTokenType = (): string =>
-  localStorage.getItem("token_type") || "Bearer";
+  sessionStorage.getItem("token_type") ||
+  localStorage.getItem("token_type") ||
+  "Bearer";
 
 const getConfig = () => {
   const token = getToken();
@@ -52,7 +57,9 @@ export const Post = async (
     .then((res) => res)
     .catch((error: AxiosError) => {
       if (error?.response?.status === 401) {
-        localStorage.clear();
+        // ✅ แก้: เคลียร์ทั้ง sessionStorage และ localStorage
+        try { sessionStorage.clear(); } catch {}
+        try { localStorage.clear(); } catch {}
         window.location.reload();
       }
       return error.response;
@@ -72,7 +79,9 @@ export const Get = async (
         return error.response;
       }
       if (error?.response?.status === 401) {
-        localStorage.clear();
+        // ✅ แก้: เคลียร์ทั้ง sessionStorage และ localStorage
+        try { sessionStorage.clear(); } catch {}
+        try { localStorage.clear(); } catch {}
         window.location.reload();
       }
       return error.response;
@@ -90,7 +99,9 @@ export const Put = async (
     .then((res) => res.data)
     .catch((error: AxiosError) => {
       if (error?.response?.status === 401) {
-        localStorage.clear();
+        // ✅ แก้: เคลียร์ทั้ง sessionStorage และ localStorage
+        try { sessionStorage.clear(); } catch {}
+        try { localStorage.clear(); } catch {}
         window.location.reload();
       }
       return error.response;
@@ -107,7 +118,9 @@ export const Delete = async (
     .then((res) => res.data)
     .catch((error: AxiosError) => {
       if (error?.response?.status === 401) {
-        localStorage.clear();
+        // ✅ แก้: เคลียร์ทั้ง sessionStorage และ localStorage
+        try { sessionStorage.clear(); } catch {}
+        try { localStorage.clear(); } catch {}
         window.location.reload();
       }
       return error.response;
@@ -117,3 +130,4 @@ export const Delete = async (
 export const axiosInstance = axios.create({
   baseURL: API_URL,
 });
+

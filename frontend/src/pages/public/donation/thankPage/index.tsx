@@ -43,7 +43,7 @@ const ThankYouPage: React.FC = () => {
           sessionStorage.removeItem('creditCardFormData');
           sessionStorage.removeItem('transactionNumber'); // ล้าง transactionNumber ด้วย
           sessionStorage.removeItem('donationType'); // Clear donationType
-          localStorage.setItem("page", "/"); // Set page to root
+          sessionStorage.setItem("page", "/"); // Set page to root
           navigate('/');
         }} className="back-to-home-button" style={{ fontFamily: 'Anakotmai-Bold' }}>
           กลับสู่หน้าหลัก

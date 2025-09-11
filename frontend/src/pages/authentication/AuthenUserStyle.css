@@ -1,0 +1,328 @@
+/* ======================================= */
+/* Global Styles               */
+/* ======================================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Anakotmai', sans-serif;
+}
+
+.container {
+  background-color: #fff;
+  position: relative;
+  overflow: hidden;
+  width: 100vw;
+  min-height: 100vh;
+  max-width: 100%;
+}
+
+/* ======================================= */
+/* Typography & Text Elements       */
+/* ======================================= */
+
+.container h1 {
+  font-size: 40px;
+}
+
+.container h4 {
+  padding-left: 5px;
+}
+
+.container p {
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0.3px;
+  margin: 20px 0;
+}
+
+.container span {
+  font-size: 12px;
+}
+
+.container a {
+  color: #333;
+  font-size: 18px;
+  text-decoration: none;
+  margin: 15px 0 10px;
+}
+
+/* ======================================= */
+/* Layout & Containers            */
+/* ======================================= */
+
+.form-container {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transition: all 0.6s ease-in-out;
+}
+
+.logo-box {
+  display: flex;
+  justify-content: center;
+  padding-top: 10%;
+  padding-bottom: 5%;
+  width: 100%; /* <--- เพิ่ม width 100% เพื่อให้ div มีขนาดเท่ากับ form */
+}
+
+.logo-box img {
+  width: 400px;
+}
+
+/* Layout ของฟอร์มลงทะเบียน */
+.name,
+.tel-birth-gender,
+.mail,
+.username,
+.password {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+}
+
+.name .fn,
+.name .ln,
+.tel-birth-gender .gender,
+.tel-birth-gender .birth,
+.tel-birth-gender .tel {
+  flex-grow: 1; /* ทำให้แต่ละส่วนขยายเต็มพื้นที่ที่เหลือใน flex container */
+}
+
+.tel-birth-gender {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+}
+
+/* กลุ่มปุ่ม */
+
+/* ======================================= */
+/* Form Components Styles         */
+/* ======================================= */
+
+.container form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 40px;
+  /* max-width: 500px;  <--- อาจจะลบหรือไม่ใช้ max-width เพื่อให้ logo อยู่กลางได้ง่ายขึ้น */
+  width: 100%;
+}
+
+/* สไตล์สำหรับ Input, Select, DatePicker ที่ใช้ในฟอร์ม */
+.container .ant-input,
+.container .ant-select-selector,
+.container .ant-picker,
+.container .ant-input-password,
+.container .ant-input-affix-wrapper {
+  background-color: #eee;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 15px;
+  font-size: 18px;
+  height: 44px;
+  box-sizing: border-box;
+  align-items: center;
+  width: 100%; /* <--- ให้ input มีความกว้างเต็ม Form.Item */
+}
+
+/* เพิ่มสไตล์สำหรับ DatePicker เพื่อให้ความกว้างเต็มพื้นที่ */
+.container .ant-picker {
+  width: 100%;
+}
+
+.i-form {
+  width: 400px;
+  height: auto;
+}
+
+.email {
+  width: 400px;
+}
+
+/* แก้ไข Input.Password ที่มี icon */
+.container .ant-input-password {
+  background-color: #eee;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 15px;
+  font-size: 18px;
+  height: 44px;
+}
+
+.container .ant-form-item {
+  width: 100%;
+}
+
+
+/* Base button styles */
+.btn{
+  margin-top: 20px;
+}
+
+/* ======================================= */
+/* Forgot Password Styles         */
+/* ======================================= */
+
+.forgot-password {
+  width: 100%;
+  text-align: right;
+  margin-top: -10px;
+  margin-bottom: 15px;
+}
+
+.forgot-link {
+  color: #512da8;
+  font-size: 14px;
+  padding: 0;
+  height: auto;
+  text-decoration: underline;
+}
+
+.forgot-link:hover {
+  color: #ff8800;
+  text-decoration: underline;
+}
+
+/* ======================================= */
+/* Form Guide Text Styles         */
+/* ======================================= */
+
+.form-guide {
+  margin-top: 20px;
+  text-align: center;
+  width: 100%;
+}
+
+.form-guide p {
+  font-size: 14px;
+  color: #666;
+  margin: 10px 0;
+}
+
+.form-guide a {
+  color: #ff8800;
+  font-size: 14px;
+  text-decoration: underline;
+  font-weight: 600;
+  margin: 0;
+}
+
+.form-guide a:hover {
+  color: #512da8;
+  text-decoration: underline;
+}
+
+/* ======================================= */
+/* Animation & Layout           */
+/* ======================================= */
+
+.sign-in {
+  left: 0;
+  width: 30%;
+  z-index: 2;
+}
+
+.sign-up {
+  left: 0;
+  width: 30%;
+  opacity: 0;
+  z-index: 1;
+}
+
+.container.active .sign-in {
+  transform: translateX(233.33%);
+  opacity: 0;
+  z-index: 1;
+}
+
+.container.active .sign-up {
+  transform: translateX(233.33%);
+  opacity: 1;
+  z-index: 5;
+  animation: move 0.6s;
+}
+
+@keyframes move {
+  0%,
+  49.99% {
+    opacity: 0;
+    z-index: 1;
+  }
+  50%,
+  100% {
+    opacity: 1;
+    z-index: 5;
+  }
+}
+
+.toggle-container {
+  position: absolute;
+  top: 0;
+  left: 30%;
+  width: 70%;
+  height: 100%;
+  overflow: hidden;
+  transition: all 0.6s ease-in-out;
+  border-radius: 0px 0 0 0px;
+  z-index: 1000;
+}
+
+.container.active .toggle-container {
+  transform: translateX(-42.85%);
+  border-radius: 0 0px 0px 0;
+}
+
+.toggle {
+  height: 100%;
+  background-image: url(../../assets/auth/dog.jpg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: #fff;
+  position: relative;
+  left: -100%;
+  height: 100%;
+  width: 200%;
+  transform: translateX(0);
+  transition: all 0.6s ease-in-out;
+}
+
+.container.active .toggle {
+  transform: translateX(50%);
+}
+
+
+.staff-login {
+  width: 100%;
+  text-align: center;
+  margin-top: 16px;
+}
+
+.staff-login .btn-staff {
+  display: inline-block;
+  padding: 10px 18px;
+  font-size: 16px;
+  font-weight: 600;
+  border: 1px solid #512da8;
+  border-radius: 8px;
+  background: #fff;
+  color: #512da8;
+  cursor: pointer;
+  line-height: 1;
+  transition: transform 0.05s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.staff-login .btn-staff:hover {
+  background: #512da8;
+  color: #fff;
+}
+
+.staff-login .btn-staff:active {
+  transform: translateY(1px);
+}
+
+/* ------------------------------------------------------- */

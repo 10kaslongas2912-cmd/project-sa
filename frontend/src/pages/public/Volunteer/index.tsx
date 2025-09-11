@@ -90,7 +90,7 @@ const VolunteerPage: React.FC = () => {
     (async () => {
       try {
         const arr = await skillsAPI.getAll();
-        if (alive) setSkills(arr);
+        if (alive) setSkills(Array.isArray(arr) ? arr : []);
       } catch (e) {
         console.error("load skills failed", e);
         if (alive) setSkills([]);
@@ -115,13 +115,23 @@ const VolunteerPage: React.FC = () => {
   /* -------- Fetch status for this user -------- */
   const refreshStatus = React.useCallback(async () => {
     try {
-      if (!authUser) return setStatus("none");
+      if (!authUser) {
+        setStatus("none");
+        return;
+      }
       const uid = Number((authUser as any).ID ?? (authUser as any).id ?? 0);
-      if (!Number.isFinite(uid) || uid <= 0) return setStatus("none");
+      if (!Number.isFinite(uid) || uid <= 0) {
+        setStatus("none");
+        return;
+      }
 
       setStatus("loading");
-      const { status } = await volunteerAPI.getStatusByUser(uid);
-      setStatus(status || "unknown");
+      const res = await volunteerAPI.getStatusByUser(uid);
+      const st: StatusKind =
+        (res?.status as StatusKind) ??
+        (typeof res === "string" ? (res as StatusKind) : "unknown");
+
+      setStatus(st || "unknown");
     } catch {
       setStatus("unknown");
     }
@@ -204,7 +214,7 @@ const VolunteerPage: React.FC = () => {
 
       await volunteerAPI.create(payload as any);
 
-      // show success, then reflect expected backend default ("pending")
+      setStatus("pending");      // optimistic update
       setShowSuccess(true);
       setSelectedSkillIds([]);
       setOtherSkill("");
@@ -217,7 +227,7 @@ const VolunteerPage: React.FC = () => {
         experience: "",
         motivationReason: "",
       }));
-      // refresh status from server (or set to 'pending' immediately)
+
       await refreshStatus();
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
@@ -228,9 +238,43 @@ const VolunteerPage: React.FC = () => {
     }
   };
 
-  /* -------- Render -------- */
+  /* -------- Visibility / Guards -------- */
 
-  const showForm = status === "none" || status === "unknown"; // allow form if unknown
+  const showForm = isLoggedIn && (status === "none" || status === "unknown");
+
+  if (authLoading) {
+    return (
+      <>
+        <NavigationBar />
+        <div className="volunteer-page-container">
+          <div className="info-message">กำลังตรวจสอบสิทธิ์ผู้ใช้...</div>
+        </div>
+      </>
+    );
+  }
+
+  // Guest: force login before access
+  if (!isLoggedIn) {
+    return (
+      <>
+        <NavigationBar />
+        <div className="volunteer-page-container">
+          <div className="status-card login-required">
+            <div className="status-header">
+              <span className="status-dot login-dot" />
+              <h2 className="status-title">ต้องเข้าสู่ระบบก่อน</h2>
+            </div>
+            <p className="status-desc">คุณต้องเข้าสู่ระบบก่อนจึงจะลงทะเบียนอาสาสมัครได้</p>
+            <div className="status-actions">
+              <a href="/auth" className="submit-btn btn-inline">ไปหน้าเข้าสู่ระบบ</a>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  /* -------- Render (Logged-in) -------- */
 
   return (
     <>
@@ -243,72 +287,25 @@ const VolunteerPage: React.FC = () => {
 
           {/* Success overlay card */}
           {showSuccess && (
-            <div
-              className="success-overlay"
-              role="dialog"
-              aria-modal="true"
-              onClick={() => setShowSuccess(false)}
-              style={{
-                position: "fixed",
-                inset: 0,
-                background: "rgba(23,28,45,0.55)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                zIndex: 50,
-              }}
-            >
-              <div
-                className="success-card"
-                onClick={(e) => e.stopPropagation()}
-                style={{
-                  background: "#fff",
-                  borderRadius: 16,
-                  padding: 24,
-                  width: "min(520px, 92vw)",
-                  boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
-                  textAlign: "center",
-                }}
-              >
-                <h2 style={{ margin: "0 0 8px 0", color: "#16a34a" }}>ลงทะเบียนสำเร็จ</h2>
-                <p style={{ margin: 0 }}>ขอบคุณสำหรับการสมัครอาสาสมัคร</p>
-                <button
-                  type="button"
-                  onClick={() => setShowSuccess(false)}
-                  className="submit-btn"
-                  style={{ marginTop: 16 }}
-                >
-                  ปิด
-                </button>
+            <div className="overlay-backdrop" role="dialog" aria-modal="true" onClick={() => setShowSuccess(false)}>
+              <div className="overlay-card" onClick={(e) => e.stopPropagation()}>
+                <h3 className="overlay-title">ลงทะเบียนสำเร็จ</h3>
+                <p className="overlay-sub">ขอบคุณสำหรับการสมัครอาสาสมัคร</p>
+                <div className="overlay-actions">
+                  <button type="button" className="overlay-btn" onClick={() => setShowSuccess(false)}>
+                    ปิด
+                  </button>
+                </div>
               </div>
             </div>
           )}
 
           {/* STATUS CARD (blocks form if not "none"/"unknown") */}
           {status !== "loading" && !showForm && (
-            <div
-              className={`status-card ${status}`}
-              style={{
-                borderRadius: 12,
-                padding: 20,
-                marginBottom: 16,
-                background:
-                  status === "approved"
-                    ? "#ecfdf5"
-                    : status === "rejected"
-                    ? "#fef2f2"
-                    : "#eff6ff",
-                border:
-                  status === "approved"
-                    ? "1px solid #10b981"
-                    : status === "rejected"
-                    ? "1px solid #ef4444"
-                    : "1px solid #3b82f6",
-              }}
-            >
+            <div className={`status-card ${status}`}>
               {status === "pending" && (
                 <>
-                  <h2 style={{ marginTop: 0, color: "#1d4ed8" }}>กำลังรอการอนุมัติ</h2>
+                  <h2>กำลังรอการอนุมัติ</h2>
                   <p>คำขอของคุณอยู่ในสถานะ <b>รอดำเนินการ</b></p>
                   <p>โดยปกติใช้เวลา 1–2 วันทำการ</p>
                   <p>กรุณาตรวจสอบหน้านี้อีกครั้ง</p>
@@ -316,26 +313,21 @@ const VolunteerPage: React.FC = () => {
               )}
               {status === "approved" && (
                 <>
-                  <h2 style={{ marginTop: 0, color: "#059669" }}>อนุมัติแล้ว</h2>
+                  <h2>อนุมัติแล้ว</h2>
                   <p>ขอบคุณ! คำขอของคุณ <b>ได้รับการอนุมัติ</b> แล้ว</p>
                   <p>ทีมงานจะติดต่อกลับตามข้อมูลที่คุณระบุ</p>
                 </>
               )}
               {status === "rejected" && (
                 <>
-                  <h2 style={{ marginTop: 0, color: "#dc2626" }}>คำขอไม่ผ่าน</h2>
+                  <h2>คำขอไม่ผ่าน</h2>
                   <p>คำขอของคุณถูกระบุเป็น <b>ไม่ผ่านการอนุมัติ</b></p>
                   <p>คุณสามารถติดต่อทีมงานเพื่อขอข้อมูลเพิ่มเติมได้</p>
                 </>
               )}
 
-              <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
-                <button
-                  type="button"
-                  className="submit-btn"
-                  onClick={refreshStatus}
-                  style={{ width: "auto", padding: "10px 16px" }}
-                >
+              <div className="status-actions">
+                <button type="button" className="submit-btn btn-inline" onClick={refreshStatus}>
                   อัปเดตสถานะ
                 </button>
               </div>
@@ -344,9 +336,7 @@ const VolunteerPage: React.FC = () => {
 
           {/* Loading status hint */}
           {status === "loading" && (
-            <div className="info-message" style={{ marginBottom: 12 }}>
-              กำลังตรวจสอบสถานะการลงทะเบียน...
-            </div>
+            <div className="info-message">กำลังตรวจสอบสถานะการลงทะเบียน...</div>
           )}
 
           {/* FORM (only if not already registered) */}
@@ -451,6 +441,9 @@ const VolunteerPage: React.FC = () => {
                 <label>ความถนัด (เลือกได้หลายรายการ) <span className="required">*</span></label>
 
                 <div className="skills-grid" role="group" aria-label="เลือกความถนัด">
+                  {skills.length === 0 && (
+                    <div className="info-message">กำลังโหลดรายการความถนัด หรือยังไม่มีรายการ</div>
+                  )}
                   {skills.map((s) => {
                     const checked = selectedSkillIds.includes(s.id);
                     return (
@@ -473,7 +466,6 @@ const VolunteerPage: React.FC = () => {
                     onChange={(e) => setOtherSkill(e.target.value)}
                     placeholder="โปรดระบุ (อื่นๆ)"
                     className="other-skill-input"
-                    style={{ marginTop: 8 }}
                   />
                 )}
               </div>

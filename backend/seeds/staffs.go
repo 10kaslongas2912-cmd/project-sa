@@ -10,17 +10,6 @@ import (
 
 func seedStaffs(db *gorm.DB) error {
 
-	var handlerRole, managerRole, medicianRole entity.Role
-	if err := db.Where("name = ?", "Handler").First(&handlerRole).Error; err != nil {
-		return fmt.Errorf("seedStaff: role Handler not found: %w", err)
-	}
-	if err := db.Where("name = ?", "Manager").First(&managerRole).Error; err != nil {
-		return fmt.Errorf("seedStaff: role Manager not found: %w", err)
-	}
-	if err := db.Where("name = ?", "Medician").First(&medicianRole).Error; err != nil {
-		return fmt.Errorf("seedStaff: role Manager not found: %w", err)
-	}
-
 	var male, female entity.Gender
 	if err := db.Where("name = ?", "ชาย").First(&male).Error; err != nil {
 		return fmt.Errorf("seedStaff: gender ชาย not found: %w", err)
@@ -47,7 +36,6 @@ func seedStaffs(db *gorm.DB) error {
 			Username:    "manager1",
 			Password:    pw, // bcrypt
 			GenderID:    male.ID,
-			RoleID:      managerRole.ID,
 			DateOfBirth: "1990-02-10",
 			Phone:       "0810000001",
 			Email:       "manager1@example.com",
@@ -61,7 +49,6 @@ func seedStaffs(db *gorm.DB) error {
 			Username:    "manager2",
 			Password:    pw,
 			GenderID:    female.ID,
-			RoleID:      managerRole.ID,
 			DateOfBirth: "1992-06-25",
 			Phone:       "0810000002",
 			Email:       "manager2@example.com",
@@ -69,6 +56,21 @@ func seedStaffs(db *gorm.DB) error {
 			Note:        pointer.P("Ops manager"),
 			ZoneID:      zoneB.ID,
 		},
+		{
+			FirstName:   "Wichai",
+			LastName:    "Srisuruk",
+			Username:    "wichai",
+			Password:    pw,
+			GenderID:    female.ID,
+			DateOfBirth: "1992-06-25",
+			Phone:       "0880088000",
+			Email:       "wichi@example.com",
+			Status:      &active,
+			PhotoURL:    pointer.P(fmt.Sprintf("%s/static/images/staff_profile/staff1.png", PublicBaseURL)),
+			Note:        pointer.P("Ops manager"),
+			ZoneID:      zoneB.ID,
+		},
+
 	}
 
 	for i := range staffs {

@@ -18,6 +18,7 @@ import (
 	sponsorship "example.com/project-sa/controllers/sponsorship"
 	staffs "example.com/project-sa/controllers/staff"
 	user "example.com/project-sa/controllers/user"
+	event "example.com/project-sa/controllers/event"
 	vaccine "example.com/project-sa/controllers/vaccine"
 	visit "example.com/project-sa/controllers/visit"
 	volunteers "example.com/project-sa/controllers/volunteerRegister"
@@ -44,6 +45,7 @@ func main() {
 		log.Fatal(err)
 	}
 
+
 	//  Setup Gin
 	r := gin.Default()
 	r.Use(CORSMiddleware())
@@ -61,6 +63,7 @@ func main() {
 	// r.POST("/dogs", dogs.CreateDog)
 	// r.PUT("/dogs/:id", dogs.UpdateDog)
 	// r.DELETE("/dogs/:id", dogs.DeleteDog)
+
 	r.POST("/sponsorships/one-time", sponsorship.CreateOneTimeSponsorship)
 	r.GET("/genders", gender.GetAll)
 	r.GET("/vaccines", vaccine.GetAll)
@@ -75,6 +78,7 @@ func main() {
 	r.DELETE("/health-records/:id", health_record.DeleteHealthRecord)
 	r.GET("/health-records/:id", health_record.GetHealthRecordById)
 	r.POST("/visits", visit.CreateVisit)
+
 	r.GET("/animal-sexes",dog.GetAllAnimalSexes)
 	r.GET("/animal-sizes",dog.GetAllAnimalSizes)
 	r.GET("/visits", visit.GetAllVisits)
@@ -89,7 +93,8 @@ func main() {
 	r.DELETE("/manages/:id", manage.DeleteManage)
 
 	// Staff routes
-	r.POST("/staffs", staffs.CreateStaff)
+	r.POST("/staffs/auth",staffs.StaffSignIn)
+	r.POST("/staffs/signup",staffs.StaffSignUp)
 	r.GET("/staffs", staffs.GetAllStaffs)
 	r.GET("/staffs/:id", staffs.GetStaffById)
 	r.PUT("/staffs/:id", staffs.UpdateStaff)
@@ -98,15 +103,25 @@ func main() {
 	r.GET("/buildings", buildings.GetAllBuildings)
 
 
+
 	r.GET("/personalities", personalities.GetAllPersonalities)
 	r.GET("/breeds", dog.GetAllBreeds)
 
+
+// Events 
+	r.GET("/events", event.GetAllEvents)        
+	r.GET("/events/:id", event.GetEventById)
+	r.GET("/events/with-related-data", event.GetEventsWithRelatedData)
+	r.POST("/events", event.CreateEvent)
+	r.PUT("/events/:id", event.UpdateEvent)
+	r.DELETE("/events/:id", event.DeleteEvent)
+	r.POST("/events/upload-image", event.UploadEventImage)
+
+	// 7) Routes (protected)
+	r.PUT("/kennels/:id", zcmanagement.UpdateDogInKennel)
+	r.DELETE("/kennels/:id", zcmanagement.DeleteDogFromKennel)
+	r.GET("/kennels", zcmanagement.GetDogInKennel)
 	r.GET("/zcmanagement", zcmanagement.GetAll)
-	r.GET("/zones", zcmanagement.GetZones)
-	r.GET("/kennels/:zone_id", zcmanagement.GetKennelsByZone)
-	r.GET("/kennel/:kennel_id/dog", zcmanagement.GetDogInKennel)
-	r.PUT("/kennel/:kennel_id/dog", zcmanagement.UpdateDogInKennel)
-	r.DELETE("/kennel/:kennel_id/dog", zcmanagement.DeleteDogFromKennel)
 
 	r.GET("/volunteers", volunteers.GetAllVolunteers)
 	r.GET("/volunteer/:id", volunteers.GetVolunteerByID)
@@ -116,20 +131,33 @@ func main() {
 	r.DELETE("/volunteer/:id", volunteers.DeleteVolunteer)
 	r.GET("/skills", volunteers.GetAllSkills)     //new
 	r.GET("/statusfv", volunteers.GetAllStatusFV) //new
-	// 7) Routes (protected)
+
+	r.POST("/donations/guest", donation.CreateDonation)
+	r.PUT("/volunteer/:id/status", volunteers.UpdateVolunteerStatus)
+		// 7) Routes (protected)
+
 	protected := r.Group("/")
 	protected.Use(middlewares.Authorizes())
 	{
-		protected.POST("/donations", donation.CreateDonation)
+		// protected.POST("/donations", donation.CreateDonation)
 		protected.GET("/users/me", user.Me)
+		protected.GET("/staffs/me", staffs.Me)
 		protected.PUT("/users/:id", user.UpdateUser)
 		protected.GET("/users", user.GetAllUsers)
 		protected.GET("/users/:id", user.GetUserById)
 		protected.DELETE("/users/:id", user.DeleteUser)
 		protected.POST("/sponsorships/subscription", sponsorship.CreateSubscriptionSponsorship)
 		protected.GET("/my-adoptions", adopter.GetMyCurrentAdoptions)
+		
 		protected.GET("/donations/my", donation.GetMyDonations)
+		protected.GET("/donations", donation.GetAllDonations)
+		protected.PUT("/donations/:id/status", donation.UpdateDonationStatus)
+		protected.DELETE("/donations/:id", donation.DeleteDonation)
 
+	}
+	don := r.Group("/donations", middlewares.OptionalAuthorize())
+	{
+		don.POST("", donation.CreateDonation)
 	}
 
 	// health

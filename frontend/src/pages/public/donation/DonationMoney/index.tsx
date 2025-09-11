@@ -32,25 +32,25 @@ const DonationMoneyForm: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (token) {
       setIsLoggedIn(true);
     }
     fetchPaymentMethods();
-  }, []); 
+  }, []);
 
-const fetchPaymentMethods = async () => {
-  try {
-    const res = await paymentMethodAPI.getAll();
-    setPaymentMethods(res);
-  } catch (err) {
-    console.error('fetchPaymentMethods error:', err);
-    messageApi.open({
-      type: 'error',
-      content: 'ไม่พบข้อมูลวิธีการชำระเงิน',
-    });
-  }
-};
+  const fetchPaymentMethods = async () => {
+    try {
+      const res = await paymentMethodAPI.getAll();
+      setPaymentMethods(res);
+    } catch (err) {
+      console.error('fetchPaymentMethods error:', err);
+      messageApi.open({
+        type: 'error',
+        content: 'ไม่พบข้อมูลวิธีการชำระเงิน',
+      });
+    }
+  };
 
   const handleSubmit = async (values: any) => {
     console.log('Form values on submit:', values);
@@ -73,10 +73,12 @@ const fetchPaymentMethods = async () => {
       return;
     }
 
-    let finalData: MoneyDonationInterface = {
+    const finalData: MoneyDonationInterface = {
       amount: type === 'รายเดือน' ? Number(values.monthlyAmount) : Number(values.oneTimeAmount),
-      payment_method_id: values.paymentMethod,
+      payment_method_id: type === 'รายเดือน' ? 1 : values.paymentMethod,
       payment_type: type === 'รายเดือน' ? 'monthly' : 'one-time',
+      billing_date: type === 'รายเดือน' ? String(values.billingDate) : "-",
+      next_payment_date: "-", // Default value
     };
 
     if (type === 'รายเดือน') {
@@ -86,12 +88,7 @@ const fetchPaymentMethods = async () => {
       if (today.getDate() >= billingDay) {
         nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1);
       }
-            // Format nextPaymentDate to YYYY-MM-DD string
-      const formattedNextPaymentDate = nextPaymentDate.toISOString().split('T')[0]; // "YYYY-MM-DD"
-      finalData = {
-        ...finalData,
-        next_payment_date: formattedNextPaymentDate,
-      };
+      finalData.next_payment_date = nextPaymentDate.toISOString().split('T')[0];
     }
 
     console.log('Final data before navigation:', finalData);
@@ -122,10 +119,25 @@ const fetchPaymentMethods = async () => {
       // Set the return path after login
       // For monthly, it's always credit card.
       // For one-time, we come back here to be redirected again by navigateToNextPage.
-      const returnTo = isMonthly ? '/donation/payment/creditcard' : '/donation/money';
+      let returnTo = '/donation/money';
+
+      if (isMonthly) {
+        // รายเดือนบังคับบัตรเครดิต
+        returnTo = '/donation/payment/creditcard';
+      } else {
+        // รายครั้ง: ดูจาก paymentMethod ที่เลือก
+        // หมายเหตุ: ปกติค่าเป็น ID (1=บัตรเครดิต, 2=พร้อมเพย์/โอน)
+        // เผื่อค่ามาเป็นชื่อ ก็รองรับไว้ทั้งสองแบบ
+        if (values.paymentMethod === 1 || values.paymentMethod === 'บัตรเครดิต') {
+          returnTo = '/donation/payment/creditcard';
+        } else if (values.paymentMethod === 2 || values.paymentMethod === 'พร้อมเพย์') {
+          returnTo = '/donation/payment/banktransfer';
+        }
+      }
+
       sessionStorage.setItem('returnTo', returnTo);
-      
-      navigate('/auth');
+
+      navigate('/auth/users');
     } else {
       // If not signing up, proceed to payment directly
       navigateToNextPage(type, values.paymentMethod);
@@ -172,7 +184,7 @@ const fetchPaymentMethods = async () => {
   const monthlyAmount = Form.useWatch('monthlyAmount', form);
   const months = Form.useWatch('months', form);
   const billingDate = Form.useWatch('billingDate', form);
-  
+
 
   return (
     <>
@@ -240,7 +252,7 @@ const fetchPaymentMethods = async () => {
                 </Form.Item>
               </div>
             ) : (
-              <div className="amount-input-row" style={{ gap: '65px'}}>
+              <div className="amount-input-row" style={{ gap: '65px' }}>
                 <Button onClick={() => handlePresetOneTimeAmount(100)}>100 บาท</Button>
                 <Button onClick={() => handlePresetOneTimeAmount(300)}>300 บาท</Button>
                 <Button onClick={() => handlePresetOneTimeAmount(500)}>500 บาท</Button>
@@ -263,13 +275,13 @@ const fetchPaymentMethods = async () => {
                 <>
                   <Form.Item
                     name="months"
-                    label={<div style={{ textAlign: "center", fontFamily: "Anakotmai", fontSize: "1.4em", width: "100%", marginLeft: "30px", marginTop: "55px", maxWidth: "175px",marginRight: "15px" }}>จำนวนเดือนที่จะบริจาค:</div>}
+                    label={<div style={{ textAlign: "center", fontFamily: "Anakotmai", fontSize: "1.4em", width: "100%", marginLeft: "30px", marginTop: "55px", maxWidth: "175px", marginRight: "15px" }}>จำนวนเดือนที่จะบริจาค:</div>}
                     colon={false}
                     rules={[{ required: false, message: 'กรุณาเลือกจำนวนเดือน!' }]}
                     className="form-row-item"
                   >
                     <Select
-                      style={{ width: "100%",marginLeft: "10px",marginRight: "-10px",maxWidth: "750px" }}
+                      style={{ width: "100%", marginLeft: "10px", marginRight: "-10px", maxWidth: "750px" }}
                       placeholder="เลือกจำนวนเดือน"
                       className="form-input2"
                       options={[
@@ -290,7 +302,7 @@ const fetchPaymentMethods = async () => {
                     className="form-row-item"
                   >
                     <Select
-                    style={{ width: "100%", marginLeft: "10px", marginRight: "20px",maxWidth: "700px" }}
+                      style={{ width: "100%", marginLeft: "10px", marginRight: "20px", maxWidth: "700px" }}
                       placeholder="เลือกวันที่ตัดบัตร"
                       className="form-input2"
                       options={Array.from({ length: 31 }, (_, i) => ({ label: `${i + 1}`, value: i + 1 }))}
@@ -301,7 +313,7 @@ const fetchPaymentMethods = async () => {
                 <>
                   <p className="pk" style={{ marginBottom: "20px" }}>ช่องทางการชำระเงิน</p>
                   <Form.Item
-                    style={{ marginTop: "70px",marginLeft: "-1250px" }}
+                    style={{ marginTop: "70px", marginLeft: "-1250px" }}
                     name="paymentMethod"
                     rules={[{ required: true, message: 'กรุณาเลือกวิธีการชำระเงิน!' }]}
                     className="form-row-item-full"
@@ -324,14 +336,14 @@ const fetchPaymentMethods = async () => {
                       <div className="account-options-container">
                         <p className="jk">สร้างบัญชีบริจาค</p>
                         <Button
-                        style={{ marginLeft: "70px",marginTop: "15px" }}
+                          style={{ marginLeft: "70px", marginTop: "15px" }}
                           onClick={() => setCreateAccount(3)}
                           className={`account-option-button ${createAccount === 3 ? 'selected' : ''}`}
                         >
                           ฉันต้องการสร้างบัญชีบริจาค
                         </Button>
                         <Button
-                        style={{ marginLeft: "70px" }}
+                          style={{ marginLeft: "70px" }}
                           onClick={() => setCreateAccount(4)}
                           className={`account-option-button ${createAccount === 4 ? 'selected' : ''}`}
                         >

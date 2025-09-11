@@ -14,7 +14,6 @@ func AutoMigrate(db *gorm.DB) error {
 		&entity.AnimalSex{},
 		&entity.AnimalSize{},
 		&entity.Personality{},
-		&entity.Role{},
 		&entity.Zone{},
 		&entity.Vaccine{},
 		&entity.Kennel{},
@@ -47,4 +46,4 @@ func AutoMigrate(db *gorm.DB) error {
 		&entity.VisitDetail{},
 		
 	)
-}
+}	

@@ -10,10 +10,9 @@ import type {
   UpdateUserRequest,
 } from "../interfaces/User";
 import type { CreateDonationRequest } from "../interfaces/Donation";
-import type { UpdateZCManagementRequest } from "../interfaces/zcManagement";
 import type { CreateVolunteerPayload } from "../interfaces/Volunteer";
 import type { SkillInterface } from "../interfaces/Skill";
-
+import type { LoginStaffRequest } from "../interfaces/Staff";
 /** ---------- helpers ---------- */
 const isFormData = (v: any): v is FormData =>
   typeof FormData !== "undefined" && v instanceof FormData;
@@ -24,6 +23,7 @@ import type { CreateSponsorshipRequest } from "../interfaces/Sponsorship";
 import type { CreateManageRequest,UpdateManageRequest } from "../interfaces/Manage";
 import { g } from "framer-motion/client";
 
+import type { CreateEventRequest, UpdateEventRequest } from "../interfaces/Event";
 /** ---------- AUTH ---------- */
 export const authAPI = {
   logIn: (data: LoginUserRequest) =>
@@ -31,11 +31,16 @@ export const authAPI = {
   signUp: (data: CreateUserRequest) =>
     Post("/users/signup", data, false),
 
-  // ถ้า BE ใช้ /auth/me ให้เปลี่ยน path ตรงนี้ที่เดียว
   me: () => Get("/users/me", true),
 
-  // ถ้า BE ไม่มี endpoint นี้ ลบออกได้
-  logout: () => Post("/user/logout", {}),
+};
+
+export const staffAuthAPI = {
+  logIn: (data: LoginStaffRequest) =>
+    Post("/staffs/auth", data, false),     // ตาม BE ปัจจุบันของคุณ
+
+  me: () => Get("/staffs/me", true),
+
 };
 
 // การพหูพจน์ + /:id
@@ -55,6 +60,46 @@ export const adopterAPI = {
     getMyCurrentAdoptions: () => Get("/my-adoptions", true), 
 };
 
+
+// แก้ไขใน service/api/index.ts
+export const eventAPI = {
+  // Public endpoints
+  getAll: (page: number = 1, limit: number = 10) => 
+    Get(`/events?page=${page}&limit=${limit}`),
+  getById: (id: number) => Get(`/events/${id}`),
+  
+  // Admin endpoints
+  getWithRelatedData: () => Get("/events/with-related-data"),
+  create: (data: CreateEventRequest) => Post("/events", data),
+  update: (id: number, data: UpdateEventRequest) => Put(`/events/${id}`, data),
+  remove: (id: number) => Delete(`/events/${id}`),
+  
+  // Image upload
+  uploadImage: async (file: File) => {
+  const formData = new FormData();
+  formData.append('image', file);
+  
+  try {
+    // เปลี่ยน URL ให้ถูกต้องตาม backend ของคุณ
+    const response = await fetch('http://localhost:8000/events/upload-image', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to upload image');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    throw error;
+  }
+},
+};
 
 /** ---------- DOGS (CRUD) ---------- */
 // แก้ให้สม่ำเสมอทุกเมธอดอยู่ใต้ /dogs
@@ -101,13 +146,6 @@ export const paymentMethodAPI = {
   getAll: () => Get("/paymentMethods"),
 };
 
-
-/** ---------- ZC MANAGEMENT ---------- */
-export const zcManagementAPI = {
-  getAll: () => Get("/zcmanagement"),
-  update: (id: number, data: UpdateZCManagementRequest) =>
-    Put(`/zcmanagement/${id}`, data),
-};
 
 /** ---------- VOLUNTEERS ---------- */
 type StatusKind = "none" | "pending" | "approved" | "rejected" | "unknown";
@@ -163,6 +201,9 @@ export const volunteerAPI = {
       : Put(`/volunteer/${id}`, data),
 
   remove: (id: number) => Delete(`/volunteer/${id}`),
+
+    updateStatus: (id: number, status: "approved" | "rejected" | "pending") =>
+  axiosInstance.put(`/volunteer/${id}/status`, { status }),
 };
 
 /** ---------- SKILLS ---------- */
@@ -190,11 +231,13 @@ export const donationAPI = {
   getAll:  () => Get("/donations"),
   getById: (id: number) => Get(`/donations/${id}`),
   getMyDonations: () => Get("/donations/my"), // สำหรับดึงการบริจาคของผู้ใช้ที่ล็อกอิน
-  create:  (data: CreateDonationRequest) => Post("/donations", data),
+  create:  (data: CreateDonationRequest) => Post("/donations", data, true),
   getItemById: (id: number) => Get(`/items/${id}`),
   getAllItems: () => Get("/items"),
   getUnitById: (id: number) => Get(`/units/${id}`),
   getAllUnits: () => Get("/units"),
+  updateStatus: (id: number, data: { status: string }) => Put(`/donations/${id}/status`, data),
+  remove: (id: number) => Delete(`/donations/${id}`),
   // ถ้า BE มี endpoint สำหรับ update/delete ค่อยเพิ่ม
   // update:  (id: number, data: UpdateDonationRequest) => Put(`/donations/${id}`, data),
   // remove:  (id: number) => Delete(`/donations/${id}`),
@@ -258,6 +301,46 @@ export const staffAPI = {
 };
 
 
+let _KENNEL_00_ID: number | null = null;
+
+const resolveKennel00Id = async (): Promise<number> => {
+  if (_KENNEL_00_ID !== null) return _KENNEL_00_ID;
+
+  const res: any = await Get("/zcmanagement");
+  const payload = (res && "data" in res) ? (res as any).data : res;
+  const ks: any[] = Array.isArray(payload?.kennels) ? payload.kennels : [];
+
+  const k00 = ks.find(k => String(k?.name ?? "").trim() === "00");
+  const id = Number(k00?.id ?? k00?.ID ?? 0) || 0;
+  _KENNEL_00_ID = id;  // cache
+  return id;
+};
+
+export const zcManagementAPI = {
+  getAll: () => Get("/zcmanagement"),
+  getZones: () => Get("/zones"),
+  getKennelsByZone: (zoneId: number) => Get(`/kennels/${Number(zoneId)}`),
+
+  // List dogs in a kennel
+  getDogsInKennel: (kennelId: number) =>
+    Get(`/dogs?kennel_id=${Number(kennelId)}`),
+
+  // Assign: set dog's kennel_id = kennelId
+  assignDogToKennel: (kennelId: number, dogId: number) =>
+    dogAPI.update(Number(dogId), { kennel_id: Number(kennelId) } as UpdateDogRequest),
+
+  // "Unassign": move dog into kennel named "00"
+  removeDogFromKennel: async (_kennelId: number, dogId: number) => {
+    const k00 = await resolveKennel00Id();
+    if (!k00) throw new Error('Kennel "00" not found. Seed it first.');
+    return dogAPI.update(Number(dogId), { kennel_id: k00 } as UpdateDogRequest);
+  },
+
+  // Optional helper if you need the id elsewhere (e.g. to list "uncaged" dogs)
+  getUnassignedKennelId: () => resolveKennel00Id(),
+};
+
+
 export const api = {
   authAPI,
   userAPI,
@@ -280,5 +363,5 @@ export const api = {
   manageAPI,
   staffAPI,
   buildingAPI,
-
+  eventAPI,
 };
