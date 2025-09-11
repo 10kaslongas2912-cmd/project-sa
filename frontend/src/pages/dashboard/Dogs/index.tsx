@@ -1,5 +1,4 @@
-// src/pages/dashboard/Dogs.tsx
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState, useEffect } from "react";
 import {
   Form,
   Input,
@@ -8,7 +7,6 @@ import {
   Checkbox,
   Button,
   Modal,
-  Upload,
   Card,
   Row,
   Col,
@@ -27,7 +25,6 @@ import {
   CameraOutlined,
   HeartOutlined,
 } from "@ant-design/icons";
-import type { UploadFile, UploadProps } from "antd";
 import dayjs from "dayjs";
 import { useDogs } from "../../../hooks/useDogs";
 import { usePersonalities } from "../../../hooks/usePersonalities";
@@ -64,22 +61,27 @@ const DogManagementSystem: React.FC = () => {
     error: errorDogs,
     refetch,
   } = useDogs();
-  const {
-    personalities: allPersonalities,
-    loading: loadingP,
-    error: errorP,
-  } = usePersonalities();
-  const { breeds, loading: loadingBreeds, error: errorBreeds } = useBreeds();
-  const { sexes, loading: loadingSexes, error: errorSexes } = useAnimalSexes();
-  const { sizes, loading: loadingSizes, error: errorSizes } = useAnimalSizes();
+  const { personalities: allPersonalities } = usePersonalities();
+  const { breeds, loading: loadingBreeds } = useBreeds();
+  const { sexes, loading: loadingSexes } = useAnimalSexes();
+  const { sizes, loading: loadingSizes } = useAnimalSizes();
 
   // States
   const [searchTerm, setSearchTerm] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingDog, setEditingDog] = useState<DogInterface | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
 
+  // พรีวิวรูปภาพ (แยกจาก photo_url ที่จะส่งให้ BE)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const openFilePicker = () => {
+    if (fileInputRef.current) {
+      // เคลียร์ค่าเดิมก่อน เพื่อให้เลือกไฟล์เดิมชื่อซ้ำก็ยังยิง change ได้
+      fileInputRef.current.value = "";
+      fileInputRef.current.click();
+    }
+  };
   // แปลงข้อมูลสำหรับแสดงผล
   const viewDogs = useMemo(() => {
     const list = Array.isArray(apiDogs) ? apiDogs : [];
@@ -108,58 +110,62 @@ const DogManagementSystem: React.FC = () => {
     );
   }, [viewDogs, searchTerm]);
 
-  // Upload handlers
-  const uploadProps: UploadProps = {
-    accept: "image/*",
-    beforeUpload: (file) => {
-      const isImage = file.type.startsWith("image/");
-      if (!isImage) {
-        message.error("สามารถอัปโหลดไฟล์รูปภาพเท่านั้น!");
-        return Upload.LIST_IGNORE;
-      }
-      const isLt5M = file.size / 1024 / 1024 < 5;
-      if (!isLt5M) {
-        message.error("ไฟล์ต้องมีขนาดไม่เกิน 5MB");
-        return Upload.LIST_IGNORE;
-      }
-      return true; // ผ่าน validation, ให้ไปทำ customRequest ต่อ
-    },
-    customRequest: async (options) => {
-      const { file, onSuccess, onError } = options;
-      try {
-        const { url } = await fileAPI.uploadDogImage(file as File);
-        // ตั้งค่าในฟอร์มให้ไปกับ payload create/update
-        form.setFieldValue("photo_url", url);
-        // อัปเดตรายการไฟล์ใน UI
-        setFileList([
-          {
-            uid: String(Date.now()),
-            name: (file as File).name,
-            status: "done",
-            url,
-          },
-        ]);
-        onSuccess && onSuccess({}, {} as any);
-        message.success("อัปโหลดรูปสำเร็จ");
-      } catch (err: any) {
-        onError && onError(err);
-        message.error(err?.response?.data?.error || "อัปโหลดรูปไม่สำเร็จ");
-      }
-    },
-    onRemove: () => {
-      form.setFieldValue("photo_url", "");
-      setFileList([]);
-    },
-    fileList,
-    listType: "picture-card",
-    maxCount: 1,
+  // เลือกรูปภาพ + อัปโหลดไป BE + พรีวิวทันที
+  // แก้ onSelectFile เล็กน้อย: หลังอัปโหลดเสร็จ สลับ preview ไปใช้ URL จริงจากเซิร์ฟเวอร์
+  const onSelectFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      message.error("สามารถอัปโหลดไฟล์รูปภาพเท่านั้น!");
+      return;
+    }
+    if (file.size / 1024 / 1024 > 5) {
+      message.error("ไฟล์ต้องมีขนาดไม่เกิน 5MB");
+      return;
+    }
+
+    // พรีวิวชั่วคราว
+    const localUrl = URL.createObjectURL(file);
+    setPreviewUrl(localUrl);
+
+    try {
+      const { url } = await fileAPI.uploadDogImage(file);
+      form.setFieldValue("photo_url", url);
+
+      // เปลี่ยนจาก blob ชั่วคราว -> URL จริงบนเซิร์ฟเวอร์ (สวย/เสถียรกว่า)
+      if (localUrl.startsWith("blob:")) URL.revokeObjectURL(localUrl);
+      setPreviewUrl(publicUrl(url));
+
+      message.success("อัปโหลดรูปสำเร็จ");
+    } catch (err: any) {
+      message.error(err?.response?.data?.error || "อัปโหลดรูปไม่สำเร็จ");
+      // ลบพรีวิวที่เพิ่งสร้างถ้าอัปโหลดล้มเหลว
+      if (localUrl.startsWith("blob:")) URL.revokeObjectURL(localUrl);
+      setPreviewUrl(null);
+    } finally {
+      // เคลียร์ค่าเพื่อให้เลือกไฟล์เดิม/ซ้ำได้ในครั้งต่อไป
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   };
+
+  const clearImage = () => {
+    if (previewUrl?.startsWith("blob:")) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(null);
+    form.setFieldValue("photo_url", "");
+  };
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl?.startsWith("blob:")) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
 
   // Form handlers
   const resetForm = () => {
     form.resetFields();
     setEditingDog(null);
-    setFileList([]);
+    clearImage();
   };
 
   const openCreateForm = () => {
@@ -170,7 +176,6 @@ const DogManagementSystem: React.FC = () => {
   const handleEditDog = (dog: DogInterface) => {
     setEditingDog(dog);
 
-    // ตั้งค่าข้อมูลในฟอร์ม
     const formValues: FormData = {
       name: dog.name || "",
       date_of_birth: dog.date_of_birth ? dayjs(dog.date_of_birth) : undefined,
@@ -184,37 +189,26 @@ const DogManagementSystem: React.FC = () => {
     };
 
     form.setFieldsValue(formValues);
-
-    // ตั้งค่ารูปภาพ
-    if (dog.photo_url) {
-      setFileList([
-        {
-          uid: "-1",
-          name: "image.jpg",
-          status: "done",
-          url: dog.photo_url,
-        },
-      ]);
-    }
-
+    setPreviewUrl(dog.photo_url ? publicUrl(dog.photo_url) : null);
     setIsFormOpen(true);
   };
 
   // CRUD Operations
-const buildCreatePayload = (values: FormData) => {
-  return {
-    name: values.name.trim(),
-    animal_sex_id: values.animal_sex_id || undefined,
-    animal_size_id: values.animal_size_id || undefined,
-    breed_id: values.breed_id || undefined,
-    date_of_birth: values.date_of_birth ? values.date_of_birth.format('YYYY-MM-DD') : undefined,
-    is_adopted: false,
-    photo_url: values.photo_url || "",
-    character: "",
-    personality_ids: values.personality_ids || [],
+  const buildCreatePayload = (values: FormData) => {
+    return {
+      name: values.name.trim(),
+      animal_sex_id: values.animal_sex_id || undefined,
+      animal_size_id: values.animal_size_id || undefined,
+      breed_id: values.breed_id || undefined,
+      date_of_birth: values.date_of_birth
+        ? values.date_of_birth.format("YYYY-MM-DD")
+        : undefined,
+      is_adopted: false,
+      photo_url: values.photo_url || "",
+      character: "",
+      personality_ids: values.personality_ids || [],
+    };
   };
-};
-
 
   const buildUpdatePayload = (original: DogInterface, values: FormData) => {
     const patch: any = {};
@@ -222,15 +216,12 @@ const buildCreatePayload = (values: FormData) => {
     if (values.name.trim() !== (original.name || "")) {
       patch.name = values.name.trim();
     }
-
     if (values.animal_sex_id !== original.animal_sex_id) {
       patch.animal_sex_id = values.animal_sex_id || null;
     }
-
     if (values.animal_size_id !== original.animal_size_id) {
       patch.animal_size_id = values.animal_size_id || null;
     }
-
     if (values.breed_id !== original.breed_id) {
       patch.breed_id = values.breed_id || null;
     }
@@ -246,7 +237,6 @@ const buildCreatePayload = (values: FormData) => {
       patch.photo_url = values.photo_url || "";
     }
 
-    // Compare personalities
     const originalIds = new Set(
       (original.dog_personalities || [])
         .map((dp) => dp?.personality?.ID)
@@ -388,6 +378,10 @@ const buildCreatePayload = (values: FormData) => {
                             height: "100%",
                             objectFit: "cover",
                           }}
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src =
+                              "/fallback-dog.png";
+                          }}
                         />
                       ) : (
                         <div style={{ textAlign: "center", color: "#bfbfbf" }}>
@@ -510,16 +504,54 @@ const buildCreatePayload = (values: FormData) => {
             {/* Upload Column */}
             <Col xs={24} md={8}>
               <Form.Item label="รูปภาพ" name="photo_url">
-                <Upload {...uploadProps}>
-                  {fileList.length === 0 && (
-                    <div style={{ textAlign: "center" }}>
-                      <UploadOutlined
-                        style={{ fontSize: "2rem", marginBottom: "0.5rem" }}
-                      />
-                      <div>คลิกเพื่อเพิ่มรูปภาพ</div>
-                    </div>
+                <div className="dms-upload">
+                  {previewUrl || form.getFieldValue("photo_url") ? (
+                    <>
+                      <div className="dms-preview">
+                        <img
+                          className="dms-preview-img"
+                          alt="preview"
+                          src={
+                            previewUrl ||
+                            publicUrl(form.getFieldValue("photo_url")!)
+                          }
+                        />
+                      </div>
+                      <div className="dms-upload-actions">
+                        <Button
+                          icon={<UploadOutlined />}
+                          onClick={openFilePicker} // <== ตรงนี้
+                        >
+                          เปลี่ยนรูป
+                        </Button>
+                        <Button
+                          danger
+                          icon={<DeleteOutlined />}
+                          onClick={clearImage}
+                        >
+                          ลบรูป
+                        </Button>
+                      </div>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      className="dms-upload-placeholder"
+                      onClick={openFilePicker}     // <== ตรงนี้
+                    >
+                      <UploadOutlined className="dms-upload-icon" />
+                      <div>คลิกเพื่ออัปโหลดรูป</div>
+                      <div className="dms-upload-hint">รองรับ JPG/PNG ขนาดไม่เกิน 5MB</div>
+                    </button>
                   )}
-                </Upload>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="dms-file-hidden"
+                    onChange={onSelectFile}
+                  />
+                </div>
               </Form.Item>
             </Col>
 
