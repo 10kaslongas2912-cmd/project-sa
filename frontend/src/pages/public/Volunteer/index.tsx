@@ -214,7 +214,7 @@ const VolunteerPage: React.FC = () => {
 
       await volunteerAPI.create(payload as any);
 
-      setStatus("pending"); // optimistic
+      setStatus("pending");      // optimistic update
       setShowSuccess(true);
       setSelectedSkillIds([]);
       setOtherSkill("");
@@ -227,6 +227,7 @@ const VolunteerPage: React.FC = () => {
         experience: "",
         motivationReason: "",
       }));
+
       await refreshStatus();
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
@@ -239,7 +240,6 @@ const VolunteerPage: React.FC = () => {
 
   /* -------- Visibility / Guards -------- */
 
-  // Only show the form if user is logged in AND no prior request blocks it
   const showForm = isLoggedIn && (status === "none" || status === "unknown");
 
   if (authLoading) {
@@ -441,6 +441,9 @@ const VolunteerPage: React.FC = () => {
                 <label>ความถนัด (เลือกได้หลายรายการ) <span className="required">*</span></label>
 
                 <div className="skills-grid" role="group" aria-label="เลือกความถนัด">
+                  {skills.length === 0 && (
+                    <div className="info-message">กำลังโหลดรายการความถนัด หรือยังไม่มีรายการ</div>
+                  )}
                   {skills.map((s) => {
                     const checked = selectedSkillIds.includes(s.id);
                     return (
