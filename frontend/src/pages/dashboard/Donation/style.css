@@ -51,7 +51,7 @@
 
 .search-input:hover,
 .search-input:focus {
-  border-color: #253C90 !important;
+  border-color: #ff6600 !important;
   box-shadow: 0 0 0 2px rgba(37, 60, 144, 0.1) !important;
 }
 
@@ -112,13 +112,13 @@
 }
 
 .tab-button:hover {
-  color: #253C90;
+  color: #ff6600;
   background-color: #f8f9ff;
 }
 
 .tab-button.active {
-  color: #253C90;
-  border-bottom-color: #253C90;
+  color: #ff6600;
+  border-bottom-color: #d78248;
   background-color: #f8f9ff;
 }
 
@@ -128,7 +128,7 @@
 
 .tab-count {
   background-color: #e6f7ff;
-  color: #1890ff;
+  color: #e3ac4d;
   padding: 2px 8px;
   border-radius: 12px;
   font-size: 12px;
@@ -250,8 +250,8 @@
 }
 
 .custom-pagination .ant-pagination-item-active {
-  background-color: #253C90 !important;
-  border-color: #253C90 !important;
+  background-color: #ff6600 !important;
+  border-color: #ff6600 !important;
 }
 
 .custom-pagination .ant-pagination-item-active a {
@@ -279,8 +279,8 @@
 
 .ant-btn-primary:hover,
 .ant-btn-primary:focus {
-  background-color: #4863c3 !important;
-  border-color: #4863c3 !important;
+  background-color: #ff6600 !important;
+  border-color: #c39848 !important;
 }
 
 .ant-btn {

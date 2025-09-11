@@ -15,6 +15,7 @@ import (
 	personalities "example.com/project-sa/controllers/personality"
 	sponsorship "example.com/project-sa/controllers/sponsorship"
 	user "example.com/project-sa/controllers/user"
+	event "example.com/project-sa/controllers/event"
 	vaccine "example.com/project-sa/controllers/vaccine"
 	visit "example.com/project-sa/controllers/visit"
 	manage "example.com/project-sa/controllers/manage"
@@ -42,6 +43,7 @@ func main() {
 	if err := seeds.SeedAll(db); err != nil {
 		log.Fatal(err)
 	}
+
 
 	//  Setup Gin
 	r := gin.Default()
@@ -75,6 +77,7 @@ func main() {
 	r.DELETE("/health-records/:id", health_record.DeleteHealthRecord)
 	r.GET("/health-records/:id", health_record.GetHealthRecordById)
 	r.POST("/visits", visit.CreateVisit)
+
 	r.GET("/animal-sexes",dog.GetAllAnimalSexes)
 	r.GET("/animal-sizes",dog.GetAllAnimalSizes)
 	r.GET("/visits", visit.GetAllVisits)
@@ -98,9 +101,21 @@ func main() {
 
 
 
+
 	r.GET("/personalities", personalities.GetAllPersonalities)
 	r.GET("/breeds", dog.GetAllBreeds)
 
+
+// Events 
+	r.GET("/events", event.GetAllEvents)        
+	r.GET("/events/:id", event.GetEventById)
+	r.GET("/events/with-related-data", event.GetEventsWithRelatedData)
+	r.POST("/events", event.CreateEvent)
+	r.PUT("/events/:id", event.UpdateEvent)
+	r.DELETE("/events/:id", event.DeleteEvent)
+	r.POST("/events/upload-image", event.UploadEventImage)
+
+	// 7) Routes (protected)
 	r.PUT("/kennels/:id", zcmanagement.UpdateDogInKennel)
 	r.DELETE("/kennels/:id", zcmanagement.DeleteDogFromKennel)
 	r.GET("/kennels", zcmanagement.GetDogInKennel)
@@ -118,6 +133,7 @@ func main() {
 	r.POST("/donations/guest", donation.CreateDonation)
 	r.PUT("/volunteer/:id/status", volunteers.UpdateVolunteerStatus)
 		// 7) Routes (protected)
+
 	protected := r.Group("/")
 	protected.Use(middlewares.Authorizes())
 	{
@@ -130,9 +146,11 @@ func main() {
 		protected.DELETE("/users/:id", user.DeleteUser)
 		protected.POST("/sponsorships/subscription", sponsorship.CreateSubscriptionSponsorship)
 		protected.GET("/my-adoptions", adopter.GetMyCurrentAdoptions)
+		
 		protected.GET("/donations/my", donation.GetMyDonations)
 		protected.GET("/donations", donation.GetAllDonations)
 		protected.PUT("/donations/:id/status", donation.UpdateDonationStatus)
+		protected.DELETE("/donations/:id", donation.DeleteDonation)
 
 	}
 	don := r.Group("/donations", middlewares.OptionalAuthorize())
