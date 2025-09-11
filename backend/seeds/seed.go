@@ -15,9 +15,6 @@ func SeedAll(db *gorm.DB) error {
 		if err := seedLookupsBase(tx); err != nil {
 			return err
 		}
-		if err := seedUsers(tx); err != nil {
-			return err
-		}
 		if err := seedStaffs(tx); err != nil {
 			return err
 		}
@@ -27,12 +24,15 @@ func SeedAll(db *gorm.DB) error {
 		if err := seedDogs(tx); err != nil {
 			return err
 		}
+		if err := seedDogPersonalities(tx); err != nil {
+			return err
+		}
 		if err := seedVaccines(tx); err != nil {
 			return err
 		}
 		if err := seedMedicalRecords(tx); err != nil {
 			return err
-		}
+		}	
 		if err := seedVaccineRecords(tx); err != nil {
 			return err
 		}
@@ -54,58 +54,15 @@ func SeedAll(db *gorm.DB) error {
 		if err := seedStatusFV(tx); err != nil {
 			return err
 		}
-		if err := seedLookupsBase(tx); err != nil {
-			return err
-		}
 		if err := seedUsers(tx); err != nil {
-			return err
-		}
-		if err := seedStaffs(tx); err != nil {
-			return err
-		}
-		if err := seedKennels(tx); err != nil {
-			return err
-		}
-		if err := seedDogs(tx); err != nil {
-			return err
-		}
-		if err := seedDogPersonalities(tx); err != nil {
-			return err
-		}
-		if err := seedVaccines(tx); err != nil {
-			return err
-		}
-		if err := seedMedicalRecords(tx); err != nil {
-			return err
-		}
-		if err := seedVaccineRecords(tx); err != nil {
-			return err
-		}
-		if err := seedDonors(tx); err != nil {
-			return err
-		}
-		if err := seedDonations(tx); err != nil {
-			return err
-		}
-		if err := seedMoneyDonations(tx); err != nil {
 			return err
 		}
 		if err := seedBuildings(tx); err != nil {
 			return err
 		}
-		if err := seedLookupsBase(tx); err != nil { return err }
-		if err := seedUsers(tx); err != nil { return err }
-		if err := seedStaffs(tx); err != nil { return err }
-		if err := seedKennels(tx); err != nil { return err }
-		if err := seedDogs(tx); err != nil { return err }
-		if err := seedDogPersonalities(tx); err != nil { return err }
-		if err := seedVaccines(tx); err != nil { return err }
-		if err := seedMedicalRecords(tx); err != nil { return err }
-		if err := seedVaccineRecords(tx); err != nil { return err }
-		if err := seedDonors(tx); err != nil { return err}
-		if err := seedDonations(tx); err != nil { return err}
-		if err := seedMoneyDonations(tx); err != nil { return err} 
-		if err := SeedEvents(tx); err != nil { return err}
+		if err := SeedEvents(tx); err != nil {
+			return err
+		}
 		return nil
 	})
 }

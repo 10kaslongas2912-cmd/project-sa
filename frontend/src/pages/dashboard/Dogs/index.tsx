@@ -24,6 +24,7 @@ import {
   SearchOutlined,
   CameraOutlined,
   HeartOutlined,
+  CloseOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useDogs } from "../../../hooks/useDogs";
@@ -71,10 +72,12 @@ const DogManagementSystem: React.FC = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingDog, setEditingDog] = useState<DogInterface | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   // พรีวิวรูปภาพ (แยกจาก photo_url ที่จะส่งให้ BE)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  
   const openFilePicker = () => {
     if (fileInputRef.current) {
       // เคลียร์ค่าเดิมก่อน เพื่อให้เลือกไฟล์เดิมชื่อซ้ำก็ยังยิง change ได้
@@ -82,6 +85,7 @@ const DogManagementSystem: React.FC = () => {
       fileInputRef.current.click();
     }
   };
+
   // แปลงข้อมูลสำหรับแสดงผล
   const viewDogs = useMemo(() => {
     const list = Array.isArray(apiDogs) ? apiDogs : [];
@@ -111,7 +115,6 @@ const DogManagementSystem: React.FC = () => {
   }, [viewDogs, searchTerm]);
 
   // เลือกรูปภาพ + อัปโหลดไป BE + พรีวิวทันที
-  // แก้ onSelectFile เล็กน้อย: หลังอัปโหลดเสร็จ สลับ preview ไปใช้ URL จริงจากเซิร์ฟเวอร์
   const onSelectFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -128,12 +131,13 @@ const DogManagementSystem: React.FC = () => {
     // พรีวิวชั่วคราว
     const localUrl = URL.createObjectURL(file);
     setPreviewUrl(localUrl);
+    setUploading(true);
 
     try {
       const { url } = await fileAPI.uploadDogImage(file);
       form.setFieldValue("photo_url", url);
 
-      // เปลี่ยนจาก blob ชั่วคราว -> URL จริงบนเซิร์ฟเวอร์ (สวย/เสถียรกว่า)
+      // เปลี่ยนจาก blob ชั่วคราว -> URL จริงบนเซิร์ฟเวอร์
       if (localUrl.startsWith("blob:")) URL.revokeObjectURL(localUrl);
       setPreviewUrl(publicUrl(url));
 
@@ -144,6 +148,7 @@ const DogManagementSystem: React.FC = () => {
       if (localUrl.startsWith("blob:")) URL.revokeObjectURL(localUrl);
       setPreviewUrl(null);
     } finally {
+      setUploading(false);
       // เคลียร์ค่าเพื่อให้เลือกไฟล์เดิม/ซ้ำได้ในครั้งต่อไป
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
@@ -506,43 +511,56 @@ const DogManagementSystem: React.FC = () => {
               <Form.Item label="รูปภาพ" name="photo_url">
                 <div className="dms-upload">
                   {previewUrl || form.getFieldValue("photo_url") ? (
-                    <>
-                      <div className="dms-preview">
-                        <img
-                          className="dms-preview-img"
-                          alt="preview"
-                          src={
-                            previewUrl ||
-                            publicUrl(form.getFieldValue("photo_url")!)
-                          }
-                        />
-                      </div>
-                      <div className="dms-upload-actions">
-                        <Button
-                          icon={<UploadOutlined />}
-                          onClick={openFilePicker} // <== ตรงนี้
-                        >
-                          เปลี่ยนรูป
-                        </Button>
-                        <Button
-                          danger
-                          icon={<DeleteOutlined />}
-                          onClick={clearImage}
-                        >
-                          ลบรูป
-                        </Button>
-                      </div>
-                    </>
-                  ) : (
-                    <button
-                      type="button"
-                      className="dms-upload-placeholder"
-                      onClick={openFilePicker}     // <== ตรงนี้
+                    <div 
+                      className="dms-preview" 
+                      onClick={openFilePicker}
                     >
-                      <UploadOutlined className="dms-upload-icon" />
-                      <div>คลิกเพื่ออัปโหลดรูป</div>
-                      <div className="dms-upload-hint">รองรับ JPG/PNG ขนาดไม่เกิน 5MB</div>
-                    </button>
+                      <img
+                        className="dms-preview-img"
+                        alt="preview"
+                        src={
+                          previewUrl ||
+                          publicUrl(form.getFieldValue("photo_url")!)
+                        }
+                      />
+                      {/* Upload Overlay */}
+                      <div className="dms-upload-overlay">
+                        <UploadOutlined className="dms-upload-overlay-icon" />
+                        <div className="dms-upload-overlay-text">
+                          {uploading ? "กำลังอัปโหลด..." : "คลิกเพื่อเปลี่ยนรูป"}
+                        </div>
+                      </div>
+                      {/* Delete Button */}
+                      <Button
+                        type="text"
+                        danger
+                        icon={<CloseOutlined />}
+                        className="dms-delete-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          clearImage();
+                        }}
+                        disabled={uploading}
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      className="dms-upload-placeholder"
+                      onClick={openFilePicker}
+                    >
+                      {uploading ? (
+                        <div className="dms-uploading">
+                          <div className="dms-upload-spinner" />
+                          <div>กำลังอัปโหลด...</div>
+                        </div>
+                      ) : (
+                        <>
+                          <UploadOutlined className="dms-upload-icon" />
+                          <div className="dms-upload-text">คลิกเพื่ออัปโหลดรูป</div>
+                          <div className="dms-upload-hint">รองรับ JPG/PNG ขนาดไม่เกิน 5MB</div>
+                        </>
+                      )}
+                    </div>
                   )}
                   <input
                     ref={fileInputRef}
@@ -666,7 +684,7 @@ const DogManagementSystem: React.FC = () => {
                   setIsFormOpen(false);
                   resetForm();
                 }}
-                disabled={submitting}
+                disabled={submitting || uploading}
                 size="large"
               >
                 ยกเลิก
@@ -675,6 +693,7 @@ const DogManagementSystem: React.FC = () => {
                 type="primary"
                 htmlType="submit"
                 loading={submitting}
+                disabled={uploading}
                 size="large"
                 icon={<HeartOutlined />}
               >

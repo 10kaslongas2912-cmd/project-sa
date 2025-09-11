@@ -13,11 +13,9 @@ export interface SponsorFormState {
   last_name: string;
   email: string;
   phone: string;
-
   wantsUpdates: UpdatesYesNo;
   updateChannel: UpdatesChannel;
   updateFrequency: UpdatesFreq;
-
   gender_id?: number | null; // เก็บเป็น id เสมอ
 }
 
