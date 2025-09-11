@@ -90,6 +90,7 @@ const NavigationBar: React.FC = () => {
                     <Link to="/profile" className="dropdown-item"><span className="item-icon">👤</span>โปรไฟล์ของฉัน</Link>
                     <Link to="/user-dashboard" className="dropdown-item"><span className="item-icon">🐕</span>สุนัขที่รับเลี้ยง</Link>
                     <Link to="/user-dashboard" className="dropdown-item"><span className="item-icon">💖</span>ประวัติการบริจาค</Link>
+                    <Link to="/volunteer" className="dropdown-item"><span className="item-icon">👩🏻‍💼</span>ลงทะเบียนอาสาสมัคร</Link>
                     <hr className="dropdown-divider" />
                     <button onClick={logout} className="dropdown-item logout-btn">
                       <span className="item-icon">🚪</span>ออกจากระบบ
