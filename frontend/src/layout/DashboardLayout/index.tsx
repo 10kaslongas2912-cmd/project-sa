@@ -24,8 +24,10 @@ import {
   MoreVertical,
   Edit,
   Users,
+  Columns4,
 } from "lucide-react";
 import type { JSX } from "react/jsx-runtime";
+import { col } from "framer-motion/client";
 
 // Types
 interface Staff {
@@ -176,7 +178,7 @@ const UpdatedDashboard: React.FC = () => {
     },
     { id: "zone-cage-management", 
       label: "จัดการโซนและกรง", 
-      icon: X, 
+      icon: Columns4, 
       path: "/dashboard/zone-cage-management" 
     },
     {
