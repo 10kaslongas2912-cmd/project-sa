@@ -17,28 +17,28 @@ import (
 /* ========== DTOs ========== */
 
 type DogCreateRequest struct {
-	Name          string `json:"name" binding:"required"`
-	AnimalSexID   uint   `json:"animal_sex_id" binding:"required"`
-	AnimalSizeID  uint   `json:"animal_size_id" binding:"required"`
-	BreedID       uint   `json:"breed_id" binding:"required"`
-	DateOfBirth   string `json:"date_of_birth"` // "YYYY-MM-DD"
-	IsAdopted     bool   `json:"is_adopted"`
-	PhotoURL      string `json:"photo_url"`
-
+	Name         string `json:"name" binding:"required"`
+	AnimalSexID  uint   `json:"animal_sex_id" binding:"required"`
+	AnimalSizeID uint   `json:"animal_size_id" binding:"required"`
+	BreedID      uint   `json:"breed_id" binding:"required"`
+	DateOfBirth  string `json:"date_of_birth"` // "YYYY-MM-DD"
+	IsAdopted    bool   `json:"is_adopted"`
+	PhotoURL     string `json:"photo_url"`
+	KennelID     uint   `json:"kennel_id" gorm:"default:1"` // ถ้าไม่ระบุ = 0 (ไม่มี)
 	// ✅ เพิ่ม personalities (IDs) ตอนสร้าง
 	PersonalityIDs []uint `json:"personality_ids"`
 }
 
 type DogUpdateRequest struct {
-	DogID         uint    `json:"dog_id"`
-	Name          *string `json:"name,omitempty"`
-	AnimalSexID   *uint   `json:"animal_sex_id,omitempty"`
-	AnimalSizeID  *uint   `json:"animal_size_id,omitempty"`
-	BreedID       *uint   `json:"breed_id,omitempty"`
-	KennelID      *uint   `json:"kennel_id,omitempty"`
-	DateOfBirth   *string `json:"date_of_birth,omitempty"`   // "YYYY-MM-DD"
-	IsAdopted     *bool   `json:"is_adopted,omitempty"`
-	PhotoURL      *string `json:"photo_url,omitempty"`
+	DogID        uint    `json:"dog_id"`
+	Name         *string `json:"name,omitempty"`
+	AnimalSexID  *uint   `json:"animal_sex_id,omitempty"`
+	AnimalSizeID *uint   `json:"animal_size_id,omitempty"`
+	BreedID      *uint   `json:"breed_id,omitempty"`
+	KennelID     *uint   `json:"kennel_id,omitempty"`
+	DateOfBirth  *string `json:"date_of_birth,omitempty"` // "YYYY-MM-DD"
+	IsAdopted    *bool   `json:"is_adopted,omitempty"`
+	PhotoURL     *string `json:"photo_url,omitempty"`
 
 	// ✅ เพิ่ม personalities (IDs) ตอนแก้ไข
 	// ใช้ pointer เพื่อตีความ: ไม่ส่ง = ไม่แตะ, ส่ง [] = เคลียร์ทั้งหมด
@@ -85,13 +85,13 @@ func CreateDog(c *gin.Context) {
 
 	if err := db.Transaction(func(tx *gorm.DB) error {
 		d := entity.Dog{
-			Name:          req.Name,
-			AnimalSexID:   req.AnimalSexID,
-			AnimalSizeID:  req.AnimalSizeID,
-			BreedID:       req.BreedID,
-			DateOfBirth:   req.DateOfBirth,
-			IsAdopted:     req.IsAdopted,
-			PhotoURL:      req.PhotoURL,
+			Name:         req.Name,
+			AnimalSexID:  req.AnimalSexID,
+			AnimalSizeID: req.AnimalSizeID,
+			BreedID:      req.BreedID,
+			DateOfBirth:  req.DateOfBirth,
+			IsAdopted:    req.IsAdopted,
+			PhotoURL:     req.PhotoURL,
 		}
 		if err := tx.Create(&d).Error; err != nil {
 			return err
@@ -126,7 +126,7 @@ func CreateDog(c *gin.Context) {
 	// ตอบ "นอก" transaction เสมอ
 	c.Header("Location", fmt.Sprintf("/dogs/%d", created.ID))
 	c.JSON(http.StatusCreated, created) // 201 แน่นอน
-	return 
+	return
 }
 
 // GetDogByID (R - by ID)
@@ -219,7 +219,7 @@ func UpdateDog(c *gin.Context) {
 		if req.PhotoURL != nil {
 			updates["photo_url"] = *req.PhotoURL
 		}
-		
+
 		if req.DateOfBirth != nil {
 			if _, err := parseYMD(*req.DateOfBirth); err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{"error": "invalid date_of_birth (YYYY-MM-DD)"})
@@ -236,30 +236,31 @@ func UpdateDog(c *gin.Context) {
 
 		// personalities: replace ถ้าส่งฟิลด์มา
 		// personalities: replace ทั้งหมด ถ้าส่งฟิลด์มา
-if req.PersonalityIDs != nil {
-    // ❗️ลบแบบ hard delete (ไม่ใช่ soft)
-    if err := tx.Unscoped().
-        Where("dog_id = ?", existing.ID).
-        Delete(&entity.DogPersonality{}).Error; err != nil {
-        return err
-    }
+		if req.PersonalityIDs != nil {
+			// ❗️ลบแบบ hard delete (ไม่ใช่ soft)
+			if err := tx.Unscoped().
+				Where("dog_id = ?", existing.ID).
+				Delete(&entity.DogPersonality{}).Error; err != nil {
+				return err
+			}
 
-    if len(*req.PersonalityIDs) > 0 {
-        rows := make([]entity.DogPersonality, 0, len(*req.PersonalityIDs))
-        seen := map[uint]struct{}{}
-        for _, pid := range *req.PersonalityIDs {
-            if _, ok := seen[pid]; ok { continue } // กันซ้ำใน payload
-            seen[pid] = struct{}{}
-            rows = append(rows, entity.DogPersonality{
-                DogID: existing.ID, PersonalityID: pid,
-            })
-        }
-        if err := tx.Create(&rows).Error; err != nil {
-            return err
-        }
-    }
-}
-
+			if len(*req.PersonalityIDs) > 0 {
+				rows := make([]entity.DogPersonality, 0, len(*req.PersonalityIDs))
+				seen := map[uint]struct{}{}
+				for _, pid := range *req.PersonalityIDs {
+					if _, ok := seen[pid]; ok {
+						continue
+					} // กันซ้ำใน payload
+					seen[pid] = struct{}{}
+					rows = append(rows, entity.DogPersonality{
+						DogID: existing.ID, PersonalityID: pid,
+					})
+				}
+				if err := tx.Create(&rows).Error; err != nil {
+					return err
+				}
+			}
+		}
 
 		var out entity.Dog
 		if err := preloadDog(tx).First(&out, existing.ID).Error; err != nil {

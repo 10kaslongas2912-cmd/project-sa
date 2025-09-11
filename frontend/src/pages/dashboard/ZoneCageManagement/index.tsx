@@ -1,10 +1,13 @@
 import './style.css';
 import React from 'react';
+
 import type { ZoneInterface } from '../../../interfaces/Zone';
 import type { KennelInterface } from '../../../interfaces/Kennel';
 import type { DogInterface } from '../../../interfaces/Dog';
 import { Get } from '../../../services/https';
 import { zcManagementAPI } from '../../../services/apis';
+
+import { useStaffMe } from "../../../hooks/useStaffsMe"; 
 
 interface Box {
   id: number;      // dog id
@@ -59,9 +62,26 @@ const MIN_SPINNER_MS = 700; // 👈 adjust loader minimum visible time (ms)
 
 const ZoneCageManagementPage = () => {
   // selections (string IDs)
+  const { staff, loading: staffLoading } = useStaffMe();
+// unwrap axios shapes (res / res.data / res.data.data)
+const rawStaff = React.useMemo(() => {
+  const s: any = staff;
+  if (!s) return null;
+  const lvl1 = s?.data ?? s;
+  return (lvl1?.data ?? lvl1) || null;
+}, [staff]);
+
+// stable numeric staff id (supports ID/id/staff_id/staffId)
+const staffId = React.useMemo(() => {
+  const v: any = rawStaff?.ID ?? rawStaff?.id ?? rawStaff?.staff_id ?? rawStaff?.staffId ?? null;
+  const n = Number(v);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}, [rawStaff]);
+
+const staffReady = !staffLoading && !!staffId;
+
   const [selectedZone, setSelectedZone] = React.useState<string | null>(null);
   const [selectedCage, setSelectedCage] = React.useState<string | null>(null);
-
   // UI state
   const [isEditing, setIsEditing] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
@@ -286,62 +306,91 @@ const ZoneCageManagementPage = () => {
   };
 
   const handleSave = async () => {
-    if (!selectedCage) return;
+  if (!selectedCage) return;
 
-    // Capacity check BEFORE any API calls
-    const originalCount = originalDogIdsRef.current.size;
-    const removed = Array.from(markedForDeletion);
+  if (staffLoading) { alert('กำลังโหลดข้อมูลพนักงาน โปรดลองอีกครั้ง'); return; }
+  if (!staffReady)  { alert('ไม่พบข้อมูลพนักงาน กรุณาเข้าสู่ระบบใหม่'); return; }
 
-    const currentIds = new Set(boxes.map((b) => b.id));
-    const added: number[] = [];
-    currentIds.forEach((id) => {
-      if (!originalDogIdsRef.current.has(id) && !markedForDeletion.has(id)) added.push(id);
-    });
+  // capacity check (unchanged)
+  const originalCount = originalDogIdsRef.current.size;
+  const removed = Array.from(markedForDeletion);
 
-    const after = originalCount - removed.length + added.length;
-    if (after > capacityForSelected) {
-      alert(`กรงนี้รองรับได้ ${capacityForSelected} ตัว แต่คุณกำลังจะเก็บไว้ทั้งหมด ${after} ตัว`);
+  const currentIds = new Set(boxes.map((b) => b.id));
+  const added: number[] = [];
+  currentIds.forEach((id) => {
+    if (!originalDogIdsRef.current.has(id) && !markedForDeletion.has(id)) added.push(id);
+  });
+
+  const after = originalCount - removed.length + added.length;
+  if (after > capacityForSelected) {
+    alert(`กรงนี้รองรับได้ ${capacityForSelected} ตัว แต่คุณกำลังจะเก็บไว้ทั้งหมด ${after} ตัว`);
+    return;
+  }
+
+  setSaving(true);
+  try {
+    const kennelIdNum = Number(selectedCage);
+    const ops: Promise<any>[] = [];
+
+    // assign ops + logs
+    for (const id of added) {
+ops.push(guardAssign(kennelIdNum, id));
+ops.push(
+  zcManagementAPI.createLog({
+    kennel: { id: kennelIdNum },
+    dog:    { ID: id },
+    staff:  { ID: staffId },
+    action: "assign",
+  }).catch(() => null) // <- don't block on log
+);
+      // If your BE expects flat fields instead, use:
+      // ops.push(zcManagementAPI.createLog({ kennel_id: kennelIdNum, dog_id: id, staff_id: staffId, action: "assign" }));
+    }
+
+    // remove ops + logs
+    for (const id of removed) {
+ops.push(guardRemove(kennelIdNum, id));
+ops.push(
+  zcManagementAPI.createLog({
+    kennel: { id: kennelIdNum },
+    dog:    { ID: id },
+    staff:  { ID: staffId },
+    action: "remove",
+  }).catch(() => null) // <- don't block on log
+);
+      // or flat: { kennel_id, dog_id, staff_id, action: "remove" }
+    }
+
+    const results = await Promise.allSettled(ops);
+    const failed = results.filter(r => r.status === 'rejected');
+    if (failed.length) {
+      console.error('Some kennel updates failed:', failed);
+      alert('บางรายการบันทึกไม่สำเร็จ ลองใหม่อีกครั้ง');
       return;
     }
 
-    setSaving(true);
-    try {
-      const kennelIdNum = Number(selectedCage);
+    // refresh baseline (unchanged)
+    const ref = await zcManagementAPI.getDogsInKennel(kennelIdNum);
+    const dogs: DogInterface[] = Array.isArray(ref) ? (ref as any) : (ref as any)?.data ?? [];
+    const mapped = dogs.map((d: any) => ({
+      id: Number(getDogId(d)),
+      zone: selectedZone!,
+      cage: selectedCage!,
+      data: getDogName(d),
+      photo: getDogPhoto(d),
+    }));
+    setBoxes(mapped);
+    originalDogIdsRef.current = new Set(mapped.map(m => m.id));
+    setMarkedForDeletion(new Set());
+    setIsEditing(false);
+  } catch (e) {
+    console.error('save failed', e);
+    alert('บันทึกไม่สำเร็จ');
+  } finally {
+    setSaving(false);
+  }
+};
 
-      // wrap ops with guards so failures become rejections
-      const ops: Promise<any>[] = [];
-      for (const id of added) ops.push(guardAssign(kennelIdNum, id));
-      for (const id of removed) ops.push(guardRemove(kennelIdNum, id));
-
-      const results = await Promise.allSettled(ops);
-      const failed = results.filter((r) => r.status === 'rejected');
-      if (failed.length) {
-        console.error('Some kennel updates failed:', failed);
-        return; // keep edit mode
-      }
-
-      // SUCCESS → refetch to sync & set new baseline
-      const ref = await zcManagementAPI.getDogsInKennel(Number(selectedCage));
-      const dogs: DogInterface[] =
-        Array.isArray(ref) ? (ref as any) : (ref as any)?.data ?? [];
-      const mapped = dogs.map((d: any) => ({
-        id: Number(getDogId(d)),
-        zone: selectedZone!,
-        cage: selectedCage!,
-        data: getDogName(d),
-        photo: getDogPhoto(d),
-      }));
-      setBoxes(mapped);
-      originalDogIdsRef.current = new Set(mapped.map((m) => m.id));
-
-      setMarkedForDeletion(new Set());
-      setIsEditing(false);
-    } catch (e) {
-      console.error('save failed', e);
-    } finally {
-      setSaving(false);
-    }
-  };
 
   // Toggle mark for deletion (instead of removing immediately)
   const handleDelete = (boxId: number) => {

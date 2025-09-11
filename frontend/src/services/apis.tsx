@@ -22,7 +22,8 @@ const mpHeaders = { "Content-Type": "multipart/form-data" };
 import type { CreateAdoptionRequest, UpdateStatusRequest } from "../interfaces/Adoption";
 import type { CreateSponsorshipRequest } from "../interfaces/Sponsorship";
 import type { CreateManageRequest,UpdateManageRequest } from "../interfaces/Manage";
-import { g } from "framer-motion/client";
+import type { UpdateZCManagementRequest } from "../interfaces/zcManagement";
+import { g, s } from "framer-motion/client";
 
 import type { CreateEventRequest, UpdateEventRequest } from "../interfaces/Event";
 /** ---------- AUTH ---------- */
@@ -334,6 +335,7 @@ export const zcManagementAPI = {
   // Assign: set dog's kennel_id = kennelId
   assignDogToKennel: (kennelId: number, dogId: number) =>
     dogAPI.update(Number(dogId), { kennel_id: Number(kennelId) } as UpdateDogRequest),
+    
 
   // "Unassign": move dog into kennel named "00"
   removeDogFromKennel: async (_kennelId: number, dogId: number) => {
@@ -342,8 +344,19 @@ export const zcManagementAPI = {
     return dogAPI.update(Number(dogId), { kennel_id: k00 } as UpdateDogRequest);
   },
 
-  // Optional helper if you need the id elsewhere (e.g. to list "uncaged" dogs)
   getUnassignedKennelId: () => resolveKennel00Id(),
+  createLog: (data: UpdateZCManagementRequest) =>
+    Post(
+      "/zcmanagement/log",
+      {
+        // accept either .id or .ID from whatever you pass in
+        kennel_id: Number((data as any)?.kennel?.id ?? (data as any)?.kennel?.ID ?? 0),
+        dog_id:    Number((data as any)?.dog?.ID    ?? (data as any)?.dog?.id    ?? 0),
+        staff_id:  Number((data as any)?.staff?.ID  ?? (data as any)?.staff?.id  ?? 0), // <-- FIXED key
+        action:    String((data as any)?.action ?? ""),
+      },
+      true 
+    ),
 };
 
 
