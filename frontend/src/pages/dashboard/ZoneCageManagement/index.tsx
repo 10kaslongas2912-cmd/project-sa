@@ -300,7 +300,7 @@ const ZoneCageManagementPage = () => {
 
     const after = originalCount - removed.length + added.length;
     if (after > capacityForSelected) {
-      alert(`This cage can hold ${capacityForSelected} dog(s). You're trying to keep ${after}.`);
+      alert(`กรงนี้รองรับได้ ${capacityForSelected} ตัว แต่คุณกำลังจะเก็บไว้ทั้งหมด ${after} ตัว`);
       return;
     }
 
@@ -407,7 +407,7 @@ const ZoneCageManagementPage = () => {
   const openAddModal = async () => {
     if (!selectedZone || !selectedCage) return;
     if (plannedCount >= capacityForSelected) {
-      alert('This cage is already full.');
+      alert('กรงนี้เต็มแล้ว');
       return;
     }
     setSelectedDogIdForAdd('');
@@ -423,7 +423,7 @@ const ZoneCageManagementPage = () => {
   const handleConfirmAdd = () => {
     if (!selectedZone || !selectedCage || !selectedDogIdForAdd) return;
     if (plannedCount >= capacityForSelected) {
-      alert('This cage is already full.');
+      alert('กรงนี้เต็มแล้ว');
       return;
     }
 
@@ -482,15 +482,15 @@ const ZoneCageManagementPage = () => {
       <div className="zone-cage-management-container">
         {/* Top form section */}
         <div className="zone-cage-management-form">
-          <h1>Zone and Cage management</h1>
+          <h1>จัดการโซนและกรง</h1>
 
           {/* Zone and Cage dropdowns on the same line */}
           <div className="form-controls-row">
             <div className="form-group">
-              <label>Zone :</label>
+              <label>โซน :</label>
               <select value={selectedZone ?? ''} onChange={handleZoneChange}>
                 <option key="__zph" value="">
-                  Select zone
+                  เลือกโซน
                 </option>
                 {zones.map((zone) => {
                   const zId = getId(zone);
@@ -504,16 +504,16 @@ const ZoneCageManagementPage = () => {
             </div>
 
             <div className="form-group">
-              <label>Cage :</label>
+              <label>กรง :</label>
               <select
                 value={selectedCage ?? ''}
                 onChange={handleCageChange}
                 disabled={!selectedZone}
                 aria-disabled={!selectedZone}
-                title={!selectedZone ? 'Select a zone first' : undefined}
+                title={!selectedZone ? 'กรุณาเลือกโซนก่อน' : undefined}
               >
                 <option key="__cph" value="">
-                  {!selectedZone ? 'Select a zone first' : 'Select cage'}
+                  {!selectedZone ? 'กรุณาเลือกโซนก่อน' : 'เลือกกรง'}
                 </option>
                 {filteredCages.map((c: any) => {
                   const cId = getId(c);
@@ -531,20 +531,20 @@ const ZoneCageManagementPage = () => {
           <div className="form-bottom-section">
             {bothSelected && (
               <span className="capacity-pill">
-                Capacity: {Number.isFinite(capacityForSelected)
+                ความจุ: {Number.isFinite(capacityForSelected)
                   ? `${plannedCount}/${capacityForSelected}`
-                  : 'unknown'}
+                  : 'ไม่ทราบ'}
               </span>
             )}
 
-            {showEdit && <button onClick={handleEdit}>Edit</button>}
+            {showEdit && <button onClick={handleEdit}>แก้ไข</button>}
             {showOtherButtons && (
               <>
                 <button onClick={handleRedo} disabled={saving}>
-                  Redo
+                  ย้อนกลับ
                 </button>
                 <button onClick={handleSave} disabled={saving}>
-                  {saving ? 'Saving…' : 'Save'}
+                  {saving ? 'กำลังบันทึก…' : 'บันทึก'}
                 </button>
               </>
             )}
@@ -554,7 +554,7 @@ const ZoneCageManagementPage = () => {
         {/* Bottom information section */}
         <div className="information-zone-container">
           <div className="information-form">
-            <h2>Information</h2>
+            <h2>ข้อมูล</h2>
 
             {loadingComplete && (
               <div className="boxes-container">
@@ -596,7 +596,7 @@ const ZoneCageManagementPage = () => {
                           className={`delete-btn ${pending ? 'undo' : ''}`}
                           onClick={() => handleDelete(box.id)}
                         >
-                          {pending ? 'Undo' : 'Remove'}
+                          {pending ? 'ยกเลิก' : 'นำออก'}
                         </button>
                       )}
                     </div>
@@ -612,7 +612,7 @@ const ZoneCageManagementPage = () => {
                         +
                       </div>
                       <div>
-                        <div style={nameStyle}>Add a dog</div>
+                        <div style={nameStyle}>เพิ่มสุนัข</div>
                         <div style={{ opacity: 0.7, fontSize: 12 }}>
                           {zoneNameById.get(selectedZone!) ?? selectedZone} ·{' '}
                           {cageNameById.get(selectedCage!) ?? selectedCage}
@@ -624,7 +624,7 @@ const ZoneCageManagementPage = () => {
                       onClick={openAddModal}
                       disabled={plannedCount >= capacityForSelected}
                     >
-                      Add
+                      เพิ่ม
                     </button>
                   </div>
                 )}
@@ -634,7 +634,7 @@ const ZoneCageManagementPage = () => {
             {showLoader && (
               <div className="loader-container">
                 <div className="loader"></div>
-                <span>Loading...</span>
+                <span>กำลังโหลด...</span>
               </div>
             )}
           </div>
@@ -651,12 +651,12 @@ const ZoneCageManagementPage = () => {
             aria-labelledby="add-dog-title"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 id="add-dog-title">Select a dog without cage</h3>
+            <h3 id="add-dog-title">เลือกสุนัขที่ยังไม่มีกรง</h3>
 
             {addLoading ? (
-              <div style={{ padding: 16 }}>Loading…</div>
+              <div style={{ padding: 16 }}>กำลังโหลด…</div>
             ) : unassignedDogs.length === 0 ? (
-              <div style={{ padding: 16 }}>No unassigned dogs.</div>
+              <div style={{ padding: 16 }}>ไม่มีสุนัขที่ยังไม่มีกรง</div>
             ) : (
               <div className="dog-grid">
                 {unassignedDogs.map((d) => {
@@ -711,13 +711,13 @@ const ZoneCageManagementPage = () => {
 
             <div className="modal-actions">
               <button onClick={closeAddModal} className="ghost">
-                Cancel
+                ยกเลิก
               </button>
               <button
                 onClick={handleConfirmAdd}
                 disabled={!selectedDogIdForAdd || plannedCount >= capacityForSelected}
               >
-                Add
+                เพิ่ม
               </button>
             </div>
           </div>
