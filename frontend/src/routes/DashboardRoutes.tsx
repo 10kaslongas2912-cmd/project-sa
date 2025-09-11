@@ -10,6 +10,7 @@ const Overview = Loadable(lazy(() => import("../pages/dashboard/Overview"))); //
 const Dogs = Loadable(lazy(() => import("../pages/dashboard/Dogs"))); // Placeholder for the dogs component
 const AdoptionPages = Loadable(lazy(() => import("../pages/public/adoption/adminadoption"))); // Placeholder for the users component
 const HealthRecords = Loadable(lazy(() => import("../pages/public/HealthRecord/SearchPage"))); // Placeholder for the health records component
+const EventadminPage = Loadable(lazy(() => import("../pages/public/event/evenadmid"))); //หน้า Admin Adoption
 // ==============================|| DASHBOARD ROUTING ||============================== //
 export const dashboardRoutes: RouteObject = {
   path: "dashboard",
@@ -27,6 +28,11 @@ export const dashboardRoutes: RouteObject = {
       path: "adoptions",
       element: <AdoptionPages />
     },
+    { 
+      path: "manageevent",
+      element: <EventadminPage />
+    }
+    ,
     {
       path: "health-record",
       children: [

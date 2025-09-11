@@ -165,6 +165,12 @@ const UpdatedDashboard: React.FC = () => {
       icon: BarChart3,
       path: "/dashboard/reports",
     },
+    {
+      id: "manageevent",
+      label: "จัดการกิจกรรม",
+      icon: Calendar,
+      path: "/dashboard/manageevent",
+    },
   ];
 
 

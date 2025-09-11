@@ -16,6 +16,7 @@ import (
 	payment_method "example.com/project-sa/controllers/payment_method"
 	sponsorship "example.com/project-sa/controllers/sponsorship"
 	user "example.com/project-sa/controllers/user"
+	event "example.com/project-sa/controllers/event"
 	vaccine "example.com/project-sa/controllers/vaccine"
 	visit "example.com/project-sa/controllers/visit"
 	personalities "example.com/project-sa/controllers/personality"
@@ -39,6 +40,7 @@ func main() {
 	if err := seeds.SeedAll(db); err != nil {
 		log.Fatal(err)
 	}
+
 
 	//  Setup Gin
 	r := gin.Default()
@@ -65,9 +67,16 @@ func main() {
 	r.DELETE("/health-records/:id", health_record.DeleteHealthRecord)
 	r.GET("/health-records/:id", health_record.GetHealthRecordById)
 	r.POST("/visits", visit.CreateVisit)
-
 	r.GET("/personalities", personalities.GetAllPersonalities)
 
+// Events 
+	r.GET("/events", event.GetAllEvents)        
+	r.GET("/events/:id", event.GetEventById)
+	r.GET("/events/with-related-data", event.GetEventsWithRelatedData)
+	r.POST("/events", event.CreateEvent)
+	r.PUT("/events/:id", event.UpdateEvent)
+	r.DELETE("/events/:id", event.DeleteEvent)
+	r.POST("/events/upload-image", event.UploadEventImage)
 	// 7) Routes (protected)
 	protected := r.Group("/")
 	protected.Use(middlewares.Authorizes())
