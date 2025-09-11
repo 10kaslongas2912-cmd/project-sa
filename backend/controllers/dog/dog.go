@@ -8,6 +8,7 @@ import (
 
 	"example.com/project-sa/configs"
 	"example.com/project-sa/entity"
+	"example.com/project-sa/utils/pointer"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -83,6 +84,17 @@ func CreateDog(c *gin.Context) {
 	db := configs.DB()
 	var created entity.Dog
 
+	// If KennelID is not provided or is 0, find kennel "00"
+	kennelID := req.KennelID
+	if kennelID == 0 {
+		var kennel entity.Kennel
+		if err := db.Where("name = ?", "00").First(&kennel).Error; err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "cannot find kennel '00': " + err.Error()})
+			return
+		}
+		kennelID = kennel.ID
+	}
+
 	if err := db.Transaction(func(tx *gorm.DB) error {
 		d := entity.Dog{
 			Name:         req.Name,
@@ -92,6 +104,7 @@ func CreateDog(c *gin.Context) {
 			DateOfBirth:  req.DateOfBirth,
 			IsAdopted:    req.IsAdopted,
 			PhotoURL:     req.PhotoURL,
+			KennelID:     pointer.P(kennelID), // <-- set kennel_id here
 		}
 		if err := tx.Create(&d).Error; err != nil {
 			return err
