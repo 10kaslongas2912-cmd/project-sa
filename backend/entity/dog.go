@@ -19,7 +19,7 @@ type Dog struct {
 	BreedID uint   `json:"breed_id"`
 	Breed   *Breed `gorm:"foreignKey:BreedID"`
 
-	KennelID uint    `json:"kennel_id"`
+	KennelID *uint    `json:"kennel_id"`
 	Kennel   *Kennel `gorm:"foreignKey:KennelID"`
 
 	AnimalSexID uint       `json:"animal_sex_id"`

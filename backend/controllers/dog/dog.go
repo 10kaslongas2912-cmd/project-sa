@@ -94,7 +94,7 @@ func CreateDog(c *gin.Context) {
 			AnimalSexID:   req.AnimalSexID,
 			AnimalSizeID:  req.AnimalSizeID,
 			BreedID:       req.BreedID,
-			KennelID:      req.KennelID,
+			KennelID:      &req.KennelID,
 			DateOfBirth:   req.DateOfBirth,
 			DateOfArrived: req.DateOfArrived,
 			IsAdopted:     req.IsAdopted,
