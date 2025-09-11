@@ -49,13 +49,8 @@ const AuthPage: React.FC = () => {
 
       // ✅ อ่าน returnTo จาก sessionStorage เท่านั้น
       const returnTo = sessionStorage.getItem("returnTo");
-      console.log(returnTo);
-      if (returnTo) {
-        sessionStorage.removeItem("returnTo");
-        navigate(returnTo, { replace: true });
-      } else {
-        navigate("/", { replace: true });
-      }
+      sessionStorage.removeItem("returnTo");
+      navigate(returnTo || "/", { replace: true });
     } catch (e: any) {
       const err = e?.response?.data?.error ?? "เข้าสู่ระบบไม่สำเร็จ";
       messageApi.error(err);
