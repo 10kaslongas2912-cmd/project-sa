@@ -87,76 +87,51 @@ const UpdatedDashboard: React.FC = () => {
   ];
 
   const menuItems: MenuItem[] = [
-    { id: "dashboard", label: "แดชบอร์ด", icon: Home, path: "/dashboard" },
-    {
+  { id: "dashboard", label: "แดชบอร์ด", icon: Home, path: "/dashboard" },
+  
+  { id: "dogs", label: "จัดการข้อมูลสุนัข", icon: PawPrint, path: "/dashboard/dogs" },
+  {
     id: "visit",
     label: "การเยี่ยมชม",
     icon: Play,
     children: [
-      { id: "create-visit", label: "สร้างการเยี่ยมชม", icon: Plus, path: "/dashboard/create-visit" },
-      { id: "update-visit", label: "แก้ไขการเยี่ยมชม", icon: Edit, path: "/dashboard/update-visit" },
+      {
+        id: "create-visit",
+        label: "สร้างการเยี่ยมชม",
+        icon: Plus,
+        path: "/dashboard/create-visit",
+      },
+      {
+        id: "update-visit",
+        label: "แก้ไขการเยี่ยมชม",
+        icon: Edit,
+        path: "/dashboard/update-visit",
+      },
     ],
   },
-    {
-      id: "dogs",
-      label: "จัดการข้อมูลสุนัข",
-      icon: PawPrint,
-      path: "/dashboard/dogs",
-    },
-    {
-      id: "manages",
-      label: "จัดการผู้ดูแล",
-      icon: Captions,
-      path: "/dashboard/manage",
-    },
-    {
-      id: "health-records",
-      label: "บันทึกสุขภาพสุนัข",
-      icon: Stethoscope,
-      path: "/dashboard/health-record",
-    },
-    {
-      id: "adoption",
-      label: "การรับเลี้ยง",
-      icon: Heart,
-      path: "/dashboard/adoptions",
-    },
-    {
-      id: "donation",
-      label: "การบริจาค",
-      icon: DollarSign,
-      path: "/dashboard/donation",
-    },
-    {
-      id: "visits",
-      label: "ตารางการเยี่ยมชม",
-      icon: Calendar,
-      path: "/dashboard/visits",
-    },
-    {
-      id: "support",
-      label: "การอุปถัมภ์สนับสนุน",
-      icon: Shield,
-      path: "/dashboard/support",
-    },
-    {
-      id: "reports",
-      label: "รายงานสถิติ",
-      icon: BarChart3,
-      path: "/dashboard/reports",
-    },
-    { id: "dogs", label: "จัดการข้อมูลสุนัข", icon: PawPrint, path: "/dashboard/dogs" },
-    { id: "health-records", label: "บันทึกสุขภาพสุนัข", icon: Stethoscope, path: "/dashboard/health-record" },
-    { id: "adoption", label: "การรับเลี้ยง", icon: Heart, path: "/dashboard/adoptions" },
-    { id: "donation", label: "การบริจาค", icon: DollarSign, path: "/dashboard/donation" },
-    { id: "visits", label: "ตารางการเยี่ยมชม", icon: Calendar, path: "/dashboard/visits" },
-    { id: "support", label: "การอุปถัมภ์สนับสนุน", icon: Shield, path: "/dashboard/support" },
-    { id: "reports", label: "รายงานสถิติ", icon: BarChart3, path: "/dashboard/reports" },
-    { id: "zone-cage-management", label: "จัดการโซนและกรง", icon: Columns4, path: "/dashboard/zone-cage-management" },
-    {id: "health-records",label: "บันทึกสุขภาพสุนัข",icon: Stethoscope,path: "/dashboard/health-record",},
-    {id: "manageevent",label: "จัดการกิจกรรม",icon: Calendar,path: "/dashboard/manageevent",},
-    {id: "volunteer",label: "อาสาสมัคร",icon: Users,path: "/dashboard/volunteer" }
-  ];
+
+
+  { id: "manages", label: "จัดการผู้ดูแล", icon: Captions, path: "/dashboard/manage" },
+
+  { id: "health-records", label: "บันทึกสุขภาพสุนัข", icon: Stethoscope, path: "/dashboard/health-record" },
+
+  { id: "adoption", label: "การรับเลี้ยง", icon: Heart, path: "/dashboard/adoptions" },
+
+  { id: "donation", label: "การบริจาค", icon: DollarSign, path: "/dashboard/donation" },
+
+  { id: "visits", label: "ตารางการเยี่ยมชม", icon: Calendar, path: "/dashboard/visits" },
+
+  { id: "support", label: "การอุปถัมภ์สนับสนุน", icon: Shield, path: "/dashboard/support" },
+
+  { id: "reports", label: "รายงานสถิติ", icon: BarChart3, path: "/dashboard/reports" },
+
+  { id: "zone-cage-management", label: "จัดการโซนและกรง", icon: Columns4, path: "/dashboard/zone-cage-management" },
+
+  { id: "manageevent", label: "จัดการกิจกรรม", icon: Calendar, path: "/dashboard/manageevent" },
+
+  { id: "volunteer", label: "อาสาสมัคร", icon: Users, path: "/dashboard/volunteer" },
+];
+
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -202,7 +177,7 @@ const UpdatedDashboard: React.FC = () => {
       case "logout":
         if (confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) {
           try { sessionStorage.clear(); } catch {}
-          navigate("/auth/staffs", { replace: true });
+          navigate("/", { replace: true });
         }
         break;
       default:

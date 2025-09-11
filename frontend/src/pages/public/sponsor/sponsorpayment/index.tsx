@@ -23,7 +23,7 @@ const SponsorPaymentPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation() as {
     state?: {
-      donor?: { title?: string | null; first_name: string; last_name: string; email: string; phone: string };
+      sponsor?: { title?: string | null; first_name: string; last_name: string; email: string; phone: string, gender_id: number | null };
       updates?: UpdatesSettings;
     };
   };
@@ -96,31 +96,38 @@ const SponsorPaymentPage: React.FC = () => {
     if (planType === "subscription") setSelectedMethodCode("credit");
   }, [planType]);
 
+
+  const normGenderId = (v: unknown): number | null => {
+  const n = typeof v === "number" ? v : Number(v ?? NaN);
+  return Number.isFinite(n) && n > 0 ? n : null;
+};
   // sponsor_data จากสถานะ login (ไม่มี updates ติดไปแล้ว)
   const sponsorData: CreateSponsorRequest | null = useMemo(() => {
     if (isLoggedIn && user?.ID) {
       return { kind: "user", user_id: user.ID };
     }
     // guest: route state ก่อน, ถ้าไม่มีใช้ของ form hook
-    const donor = location.state?.donor ?? {
+    const sponsor = location.state?.sponsor ?? {
       title: formState.title || null,
       first_name: formState.first_name,
       last_name: formState.last_name,
       email: formState.email,
       phone: formState.phone,
+      gender_id: formState.gender_id ?? null
     };
 
-    if (![donor.first_name, donor.last_name, donor.email, donor.phone].every((v) => String(v ?? "").trim())) {
+    if (![sponsor.first_name, sponsor.last_name, sponsor.email, sponsor.phone].every((v) => String(v ?? "").trim())) {
       return null;
     }
 
     return {
       kind: "guest",
-      title: donor.title ?? null,
-      first_name: donor.first_name,
-      last_name: donor.last_name,
-      email: donor.email,
-      phone: donor.phone,
+      title: sponsor.title ?? null,
+      first_name: sponsor.first_name,
+      last_name: sponsor.last_name,
+      email: sponsor.email,
+      phone: sponsor.phone,
+      gender_id: normGenderId(sponsor.gender_id),
     };
   }, [isLoggedIn, user, location.state, formState]);
 

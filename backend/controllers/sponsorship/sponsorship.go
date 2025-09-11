@@ -2,7 +2,10 @@
 package sponsorship
 
 import (
+	"bytes"
 	"errors"
+	"io"
+	"log"
 	"net/http"
 	"strings"
 
@@ -31,6 +34,7 @@ type SponsorData struct {
 	LastName  *string `json:"last_name,omitempty"`
 	Email     *string `json:"email,omitempty"`
 	Phone     *string `json:"phone,omitempty"`
+	GenderID  *uint   `json:"gender_id,omitempty"`
 	// Update    *UpdatesPref `json:"update,omitempty"` // ระดับ Sponsor
 }
 
@@ -41,8 +45,8 @@ type SponsorshipRequest struct {
 	Amount          int64        `json:"amount" binding:"required,min=1"`
 	Status          string       `json:"status"` // FE: "Active" | "Paided" → map ภายใน
 	PaymentMethodID uint         `json:"payment_method_id" binding:"required"`
-	Frequency       *string      `json:"frequency"` // sub เท่านั้น
-	Update         *UpdatesPref `json:"update,omitempty"` // 🆕 ระดับ Sponsorship (override รายตัว)
+	Frequency       *string      `json:"frequency"`        // sub เท่านั้น
+	Update          *UpdatesPref `json:"update,omitempty"` // 🆕 ระดับ Sponsorship (override รายตัว)
 }
 
 type OneTimeResponse struct {
@@ -86,7 +90,7 @@ func mapStatus(fe string, fallback string) string {
 	case "active":
 		return "active"
 	case "paided", "paid":
-		return "paid"
+		return "paided"
 	case "":
 		return strings.ToLower(fallback)
 	default:
@@ -204,6 +208,7 @@ func findOrCreateSponsor(tx *gorm.DB, sd SponsorData, userIDFromCtx *uint) (*ent
 	last := strings.TrimSpace(deref(sd.LastName))
 	email := strings.ToLower(strings.TrimSpace(deref(sd.Email)))
 	phone := strings.TrimSpace(deref(sd.Phone))
+	genderid := sd.GenderID
 
 	var s entity.Sponsor
 	err := tx.
@@ -220,6 +225,7 @@ func findOrCreateSponsor(tx *gorm.DB, sd SponsorData, userIDFromCtx *uint) (*ent
 			s.Phone = &phone
 			s.FirstName = &first
 			s.LastName = &last
+			s.GenderID = genderid
 			if err := tx.Create(&s).Error; err != nil {
 				return nil, err
 			}
@@ -251,13 +257,20 @@ func ensureDog(tx *gorm.DB, id uint) error {
 
 // POST /sponsorships/one-time
 func CreateOneTimeSponsorship(c *gin.Context) {
+
+	body, _ := io.ReadAll(c.Request.Body)
+	log.Println("🔥 Raw Body:", string(body))
+
+	// ต้อง reset body ก่อนจะ bind ได้อีกครั้ง
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(body))
+
 	var req SponsorshipRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-	c.JSON(http.StatusBadRequest, gin.H{
-		"error":   "invalid request",
-		"details": err.Error(), // ⬅️ บอกเลยว่า field ไหนผิดชนิด/ขาด
-	})
-	return
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "invalid request",
+			"details": err.Error(), // ⬅️ บอกเลยว่า field ไหนผิดชนิด/ขาด
+		})
+		return
 	}
 	if mapPlanType(req.PlanType) != "one-time" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "plan_type must be one-time for this endpoint"})
@@ -266,19 +279,25 @@ func CreateOneTimeSponsorship(c *gin.Context) {
 
 	db := configs.DB()
 	err := db.Transaction(func(tx *gorm.DB) error {
-		if err := ensureDog(tx, req.DogID); err != nil { return err }
-		if err := ensurePaymentMethod(tx, req.PaymentMethodID); err != nil { return err }
+		if err := ensureDog(tx, req.DogID); err != nil {
+			return err
+		}
+		if err := ensurePaymentMethod(tx, req.PaymentMethodID); err != nil {
+			return err
+		}
 
 		uid := getUserIDFromCtx(c)
 		if err := validateSponsorData(req.SponsorData, uid); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error":   "invalid sponsor_data",
-			"details": err.Error(), // "first_name required for kind=guest" ฯลฯ
-		})
-		return err
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error":   "invalid sponsor_data",
+				"details": err.Error(), // "first_name required for kind=guest" ฯลฯ
+			})
+			return err
 		}
 		sponsor, err := findOrCreateSponsor(tx, req.SponsorData, uid)
-		if err != nil { return err }
+		if err != nil {
+			return err
+		}
 
 		// ✅ อัปเดตค่าข่าวสารระดับ Sponsor ถ้าส่งมา
 		// if err := applySponsorUpdatesIfAny(tx, sponsor, req.SponsorData.Update); err != nil {
@@ -297,7 +316,9 @@ func CreateOneTimeSponsorship(c *gin.Context) {
 		// ✅ ตั้งค่าข่าวสารระดับ Sponsorship ถ้าส่งมา
 		applySponsorshipUpdatesIfAny(&sp, req.Update)
 
-		if err := tx.Create(&sp).Error; err != nil { return err }
+		if err := tx.Create(&sp).Error; err != nil {
+			return err
+		}
 
 		pmt := entity.SponsorshipPayment{
 			SponsorshipID:   sp.ID,
@@ -305,7 +326,9 @@ func CreateOneTimeSponsorship(c *gin.Context) {
 			Amount:          sp.Amount,
 			Status:          "SUCCEEDED",
 		}
-		if err := tx.Create(&pmt).Error; err != nil { return err }
+		if err := tx.Create(&pmt).Error; err != nil {
+			return err
+		}
 
 		c.JSON(http.StatusCreated, OneTimeResponse{
 			SponsorshipID: sp.ID,
@@ -348,12 +371,20 @@ func CreateSubscriptionSponsorship(c *gin.Context) {
 
 	db := configs.DB()
 	err := db.Transaction(func(tx *gorm.DB) error {
-		if err := ensureDog(tx, req.DogID); err != nil { return err }
-		if err := ensurePaymentMethod(tx, req.PaymentMethodID); err != nil { return err }
+		if err := ensureDog(tx, req.DogID); err != nil {
+			return err
+		}
+		if err := ensurePaymentMethod(tx, req.PaymentMethodID); err != nil {
+			return err
+		}
 
-		if err := validateSponsorData(req.SponsorData, uid); err != nil { return err }
+		if err := validateSponsorData(req.SponsorData, uid); err != nil {
+			return err
+		}
 		sponsor, err := findOrCreateSponsor(tx, req.SponsorData, uid)
-		if err != nil { return err }
+		if err != nil {
+			return err
+		}
 
 		// ✅ อัปเดตค่าข่าวสารระดับ Sponsor ถ้าส่งมา
 		// if err := applySponsorUpdatesIfAny(tx, sponsor, req.SponsorData.Update); err != nil {
@@ -372,22 +403,29 @@ func CreateSubscriptionSponsorship(c *gin.Context) {
 		// ✅ ตั้งค่าข่าวสารระดับ Sponsorship ถ้าส่งมา
 		applySponsorshipUpdatesIfAny(&sp, req.Update)
 
-		if err := tx.Create(&sp).Error; err != nil { return err }
+		if err := tx.Create(&sp).Error; err != nil {
+			return err
+		}
 
 		sub := entity.Subscription{
 			SponsorshipID: sp.ID,
+			Amount:        sp.Amount,
 			Interval:      strings.ToLower(deref(req.Frequency)),
 		}
-		if err := tx.Create(&sub).Error; err != nil { return err }
+		if err := tx.Create(&sub).Error; err != nil {
+			return err
+		}
 
 		pmt := entity.SponsorshipPayment{
 			SponsorshipID:   sp.ID,
 			SubscriptionID:  &sub.ID,
 			PaymentMethodID: req.PaymentMethodID,
 			Amount:          sp.Amount,
-			Status:          "SUCCESSED",
+			Status:          "SUCCEEDED",
 		}
-		if err := tx.Create(&pmt).Error; err != nil { return err }
+		if err := tx.Create(&pmt).Error; err != nil {
+			return err
+		}
 
 		c.JSON(http.StatusCreated, SubscriptionResponse{
 			SponsorshipID:  sp.ID,

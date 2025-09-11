@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams, useNavigate } from "react-router-dom";
 import { useDog } from "../../../../hooks/useDog";
 import { ageText } from "../../../../utils/date"
+import { publicUrl } from '../../../../utils/publicUrl';
 import './style.css';
 
 
@@ -43,7 +44,7 @@ const DogInfo: React.FC = () => {
         <div className="dog-image-section">
           <div className="dog-image-container">
             <img 
-              src={dog.photo_url} 
+              src={publicUrl(dog?.photo_url)} 
               alt={dog.name}
               className="dog-image"
               onError={(e: React.SyntheticEvent<HTMLImageElement>) => {

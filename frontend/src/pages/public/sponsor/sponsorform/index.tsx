@@ -64,7 +64,7 @@ const SponsorFormPage: React.FC = () => {
         const path = `/sponsor/${dogId}/form`;
         sessionStorage.setItem("returnTo", path);
         localStorage.setItem("returnTo", path); // backup
-        navigate("/auth", { replace: true });
+        navigate("/auth/users", { replace: true });
       } else if (!user) {
         refresh();
       }
