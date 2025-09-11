@@ -20,7 +20,7 @@ const isFormData = (v: any): v is FormData =>
 const mpHeaders = { "Content-Type": "multipart/form-data" };
 import type { CreateAdoptionRequest, UpdateStatusRequest } from "../interfaces/Adoption";
 import type { CreateSponsorshipRequest } from "../interfaces/Sponsorship";
-
+import type { CreateEventRequest, UpdateEventRequest } from "../interfaces/Event";
 /** ---------- AUTH ---------- */
 export const authAPI = {
   logIn: (data: LoginUserRequest) =>
@@ -57,6 +57,46 @@ export const adopterAPI = {
     getMyCurrentAdoptions: () => Get("/my-adoptions", true), 
 };
 
+
+// แก้ไขใน service/api/index.ts
+export const eventAPI = {
+  // Public endpoints
+  getAll: (page: number = 1, limit: number = 10) => 
+    Get(`/events?page=${page}&limit=${limit}`),
+  getById: (id: number) => Get(`/events/${id}`),
+  
+  // Admin endpoints
+  getWithRelatedData: () => Get("/events/with-related-data"),
+  create: (data: CreateEventRequest) => Post("/events", data),
+  update: (id: number, data: UpdateEventRequest) => Put(`/events/${id}`, data),
+  remove: (id: number) => Delete(`/events/${id}`),
+  
+  // Image upload
+  uploadImage: async (file: File) => {
+  const formData = new FormData();
+  formData.append('image', file);
+  
+  try {
+    // เปลี่ยน URL ให้ถูกต้องตาม backend ของคุณ
+    const response = await fetch('http://localhost:8000/events/upload-image', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to upload image');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    throw error;
+  }
+},
+};
 
 /** ---------- DOGS (CRUD) ---------- */
 // แก้ให้สม่ำเสมอทุกเมธอดอยู่ใต้ /dogs
@@ -306,5 +346,6 @@ export const api = {
   healthRecordAPI,
   vaccineAPI,
   visitAPI,
+  eventAPI,
   manageAPI
 };
