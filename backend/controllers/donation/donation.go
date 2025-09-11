@@ -26,11 +26,7 @@ type CombinedDonationPayload struct {
 	ItemDonationDetails  []entity.ItemDonation `json:"item_donation_details,omitempty"`
 }
 
-// ----------- Handlers -----------
-
-// CreateDonation
-// - ถ้ามี token → ใช้ user_id จาก context เสมอ (ignore user_id ที่ client ส่งมา)
-// - ถ้าไม่มี token → ถือเป็น guest; match ด้วย first_name + last_name + user_id IS NULL
+// ----- helper: เอา user_id จาก context (ตั้งโดย OptionalAuthorize) -----
 func tryUserIDFromContext(c *gin.Context) *uint {
 	if v, ok := c.Get("user_id"); ok {
 		if id, ok2 := v.(uint); ok2 && id > 0 {
@@ -40,7 +36,7 @@ func tryUserIDFromContext(c *gin.Context) *uint {
 	return nil
 }
 
-// ===== Handlers =====
+// ===== Handler (เวอร์ชันที่ "เคารพ guest" แม้จะมี token) =====
 func CreateDonation(c *gin.Context) {
 	var payload CombinedDonationPayload
 	if err := c.ShouldBindJSON(&payload); err != nil {
@@ -48,7 +44,7 @@ func CreateDonation(c *gin.Context) {
 		return
 	}
 
-	// validate donation_type ให้เหลือเฉพาะ money|item
+	// validate donation_type
 	switch strings.ToLower(payload.DonationType) {
 	case "money", "item":
 	default:
@@ -65,17 +61,23 @@ func CreateDonation(c *gin.Context) {
 		}
 	}()
 
-	// --- user vs guest: อาศัย context ที่ตั้งโดย OptionalAuthorize ---
+	// อ่าน user จาก token ถ้ามี (OptionalAuthorize จะ set ให้)
 	authedUserID := tryUserIDFromContext(c)
 
+	// ถ้า payload ระบุว่า "guest" ให้เมิน user_id ใน context ทันที (กันกรณี FE เผลอส่ง token มาด้วย)
 	incoming := payload.DonorInfo
+	if incoming.DonorType != nil && strings.EqualFold(*incoming.DonorType, "guest") {
+		authedUserID = nil
+	}
+
 	var donorToUse entity.Donor
 
 	if authedUserID != nil {
-		// ✅ ผู้ใช้ล็อกอิน → ยึด user_id จาก token เสมอ (ignore user_id ใน payload)
+		// ===== โหมดผู้ใช้ล็อกอิน =====
+		// ยึด user_id จาก token เสมอ (ignore user_id ที่ client ส่งมา)
 		if err := tx.Where("user_id = ?", *authedUserID).First(&donorToUse).Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				// ยังไม่มี donor สำหรับ user นี้ → สร้างใหม่
+				// ยังไม่เคยมี donor record สำหรับ user นี้ → สร้างใหม่
 				donorToUse = entity.Donor{
 					UserID:    authedUserID,
 					FirstName: incoming.FirstName,
@@ -96,17 +98,26 @@ func CreateDonation(c *gin.Context) {
 			}
 		}
 	} else {
-		// 🟨 guest → match โดยชื่อ-สกุล(+อีเมล) และ user_id IS NULL
+		// ===== โหมด guest =====
+		// กัน payload แอบยัด: บังคับเคลียร์ user_id และตั้ง donor_type = guest
+		incoming.ID = 0
+		incoming.UserID = nil
+		incoming.DonorType = pointer.P("guest")
+
+		// ปลอดภัยเรื่อง nil: ดึง email แบบไม่ panic
+		emailSafe := ""
+		if incoming.Email != nil {
+			emailSafe = strings.TrimSpace(*incoming.Email)
+		}
+
+		// match ด้วย first_name + last_name (+ email ถ้ามี) และ user_id IS NULL
 		q := tx.Where("first_name = ? AND last_name = ? AND user_id IS NULL", incoming.FirstName, incoming.LastName)
-		if strings.TrimSpace(*incoming.Email) != "" {
+		if emailSafe != "" {
 			q = q.Where("email = ?", incoming.Email)
 		}
 		if err := q.First(&donorToUse).Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				donorToUse = incoming
-				donorToUse.ID = 0
-				donorToUse.UserID = nil
-				donorToUse.DonorType = pointer.P("guest")
 				if err := tx.Create(&donorToUse).Error; err != nil {
 					tx.Rollback()
 					c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create guest donor: " + err.Error()})
@@ -120,7 +131,7 @@ func CreateDonation(c *gin.Context) {
 		}
 	}
 
-	// --- สร้าง Donation หลัก ---
+	// ===== บันทึก Donation หลัก =====
 	donation := entity.Donation{
 		DonorID:      donorToUse.ID,
 		DonationType: strings.ToLower(payload.DonationType), // "money" | "item"
@@ -147,7 +158,7 @@ func CreateDonation(c *gin.Context) {
 		return
 	}
 
-	// --- แนบรายละเอียดตามประเภท ---
+	// แนบรายละเอียดตามประเภท
 	switch donation.DonationType {
 	case "money":
 		if payload.MoneyDonationDetails != nil {
@@ -175,7 +186,10 @@ func CreateDonation(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Donation created successfully", "donation_id": donation.ID})
+	c.JSON(http.StatusOK, gin.H{
+		"message":     "Donation created successfully",
+		"donation_id": donation.ID,
+	})
 }
 
 // GetMyDonations
