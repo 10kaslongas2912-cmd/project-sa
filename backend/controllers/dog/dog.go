@@ -125,8 +125,7 @@ func CreateDog(c *gin.Context) {
 
 	// ตอบ "นอก" transaction เสมอ
 	c.Header("Location", fmt.Sprintf("/dogs/%d", created.ID))
-	c.JSON(http.StatusCreated, created) // 201 แน่นอน
-	return 
+	c.JSON(http.StatusCreated, created) 
 }
 
 // GetDogByID (R - by ID)

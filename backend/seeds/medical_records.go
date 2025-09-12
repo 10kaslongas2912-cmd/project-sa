@@ -17,10 +17,10 @@ func seedMedicalRecords(db *gorm.DB) error {
 		return err
 	}
 	var staff1, staff2 entity.Staff
-	if err := db.Where("username = ?", "manager1").First(&staff1).Error; err != nil {
+	if err := db.Where("username = ?", "wichai").First(&staff1).Error; err != nil {
 		return err
 	}
-	if err := db.Where("username = ?", "manager2").First(&staff2).Error; err != nil {
+	if err := db.Where("username = ?", "kittisak").First(&staff2).Error; err != nil {
 		return err
 	}
 

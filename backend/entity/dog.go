@@ -26,8 +26,12 @@ type Dog struct {
 	AnimalSizeID uint        `json:"animal_size_id"`
 	AnimalSize   *AnimalSize `json:"animal_size" gorm:"foreignKey:AnimalSizeID"`
 
+	StaffID uint `json:"staff_id"`
+	Staff *Staff `gorm:"foreignKey:StaffID" json:"Staff"`
+
 	MedicalRecords   []MedicalRecord  `gorm:"foreignKey:DogID" json:"medical_records"`
 	Adoptions        []Adoption       `gorm:"foreignKey:DogID" json:"adoptions"`
 	Sponsorships     []Sponsorship    `gorm:"foreignKey:DogID" json:"sponsorships"`
 	DogPersonalities []DogPersonality `gorm:"foreignKey:DogID" json:"dog_personalities"`
+	
 }
