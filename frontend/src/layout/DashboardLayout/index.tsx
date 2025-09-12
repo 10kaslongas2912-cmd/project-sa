@@ -70,7 +70,7 @@ const UpdatedDashboard: React.FC = () => {
   // Menu items definition
   const menuItems: MenuItem[] = [
     { id: "dashboard", label: "แดชบอร์ด", icon: Home, path: "/dashboard" },
-    
+
     { id: "dogs", label: "จัดการข้อมูลสุนัข", icon: PawPrint, path: "/dashboard/dogs" },
     {
       id: "visit",
@@ -117,7 +117,7 @@ const UpdatedDashboard: React.FC = () => {
   const findParentMenuFromPath = (currentPath: string): string => {
     for (const menuItem of menuItems) {
       if (menuItem.children) {
-        const matchingChild = menuItem.children.find(child => 
+        const matchingChild = menuItem.children.find(child =>
           child.path && currentPath === child.path
         );
         if (matchingChild) {
@@ -140,7 +140,7 @@ const UpdatedDashboard: React.FC = () => {
   // ✅ ตรวจสอบ path ปัจจุบันเพื่อ disable parent menu และกำหนด activeMenu
   useEffect(() => {
     const currentPath = location.pathname;
-    
+
     // ตรวจสอบว่าอยู่ในหน้าที่ควร disable parent menu
     if (currentPath === "/dashboard/create-visit" || currentPath === "/dashboard/update-visit") {
       setDisabledParentMenu("visit"); // disable parent menu "การเยี่ยมชม"
@@ -157,8 +157,28 @@ const UpdatedDashboard: React.FC = () => {
 
   const isActive = (item: MenuItem) => {
     if (!item.path) return false;
-    if (item.id === "dashboard") return location.pathname === item.path;
-    return location.pathname.startsWith(item.path);
+
+    // สำหรับหน้า dashboard หลัก ต้องตรงทุกตัวอักษร
+    if (item.id === "dashboard") {
+      return location.pathname === item.path;
+    }
+
+    // สำหรับ menu อื่นๆ ตรวจสอบให้แม่นยำขึ้น
+    const currentPath = location.pathname;
+    const menuPath = item.path;
+
+    // ถ้า path ตรงกันทุกตัวอักษร
+    if (currentPath === menuPath) {
+      return true;
+    }
+
+    // ถ้า current path เริ่มต้นด้วย menu path และตัวถัดไปเป็น "/" 
+    // เช่น /dashboard/manage กับ /dashboard/manage/edit
+    if (currentPath.startsWith(menuPath + "/")) {
+      return true;
+    }
+
+    return false;
   };
 
   const sampleNotifications: Notification[] = [
@@ -210,7 +230,7 @@ const UpdatedDashboard: React.FC = () => {
         break;
       case "logout":
         if (confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) {
-          try { sessionStorage.clear(); } catch {}
+          try { sessionStorage.clear(); } catch { }
           navigate("/", { replace: true });
         }
         break;
@@ -359,7 +379,7 @@ const UpdatedDashboard: React.FC = () => {
               const hasChildren = !!item.children?.length;
               const active = isActive(item);
               const isDisabled = disabledParentMenu === item.id;
-              
+
               return (
                 <div key={item.id} className="sidebar-menu-group">
                   <button
@@ -368,7 +388,7 @@ const UpdatedDashboard: React.FC = () => {
                     onClick={() => {
                       // ถ้า parent menu ถูก disable ไม่ให้ทำงาน
                       if (isDisabled) return;
-                      
+
                       if (hasChildren) {
                         setActiveMenu(activeMenu === item.id ? "" : item.id);
                       } else {
