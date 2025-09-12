@@ -66,7 +66,7 @@ func seedDogs(db *gorm.DB) error {
 			IsAdopted:    false,
 			ReadyToAdopt: true,
 			PhotoURL:     fmt.Sprintf("%s/static/images/dog/dog1.jpg", PublicBaseURL),
-			StaffID:      wichai.ID,
+			CreatedByID:  pointer.P(wichai.ID),
 		},
 		{
 			Name:         "Taa",
@@ -78,7 +78,7 @@ func seedDogs(db *gorm.DB) error {
 			IsAdopted:    false,
 			ReadyToAdopt: true,
 			PhotoURL:     fmt.Sprintf("%s/static/images/dog/dog2.jpg", PublicBaseURL),
-			StaffID:      wichai.ID,
+			CreatedByID:  pointer.P(wichai.ID),
 		},
 		{
 			Name:         "Jia",
@@ -90,7 +90,7 @@ func seedDogs(db *gorm.DB) error {
 			IsAdopted:    false,
 			ReadyToAdopt: true,
 			PhotoURL:     fmt.Sprintf("%s/static/images/dog/dog3.jpg", PublicBaseURL),
-			StaffID:      wichai.ID,
+			CreatedByID:  pointer.P(wichai.ID),
 		},
 		{
 			Name:         "Sam",
@@ -102,7 +102,7 @@ func seedDogs(db *gorm.DB) error {
 			IsAdopted:    false,
 			ReadyToAdopt: true,
 			PhotoURL:     fmt.Sprintf("%s/static/images/dog/dog5.jpg", PublicBaseURL),
-			StaffID:      wichai.ID,
+			CreatedByID:  pointer.P(wichai.ID),
 		},
 		{
 			Name:         "Nam",
@@ -114,7 +114,7 @@ func seedDogs(db *gorm.DB) error {
 			IsAdopted:    false,
 			ReadyToAdopt: true,
 			PhotoURL:     fmt.Sprintf("%s/static/images/dog/dog6.jpg", PublicBaseURL),
-			StaffID:      wichai.ID,
+			CreatedByID:  pointer.P(wichai.ID),
 		},
 	}
 

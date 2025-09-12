@@ -126,3 +126,52 @@ export interface GetMySponsorshipsResponse {
 
 
 
+
+
+// ----------------------AdminDTO-----------------//
+export interface AdminSponsorshipListResponse {
+  items: AdminSponsorshipItem[];
+}
+export interface AdminSponsorshipItem {
+  ID: number;
+  CreatedAt: string;
+  plan_type: 'one-time' | 'subscription';
+  amount: number;
+  status: string; // active | completed | canceled | ...
+  note?: string | null;
+
+  sponsor: {
+    ID: number;
+    kind: 'user' | 'guest';
+    // ถ้า kind=user ให้มี user ด้วย
+    user?: { first_name?: string; last_name?: string; email?: string; phone?: string };
+    // ถ้า kind=guest field ด้านล่างจะมี
+    first_name?: string | null;
+    last_name?: string | null;
+    email?: string | null;
+    phone?: string | null;
+  };
+
+  dog: { ID: number; name: string; image_url?: string | null };
+
+  subscription?: {
+    ID: number;
+    interval: 'monthly' | 'quarterly' | 'yearly';
+    status: string;
+    next_payment_at?: string | null;
+  };
+
+  sponsorship_payments?: Array<{
+    ID: number;
+    Amount?: number; // เผื่อกรณีสะกดต่าง
+    amount?: number;
+    status: 'SUCCEEDED' | 'PENDING' | 'FAILED' | string;
+    CreatedAt: string;
+    transaction_ref?: string | null;
+  }>;
+
+  // ค่าการรับข่าวสารระดับ sponsorship
+  enabled: boolean;
+  channel?: 'email' | 'sms' | 'line' | null;
+  frequency?: 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | null;
+}

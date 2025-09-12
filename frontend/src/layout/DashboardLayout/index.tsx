@@ -102,7 +102,7 @@ const UpdatedDashboard: React.FC = () => {
 
     { id: "visits", label: "ตารางการเยี่ยมชม", icon: Calendar, path: "/dashboard/visits" },
 
-    { id: "support", label: "การอุปถัมภ์สนับสนุน", icon: Shield, path: "/dashboard/support" },
+    { id: "support", label: "การอุปถัมภ์สนับสนุน", icon: Shield, path: "/dashboard/sponsorships" },
 
     { id: "reports", label: "รายงานสถิติ", icon: BarChart3, path: "/dashboard/reports" },
 

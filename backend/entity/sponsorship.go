@@ -19,7 +19,8 @@ type Sponsorship struct {
 	Enabled   bool `json:"enabled"`
 	Channel   *string `json:"channel"`
 	Frequency *string `json:"frequency"`
-
+	DeletedByStaffID *uint `json:"deleted_by_staff_id"`
+	DeletedByStaff *Staff `gorm:"foreignKey:DeletedByStaffID" json:"deleted_by_staff"`
 	// กำหนดความสัมพันธ์ 1-1 กับ Subscription
 	// GORM จะสร้าง foreign key `sponsorship_id` ในตาราง `subscriptions`
 	// `constraint:OnDelete:CASCADE` จะลบ Subscription ที่เกี่ยวข้องโดยอัตโนมัติเมื่อ Sponsorship ถูกลบ
@@ -27,3 +28,8 @@ type Sponsorship struct {
 
 	SponsorshipPayments []SponsorshipPayment `gorm:"foreignKey:SponsorshipID" json:"sponsorship_payments"`
 }
+
+
+
+
+

@@ -8,6 +8,7 @@ import (
 	adopter "example.com/project-sa/controllers/adoption"
 	auth "example.com/project-sa/controllers/auth"
 	buildings "example.com/project-sa/controllers/building"
+	dashboard "example.com/project-sa/controllers/dashboard"
 	dog "example.com/project-sa/controllers/dog"
 	donation "example.com/project-sa/controllers/donation"
 	event "example.com/project-sa/controllers/event"
@@ -19,7 +20,6 @@ import (
 	sponsorship "example.com/project-sa/controllers/sponsorship"
 	staffs "example.com/project-sa/controllers/staff"
 	user "example.com/project-sa/controllers/user"
-	dashboard "example.com/project-sa/controllers/dashboard"
 	vaccine "example.com/project-sa/controllers/vaccine"
 	visit "example.com/project-sa/controllers/visit"
 	volunteers "example.com/project-sa/controllers/volunteerRegister"
@@ -57,17 +57,12 @@ func main() {
 
 	r.GET("/dogs", dog.GetAllDogs)
 	r.GET("/dogs/:id", dog.GetDogById)
-	r.POST("/dogs", dog.CreateDog)
-	r.PUT("/dogs/:id", dog.UpdateDog)
-	r.DELETE("/dogs/:id", dog.DeleteDog)
 	// r.POST("/dogs", dogs.CreateDog)
 	// r.PUT("/dogs/:id", dogs.UpdateDog)
 	// r.DELETE("/dogs/:id", dogs.DeleteDog)
-	
 
-  r.GET("/dashboard/stats", dashboard.GetDashboardStats)
+	r.GET("/dashboard/stats", dashboard.GetDashboardStats)
 	r.GET("/dashboard/recent-updates", dashboard.GetDashboardRecentUpdates)
-
 
 	r.POST("/sponsorships/one-time", sponsorship.CreateOneTimeSponsorship)
 	r.GET("/genders", gender.GetAll)
@@ -125,7 +120,6 @@ func main() {
 	r.GET("/kennels", zcmanagement.GetDogInKennel)
 	r.GET("/zcmanagement", zcmanagement.GetAll)
 
-
 	r.GET("/volunteers", volunteers.GetAllVolunteers)
 	r.GET("/volunteer/:id", volunteers.GetVolunteerByID)
 	r.GET("/volunteers/user/:user_id", volunteers.GetVolunteersByUserID)
@@ -143,6 +137,7 @@ func main() {
 	protected.Use(middlewares.Authorizes())
 	{
 		// protected.POST("/donations", donation.CreateDonation)
+		protected.GET("/sponsorships",sponsorship.AdminListSponsorships)
 		protected.GET("/users/me", user.Me)
 		protected.GET("/staffs/me", staffs.Me)
 		protected.PUT("/users/:id", user.UpdateUser)
@@ -159,8 +154,12 @@ func main() {
 		protected.PUT("/donations/:id/status", donation.UpdateDonationStatus)
 		protected.DELETE("/donations/:id", donation.DeleteDonation)
 		protected.GET("/sponsorships/my", sponsorship.GetMySponsorships)
-		protected.POST("/files/dogs", /* middlewares.Authorizes(), */ dog.UploadDogImage)
+		protected.POST("/files/dogs", dog.UploadDogImage)
 		protected.POST("/zcmanagement/log", zcmanagement.CreateZCManagementLog)
+		protected.POST("/dogs", dog.CreateDog)
+		protected.PUT("/dogs/:id", dog.UpdateDog)
+		protected.DELETE("/dogs/:id", dog.DeleteDog)
+		protected.DELETE("/sponsorships/:id", sponsorship.DeleteSponsorship)
 	}
 	don := r.Group("/donations", middlewares.OptionalAuthorize())
 	{

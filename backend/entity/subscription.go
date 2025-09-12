@@ -19,6 +19,7 @@ type Subscription struct {
 	EndedAt           *time.Time `json:"ended_at"`
 	CancelAtPeriodEnd bool       `json:"cancel_at_period_end"`
 	Status            string     `json:"status"`
+	NextPaymentAt     *time.Time `json:"next_payment_at"`
 
 	SponsorshipPayments []SponsorshipPayment `gorm:"foreignKey:SubscriptionID" json:"sponsorship_payments"`
 }
