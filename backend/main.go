@@ -147,13 +147,15 @@ func main() {
 		protected.GET("/users/:id", user.GetUserById)
 		protected.DELETE("/users/:id", user.DeleteUser)
 		protected.POST("/sponsorships/subscription", sponsorship.CreateSubscriptionSponsorship)
+		protected.POST("/sponsorships/subscriptions/:id/cancel", sponsorship.CancelSubscription)
+		protected.POST("/sponsorships/subscriptions/:id/reactive", sponsorship.ReactivateSubscription)
 		protected.GET("/my-adoptions", adopter.GetMyCurrentAdoptions)
 		
 		protected.GET("/donations/my", donation.GetMyDonations)
 		protected.GET("/donations", donation.GetAllDonations)
 		protected.PUT("/donations/:id/status", donation.UpdateDonationStatus)
 		protected.DELETE("/donations/:id", donation.DeleteDonation)
-
+		protected.GET("/sponsorships/my", sponsorship.GetMySponsorships)
 
 		protected.POST("/files/dogs", /* middlewares.Authorizes(), */ dog.UploadDogImage)
 

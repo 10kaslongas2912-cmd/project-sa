@@ -249,6 +249,9 @@ export const sponsorshipAPI = {
   getById: (id: number) => Get(`/sponsorships/${id}`),
   createSubscription:  (data: CreateSponsorshipRequest) => Post("/sponsorships/subscription", data),
   createOneTime:  (data: CreateSponsorshipRequest) => Post("/sponsorships/one-time", data),
+  getMySponsorships: () => Get("/sponsorships/my"),
+  cancelSubscription: (id: number, body: { status: string; cancel_at_period_end?: boolean }) => Post(`/sponsorships/subscriptions/${id}/cancel`, body),
+  reactivateSubscription: (id: number, body: { status: string; cancel_at_period_end?: boolean }) => Post(`/sponsorships/subscriptions/${id}/reactive`,body)
 }
 // รวม export เดียว
 export const healthRecordAPI = {

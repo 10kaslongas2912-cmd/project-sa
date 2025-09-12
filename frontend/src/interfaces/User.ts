@@ -17,7 +17,7 @@ export interface UserInterface {
 
 export interface AppUserInterface {
   ID: number;
-  name: string;
+  name: string | null;
   first_name: string;
   last_name: string;
   photo_url?: string;

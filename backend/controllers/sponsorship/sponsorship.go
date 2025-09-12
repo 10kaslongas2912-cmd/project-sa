@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	"example.com/project-sa/configs"
 	"example.com/project-sa/entity"
@@ -20,12 +21,9 @@ import (
 type UpdatesPref struct {
 	Enabled   bool    `json:"enabled"`
 	Channel   *string `json:"channel"`   // "email" | "sms" | "line" | null
-	Frequency *string `json:"frequency"` // null ได้
+	Frequency *string `json:"frequency"` // "weekly" | "biweekly" | "monthly" | "quarterly" | null
 }
 
-// FE:
-// sponsor_data: user/guest (+ update?)
-// updates: ตั้งค่าระดับ "sponsorship" (ออปชัน) — ถ้าไม่ส่งจะไม่ตั้งค่าใน sp.*
 type SponsorData struct {
 	Kind      string  `json:"kind" binding:"required"` // "user" | "guest"
 	UserID    *uint   `json:"user_id,omitempty"`
@@ -35,7 +33,7 @@ type SponsorData struct {
 	Email     *string `json:"email,omitempty"`
 	Phone     *string `json:"phone,omitempty"`
 	GenderID  *uint   `json:"gender_id,omitempty"`
-	// Update    *UpdatesPref `json:"update,omitempty"` // ระดับ Sponsor
+	// Update *UpdatesPref `json:"update,omitempty"` // ระดับ Sponsor (เปิดเมื่อพร้อม)
 }
 
 type SponsorshipRequest struct {
@@ -43,10 +41,10 @@ type SponsorshipRequest struct {
 	PlanType        string       `json:"plan_type" binding:"required"` // "one-time" | "subscription"
 	DogID           uint         `json:"dog_id" binding:"required"`
 	Amount          int64        `json:"amount" binding:"required,min=1"`
-	Status          string       `json:"status"` // FE: "Active" | "Paided" → map ภายใน
+	Status          string       `json:"status"` // FE: "Active" | "Paided" | "Paid" → map ภายใน
 	PaymentMethodID uint         `json:"payment_method_id" binding:"required"`
-	Frequency       *string      `json:"frequency"`        // sub เท่านั้น
-	Update          *UpdatesPref `json:"update,omitempty"` // 🆕 ระดับ Sponsorship (override รายตัว)
+	Frequency       *string      `json:"frequency"`        // เฉพาะ subscription
+	Update          *UpdatesPref `json:"update,omitempty"` // ระดับ Sponsorship (override รายดีล)
 }
 
 type OneTimeResponse struct {
@@ -60,7 +58,55 @@ type SubscriptionResponse struct {
 	PaymentID      uint `json:"payment_id"`
 }
 
-/* ===== Helpers ===== */
+/* ===== DTO: GET /me/sponsorships (ไม่ paginate) ===== */
+
+type MySponsorshipPaymentDTO struct {
+	ID              uint      `json:"ID"` // เคสใหญ่ตาม gorm.Model
+	Amount          int64     `json:"amount"`
+	Status          string    `json:"status"`
+	PaymentMethodID uint      `json:"payment_method_id"`
+	CreatedAt       time.Time // ไม่มี tag → ออก "CreatedAt"
+	TransactionRef  string    `json:"transaction_ref"`
+}
+
+type MySponsorshipSubscriptionDTO struct {
+	ID               uint       `json:"ID"`
+	Interval         string     `json:"interval"` // monthly | quarterly | yearly
+	Status           string     `json:"status,omitempty"`
+	NextPaymentAt    *time.Time `json:"next_payment_at,omitempty"`
+	CurrentPeriodEnd *time.Time `json:"current_period_end"`
+}
+
+type MySponsorshipItemDTO struct {
+	ID        uint      `json:"ID"`
+	DogID     uint      `json:"dog_id"`
+	PhotoURL  string    `json:"photo_url"`
+	DogName   string    `json:"dog_name"`
+	PlanType  string    `json:"plan_type"` // one-time | subscription
+	Amount    int64     `json:"amount"`
+	Status    string    `json:"status"`
+	Enabled   bool      `json:"enabled"`
+	Channel   *string   `json:"channel,omitempty"`   // email | sms | line | null
+	Frequency *string   `json:"frequency,omitempty"` // weekly | biweekly | monthly | quarterly | null
+	CreatedAt time.Time // ไม่มี tag → ออก "CreatedAt"
+
+	PaymentCount int                           `json:"payment_count"`
+	LastPayment  *MySponsorshipPaymentDTO      `json:"last_payment,omitempty"`
+	Subscription *MySponsorshipSubscriptionDTO `json:"subscription,omitempty"`
+}
+
+type MySponsorshipSummaryDTO struct {
+	TotalOneTime      int64 `json:"total_one_time"`
+	TotalSubscription int64 `json:"total_subscription"`
+	TotalAll          int64 `json:"total_all"`
+}
+
+type MySponsorshipListDTO struct {
+	Items   []MySponsorshipItemDTO  `json:"items"`
+	Summary MySponsorshipSummaryDTO `json:"summary"`
+}
+
+/* ===== Helpers (เฉพาะที่จำเป็นในไฟล์นี้) ===== */
 
 func getUserIDFromCtx(c *gin.Context) *uint {
 	if v, ok := c.Get("user_id"); ok {
@@ -84,21 +130,19 @@ func mapPlanType(fe string) string {
 	}
 }
 
-// FE "Active" | "Paided" | "Paid"
+// canonical status ของ Sponsorship: "active" / "completed"
 func mapStatus(fe string, fallback string) string {
-	switch strings.ToLower(strings.TrimSpace(fe)) {
+	switch norm(fe) {
 	case "active":
 		return "active"
-	case "paided", "paid":
-		return "paided"
+	case "paided", "paid", "completed", "complete":
+		return "completed"
 	case "":
-		return strings.ToLower(fallback)
+		return norm(fallback)
 	default:
-		return strings.ToLower(fe)
+		return norm(fe)
 	}
 }
-
-// --- updates normalization ---
 
 func normChannel(p *string) *string {
 	if p == nil {
@@ -124,15 +168,20 @@ func normFrequency(p *string) *string {
 	return nil
 }
 
-// func applySponsorUpdatesIfAny(tx *gorm.DB, s *entity.Sponsor, upd *UpdatesPref) error {
-// 	if upd == nil {
-// 		return nil
-// 	}
-// 	s.Enabled = upd.Enabled
-// 	s.Channel = normChannel(upd.Channel)
-// 	s.Frequency = normFrequency(upd.Frequency)
-// 	return tx.Save(s).Error
-// }
+func normInterval(p *string) (string, bool) {
+	if p == nil {
+		return "", false
+	}
+	switch norm(*p) {
+	case "monthly", "quarterly", "yearly", "annually":
+		if norm(*p) == "annually" {
+			return "yearly", true
+		}
+		return norm(*p), true
+	default:
+		return "", false
+	}
+}
 
 func applySponsorshipUpdatesIfAny(sp *entity.Sponsorship, upd *UpdatesPref) {
 	if upd == nil {
@@ -142,8 +191,6 @@ func applySponsorshipUpdatesIfAny(sp *entity.Sponsorship, upd *UpdatesPref) {
 	sp.Channel = normChannel(upd.Channel)
 	sp.Frequency = normFrequency(upd.Frequency)
 }
-
-// --- validate sponsor_data ---
 
 func validateSponsorData(sd SponsorData, userIDFromCtx *uint) error {
 	k := norm(sd.Kind)
@@ -170,8 +217,6 @@ func validateSponsorData(sd SponsorData, userIDFromCtx *uint) error {
 	}
 	return errors.New("invalid sponsor_data.kind")
 }
-
-// --- Sponsor finder/creator ---
 
 func findOrCreateSponsor(tx *gorm.DB, sd SponsorData, userIDFromCtx *uint) (*entity.Sponsor, error) {
 	k := norm(sd.Kind)
@@ -242,38 +287,59 @@ func deref(p *string) string {
 	}
 	return *p
 }
+func derefStr(p *string) string {
+	if p == nil {
+		return ""
+	}
+	return *p
+}
 
 func ensurePaymentMethod(tx *gorm.DB, id uint) error {
 	var pm entity.PaymentMethod
 	return tx.First(&pm, id).Error
 }
-
 func ensureDog(tx *gorm.DB, id uint) error {
 	var dog entity.Dog
 	return tx.First(&dog, id).Error
+}
+
+func safeDogName(sp entity.Sponsorship) string {
+	if sp.Dog != nil {
+		// สมมติ Dog.Name เป็น string (ถ้าเป็น *string ให้แก้เป็น: if sp.Dog.Name != nil { return *sp.Dog.Name })
+		return sp.Dog.Name
+	}
+	return ""
 }
 
 /* ===== Handlers ===== */
 
 // POST /sponsorships/one-time
 func CreateOneTimeSponsorship(c *gin.Context) {
-
+	// (optional) debug body
 	body, _ := io.ReadAll(c.Request.Body)
 	log.Println("🔥 Raw Body:", string(body))
-
-	// ต้อง reset body ก่อนจะ bind ได้อีกครั้ง
-	c.Request.Body = io.NopCloser(bytes.NewBuffer(body))
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(body)) // reset body
 
 	var req SponsorshipRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":   "invalid request",
-			"details": err.Error(), // ⬅️ บอกเลยว่า field ไหนผิดชนิด/ขาด
+			"details": err.Error(),
 		})
 		return
 	}
 	if mapPlanType(req.PlanType) != "one-time" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "plan_type must be one-time for this endpoint"})
+		return
+	}
+
+	uid := getUserIDFromCtx(c)
+	// validate นอก transaction
+	if err := validateSponsorData(req.SponsorData, uid); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "invalid sponsor_data",
+			"details": err.Error(),
+		})
 		return
 	}
 
@@ -286,25 +352,12 @@ func CreateOneTimeSponsorship(c *gin.Context) {
 			return err
 		}
 
-		uid := getUserIDFromCtx(c)
-		if err := validateSponsorData(req.SponsorData, uid); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error":   "invalid sponsor_data",
-				"details": err.Error(), // "first_name required for kind=guest" ฯลฯ
-			})
-			return err
-		}
 		sponsor, err := findOrCreateSponsor(tx, req.SponsorData, uid)
 		if err != nil {
 			return err
 		}
 
-		// ✅ อัปเดตค่าข่าวสารระดับ Sponsor ถ้าส่งมา
-		// if err := applySponsorUpdatesIfAny(tx, sponsor, req.SponsorData.Update); err != nil {
-		// 	return err
-		// }
-
-		status := mapStatus(req.Status, "paid")
+		status := mapStatus(req.Status, "completed")
 		sp := entity.Sponsorship{
 			SponsorID: sponsor.ID,
 			DogID:     req.DogID,
@@ -312,8 +365,6 @@ func CreateOneTimeSponsorship(c *gin.Context) {
 			Amount:    req.Amount,
 			Status:    &status,
 		}
-
-		// ✅ ตั้งค่าข่าวสารระดับ Sponsorship ถ้าส่งมา
 		applySponsorshipUpdatesIfAny(&sp, req.Update)
 
 		if err := tx.Create(&sp).Error; err != nil {
@@ -325,6 +376,7 @@ func CreateOneTimeSponsorship(c *gin.Context) {
 			PaymentMethodID: req.PaymentMethodID,
 			Amount:          sp.Amount,
 			Status:          "SUCCEEDED",
+			TransactionRef:  mockTxnRef("OT"), // ใช้ helper จากไฟล์ txn_ref.go
 		}
 		if err := tx.Create(&pmt).Error; err != nil {
 			return err
@@ -357,15 +409,25 @@ func CreateSubscriptionSponsorship(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "plan_type must be subscription for this endpoint"})
 		return
 	}
+
 	uid := getUserIDFromCtx(c)
 	if uid == nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": "login required for subscription"})
 		return
 	}
-	switch norm(deref(req.Frequency)) { // validate frequency
-	case "monthly", "quarterly", "yearly":
-	default:
+
+	interval, ok := normInterval(req.Frequency)
+	if !ok {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid frequency"})
+		return
+	}
+
+	// validate นอก transaction
+	if err := validateSponsorData(req.SponsorData, uid); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "invalid sponsor_data",
+			"details": err.Error(),
+		})
 		return
 	}
 
@@ -378,18 +440,10 @@ func CreateSubscriptionSponsorship(c *gin.Context) {
 			return err
 		}
 
-		if err := validateSponsorData(req.SponsorData, uid); err != nil {
-			return err
-		}
 		sponsor, err := findOrCreateSponsor(tx, req.SponsorData, uid)
 		if err != nil {
 			return err
 		}
-
-		// ✅ อัปเดตค่าข่าวสารระดับ Sponsor ถ้าส่งมา
-		// if err := applySponsorUpdatesIfAny(tx, sponsor, req.SponsorData.Update); err != nil {
-		// 	return err
-		// }
 
 		status := mapStatus(req.Status, "active")
 		sp := entity.Sponsorship{
@@ -399,8 +453,6 @@ func CreateSubscriptionSponsorship(c *gin.Context) {
 			Amount:    req.Amount,
 			Status:    &status,
 		}
-
-		// ✅ ตั้งค่าข่าวสารระดับ Sponsorship ถ้าส่งมา
 		applySponsorshipUpdatesIfAny(&sp, req.Update)
 
 		if err := tx.Create(&sp).Error; err != nil {
@@ -410,7 +462,9 @@ func CreateSubscriptionSponsorship(c *gin.Context) {
 		sub := entity.Subscription{
 			SponsorshipID: sp.ID,
 			Amount:        sp.Amount,
-			Interval:      strings.ToLower(deref(req.Frequency)),
+			Interval:      interval, // normalized
+			Status:        "active",
+			// StartDate/CancelAt: เติมถ้าต้องการ
 		}
 		if err := tx.Create(&sub).Error; err != nil {
 			return err
@@ -422,6 +476,7 @@ func CreateSubscriptionSponsorship(c *gin.Context) {
 			PaymentMethodID: req.PaymentMethodID,
 			Amount:          sp.Amount,
 			Status:          "SUCCEEDED",
+			TransactionRef:  mockTxnRef("SUB"),
 		}
 		if err := tx.Create(&pmt).Error; err != nil {
 			return err
@@ -442,4 +497,143 @@ func CreateSubscriptionSponsorship(c *gin.Context) {
 		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
+}
+
+/* ===== GET /me/sponsorships ===== */
+
+func GetMySponsorships(c *gin.Context) {
+	uid := getUserIDFromCtx(c)
+	if uid == nil || *uid == 0 {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	db := configs.DB()
+
+	// -------------------------------
+	// 1) ดึงรายการของผู้ใช้
+	// -------------------------------
+	var sps []entity.Sponsorship
+	if err := db.
+		Preload("Dog").
+		Preload("Subscription").
+		Preload("SponsorshipPayments", func(tx *gorm.DB) *gorm.DB {
+			// เรียงล่าสุดก่อน (จะหยิบ last payment ได้สะดวก)
+			return tx.Order("sponsorship_payments.id DESC")
+		}).
+		Preload("SponsorshipPayments.PaymentMethod").
+		Joins("JOIN sponsors s ON s.id = sponsorships.sponsor_id").
+		Where("s.kind = ? AND s.user_id = ?", entity.SponsorKindUser, *uid).
+		Order("sponsorships.id DESC").
+		Find(&sps).Error; err != nil {
+
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusOK, MySponsorshipListDTO{
+				Items:   []MySponsorshipItemDTO{},
+				Summary: MySponsorshipSummaryDTO{},
+			})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// -------------------------------
+	// map -> items (คำนวณ period_end / next_payment_at)
+	// -------------------------------
+	items := make([]MySponsorshipItemDTO, 0, len(sps))
+	for _, sp := range sps {
+		item := MySponsorshipItemDTO{
+			ID:        sp.ID,
+			DogID:     sp.DogID,
+			DogName:   safeDogName(sp),
+			PhotoURL:  sp.Dog.PhotoURL,
+			PlanType:  sp.PlanType,
+			Amount:    sp.Amount,
+			Status:    derefStr(sp.Status),
+			Enabled:   sp.Enabled,
+			Channel:   sp.Channel,
+			Frequency: sp.Frequency,
+			CreatedAt: sp.CreatedAt,
+		}
+
+		// ----- last payment (ล่าสุดของรายการนี้) -----
+		if len(sp.SponsorshipPayments) > 0 {
+			lp := sp.SponsorshipPayments[0] // DESC แล้ว
+			item.PaymentCount = len(sp.SponsorshipPayments)
+			item.LastPayment = &MySponsorshipPaymentDTO{
+				ID:              lp.ID,
+				Amount:          lp.Amount,
+				Status:          lp.Status,
+				PaymentMethodID: lp.PaymentMethodID,
+				CreatedAt:       lp.CreatedAt,
+				TransactionRef:  lp.TransactionRef,
+			}
+		}
+
+		// ----- subscription summary -----
+		if sp.Subscription != nil {
+			// หา "จ่ายล่าสุดของ subscription นี้" เพื่อเป็น anchor
+			var anchor time.Time
+			// เริ่มจาก StartDate; ว่างให้ถอยไปใช้ CreatedAt
+			if !sp.Subscription.StartDate.IsZero() {
+				anchor = sp.Subscription.StartDate
+			} else {
+				anchor = sp.CreatedAt
+			}
+			// ถ้ามี payment ที่สำเร็จของ subscription เดียวกัน ให้ใช้ตอนนั้นเป็น anchor
+			for _, p := range sp.SponsorshipPayments {
+				if p.SubscriptionID != nil && *p.SubscriptionID == sp.Subscription.ID && strings.EqualFold(p.Status, "SUCCEEDED") {
+					anchor = p.CreatedAt
+					break
+				}
+			}
+
+			// current_period_end = anchor + interval (เสมอ)
+			cpe := addInterval(anchor, sp.Subscription.Interval)
+			var nextPtr *time.Time
+			// next_payment_at แสดงเฉพาะกรณีไม่ยกเลิก
+			if !strings.EqualFold(sp.Subscription.Status, "canceled") {
+				nextPtr = &cpe
+			}
+
+			item.Subscription = &MySponsorshipSubscriptionDTO{
+				ID:               sp.Subscription.ID,
+				Interval:         sp.Subscription.Interval,
+				Status:           sp.Subscription.Status,
+				NextPaymentAt:    nextPtr, // ถ้ายกเลิก = nil
+				CurrentPeriodEnd: &cpe,    // ใช้เช็คสิทธิ์ reactivate ได้จนถึงวันนี้
+			}
+		}
+
+		items = append(items, item)
+	}
+
+	// -------------------------------
+	// 2) SUMMARY: รวมยอด "ที่จ่ายจริง" จาก SponsorPayments
+	//    (ไม่นับสถานะอื่น นับเฉพาะที่สำเร็จ)
+	// -------------------------------
+	paidStatuses := []string{"SUCCEEDED", "PAID", "COMPLETED"}
+
+	var summary MySponsorshipSummaryDTO
+	if err := db.
+		Model(&entity.SponsorshipPayment{}).
+		Joins("JOIN sponsorships sp ON sp.id = sponsorship_payments.sponsorship_id").
+		Joins("JOIN sponsors s ON s.id = sp.sponsor_id").
+		Where("s.kind = ? AND s.user_id = ?", entity.SponsorKindUser, *uid).
+		Where("sponsorship_payments.status IN ?", paidStatuses).
+		Select(`
+            COALESCE(SUM(CASE WHEN sp.plan_type = 'one-time'     THEN sponsorship_payments.amount ELSE 0 END), 0) AS total_one_time,
+            COALESCE(SUM(CASE WHEN sp.plan_type = 'subscription' THEN sponsorship_payments.amount ELSE 0 END), 0) AS total_subscription,
+            COALESCE(SUM(sponsorship_payments.amount), 0) AS total_all
+        `).
+		Scan(&summary).Error; err != nil {
+
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, MySponsorshipListDTO{
+		Items:   items,
+		Summary: summary,
+	})
 }

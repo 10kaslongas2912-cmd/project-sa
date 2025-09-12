@@ -3,6 +3,7 @@
 import type { UserInterface } from "./User";
 import type { GenderInterface } from "./Gender";
 
+
 /* ---------- Core models ---------- */
 
 export interface SponsorInterface {
@@ -10,18 +11,16 @@ export interface SponsorInterface {
   kind: "user" | "guest";           // ชัดเจนขึ้น
   user_id?: number;
   user?: UserInterface;
-
   title?: string | null;
   first_name?: string;
   last_name?: string;
   email?: string;
   phone?: string;
-
   gender_id?: number | null;
   gender?: GenderInterface;
-
   note?: string;
 }
+
 
 /* ---------- Updates preference ---------- */
 
@@ -54,21 +53,76 @@ export interface CreateSponsorshipRequest {
   amount: number;
   payment_method_id: number;
   status: "Active" | "Paided";
-  update?: UpdatesSettings; // ⬅️ NEW (ตรงกับ controller: json:"updates,omitempty")
+  update?: UpdatesSettings; 
 }
 
 export interface DeleteSponsorRequest {
   ID: number;
 }
 
-/* ---------- Sponsorship (donation) ---------- */
 
-export interface CreateSponsorshipRequest {
-  sponsor_data: CreateSponsorRequest;
-  dog_id: number;
-  plan_type: "one-time" | "subscription";
-  frequency: "monthly" | "quarterly" | "yearly" | null;
+/* ---------- My Sponsorship History ---------- */
+export type PlanType = "one-time" | "subscription";
+export type Interval = "monthly" | "quarterly" | "yearly";
+export type Channel = "email" | "sms" | "line" | null;
+export type UpdateFrequency = "weekly" | "biweekly" | "monthly" | "quarterly" | null;
+
+// ตามโดเมนใน BE: PENDING, ACTIVE, COMPLETED, CANCELED
+export type SponsorshipStatus = "pending" | "active" | "completed" | "canceled";
+
+// ตามโดเมนใน BE: PENDING, SUCCEEDED, FAILED, REFUNDED
+export type PaymentStatus = "PENDING" | "SUCCEEDED" | "FAILED" | "REFUNDED";
+
+/* ---------- Items (ย่อ ใช้แสดงผล) ---------- */
+export interface MySponsorshipPayment {
+  ID: number;
   amount: number;
+  status: PaymentStatus;
   payment_method_id: number;
-  status: "Active" | "Paided"; // ตรงกับฝั่ง BE ตอนนี้
+  CreatedAt: string; // ISO
+  transaction_ref: string;
 }
+
+export interface MySponsorshipSubscription {
+  ID: number;
+  interval: Interval; 
+  status: string;
+  next_payment_at: string; 
+  current_period_end: string
+}
+
+export interface MySponsorshipItem {
+  ID: number;
+  dog_id: number;
+  dog_name: string;
+  photo_url: string;
+  plan_type: PlanType;
+  amount: number;
+  status: SponsorshipStatus;
+
+  enabled: boolean;
+  channel?: Channel;
+  frequency?: UpdateFrequency;
+
+  CreatedAt: string; 
+
+  payment_count: number;
+  last_payment?: MySponsorshipPayment;
+  subscription?: MySponsorshipSubscription;
+}
+
+export interface MySponsorshipSummary {
+  total_one_time: number;
+  total_subscription: number;
+  total_all: number;
+}
+
+/* ---------- Responses ---------- */
+
+export interface GetMySponsorshipsResponse {
+  items: MySponsorshipItem[];
+  summary: MySponsorshipSummary;
+}
+
+
+

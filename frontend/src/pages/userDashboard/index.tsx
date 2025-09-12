@@ -9,7 +9,7 @@ import MyAdoptionsPage from '../public/adoption/useradopt';
 import MyDonations from '../userDashboard/HistoryDonation'; // <- ใช้ไฟล์ที่ทำไว้ก่อนหน้า
 import './style.css';
 import NavigationBarStatic from '../../components/NavigationBarStatic/index';
-
+import MySponsorships from './HistorySponsorship';
 const { Sider, Content, Header } = Layout;
 const { Title, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -43,23 +43,14 @@ const AdoptionPlaceholder: React.FC = () => (
 );
 
 const DonationsDashboard: React.FC = () => {
-  const [activeKey, setActiveKey] = useState<MenuKey>('donations');
+  const [activeKey, setActiveKey] = useState<MenuKey>('sponsorship');
 
   const renderContent = () => {
     switch (activeKey) {
       case 'donations':
         return <MyDonations />;
       case 'sponsorship':
-        return (
-          <>
-            <div className="db-page-title">
-              <Title level={2} className="db-title" style={{ fontFamily: 'Anakotmai' }}>ประวัติการอุปถัมภ์</Title>
-              <Paragraph className="db-sub" style={{ fontFamily: 'Anakotmai' }}>จัดทำเป็นแท็บไว้ก่อน รอพัฒนา</Paragraph>
-              <div className="db-underline" />
-            </div>
-            <SponsorshipPlaceholder />
-          </>
-        );
+        return <MySponsorships />;
       case 'adoption':
         return (
           <>
@@ -91,7 +82,7 @@ const DonationsDashboard: React.FC = () => {
             className="db-menu"
             items={[
               { key: 'donations', icon: <HistoryOutlined />, label: <span style={{ fontFamily: 'Anakotmai' }}>ประวัติการบริจาค</span> },
-              { key: 'sponsorship', icon: <HeartOutlined />, label: <span style={{ fontFamily: 'Anakotmai' }}>ประวัติการอุปถัมภ์</span> },
+              { key: 'sponsorship', icon: <HeartOutlined />, label: <span style={{ fontFamily: 'Anakotmai' }}>ประวัติการอุปถัมภ์</span> }, 
               { key: 'adoption', icon: <TeamOutlined />, label: <span style={{ fontFamily: 'Anakotmai' }}>การรับเลี้ยง</span> },
             ]}
           />
