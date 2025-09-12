@@ -78,6 +78,7 @@ func seedLookupsBase(db *gorm.DB) error {
 		return err
 	}
 
+	
 	var zoneA entity.Zone
 	if err := db.Where("name = ?", "A").
 		FirstOrCreate(&zoneA, entity.Zone{Name: "A"}).Error; err != nil {
@@ -89,7 +90,11 @@ func seedLookupsBase(db *gorm.DB) error {
 		FirstOrCreate(&zoneB, entity.Zone{Name: "B"}).Error; err != nil {
 		return err
 	}
-
+	var kennel00 entity.Kennel
+		if err := db.Where("name = ?", "00").
+			FirstOrCreate(&kennel00, entity.Kennel{Name: "00", ZoneID: zoneA.ID}).Error; err != nil {
+			return err
+		}
 	// Create kennels with proper zone associations
 	if err := db.Where("name = ?", "A-1").
 		FirstOrCreate(&entity.Kennel{

@@ -90,8 +90,7 @@ const AuthPage: React.FC = () => {
     try {
       await authAPI.signUp(payload);
       messageApi.success("สมัครสมาชิกสำเร็จ, กำลังเข้าสู่ระบบ...");
-
-      // auto login
+      
       await onFinishLogin({
         username: payload.username,
         password: payload.password,
@@ -240,7 +239,7 @@ const AuthPage: React.FC = () => {
 
             <div className="btn">
               <ButtonComponent className="btn-primary" htmlType="submit" disabled={submitting}>
-                สมัครสมาชิก
+                {submitting ? "กำลังเข้าสมัครสมาชิก..." : "สมัครสมาชิก"}
               </ButtonComponent>
             </div>
 

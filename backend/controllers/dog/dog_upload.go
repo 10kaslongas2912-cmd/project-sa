@@ -24,7 +24,7 @@ func UploadDogImage(c *gin.Context) {
     m := time.Now().Format("01")
 
     // path บนดิสก์ (ใต้โฟลเดอร์ static)
-    dir := filepath.Join("static", "upload", "dog", y, m)
+    dir := filepath.Join("static", "uploads", "dog", y, m)
     if err := os.MkdirAll(dir, 0755); err != nil {
         c.JSON(500, gin.H{"error":"mkdir failed"}); return
     }

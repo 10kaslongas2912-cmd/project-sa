@@ -1,0 +1,308 @@
+/* SponsorshipHistory.css */
+@import url('https://fonts.googleapis.com/css2?family=Anakotmai:wght@400;600;700&display=swap');
+
+/* Main Container */
+.sponsorship-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+  font-family: 'Anakotmai-Bold', sans-serif;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* Header Styles */
+.header-section {
+  margin-bottom: 24px;
+}
+
+.main-title {
+  text-align: center;
+  margin-bottom: 15px;
+  color: #ff6600;
+  font-size: clamp(28px, 5vw, 42px);
+  font-family: 'Anakotmai-Bold';
+  margin-top: -20px;
+}
+
+.title-divider {
+  height: 5px;
+  width: 100%;
+  max-width: 600px;
+  background-color: #253C90;
+  margin: 0 auto 30px;
+  border-radius: 2px;
+}
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.search-wrapper {
+  flex: 1;
+  max-width: 600px;
+}
+
+.search-input {
+  width: 100%;
+  border-radius: 25px;
+  border: 2px solid #e8e8e8;
+  font-family: 'Anakotmai-Bold';
+}
+
+/* Card Styles */
+.main-card {
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: none;
+  background: #fff;
+}
+
+/* Tab Styles */
+.tab-container {
+  padding: 0 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.tab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 60px;
+}
+
+.tab-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.tab-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: 'Anakotmai-Bold';
+  font-size: 16px;
+  font-weight: 500;
+  min-height: 60px;
+  transition: all 0.3s ease;
+}
+
+.tab-button.active {
+  border-bottom: 3px solid #d78248;
+  color: #ff6600;
+  background-color: #f8f9ff;
+}
+
+.tab-button.inactive {
+  border-bottom: 3px solid transparent;
+  color: #666;
+  background-color: transparent;
+}
+
+.tab-button:hover {
+  background-color: #f8f9ff;
+}
+
+.tab-icon {
+  font-size: 18px;
+}
+
+.tab-count {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.tab-count.active {
+  background-color: #253C90;
+  color: white;
+}
+
+.tab-count.inactive {
+  background-color: #e6f7ff;
+  color: #e3ac4d;
+}
+
+/* Controls Section */
+.controls-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.sort-select {
+  width: 120px;
+}
+
+/* Table Content */
+.table-content {
+  padding: 24px;
+}
+
+.data-table {
+  font-family: 'Anakotmai-Bold';
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.pagination-style {
+  margin-top: 24px;
+  text-align: center;
+}
+
+/* Dog Avatar */
+.dog-avatar-container {
+  text-align: center;
+}
+
+.dog-name {
+  font-size: 12px;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* Amount Display */
+.amount-text {
+  color: #ff6600;
+}
+
+/* Notification Bell */
+.notification-bell {
+  text-align: center;
+}
+
+.notification-bell-icon {
+  font-size: 18px;
+}
+
+.notification-bell-icon.active {
+  color: #52c41a;
+}
+
+.notification-bell-icon.inactive {
+  color: #d9d9d9;
+}
+
+/* Action Button */
+.action-button {
+  margin-left: 30px;
+}
+
+/* Modal Styles */
+.modal-title {
+  font-family: 'Anakotmai';
+  color: #ff6600;
+  font-size: 30px;
+}
+
+.descriptions-title {
+  font-family: 'Anakotmai';
+  color: #253C90;
+  font-size: 20px;
+}
+
+.descriptions-spacing {
+  margin-top: 16px;
+}
+
+/* Dog Image in Modal */
+.modal-dog-image {
+  text-align: center;
+}
+
+.modal-dog-name {
+  margin-top: 8px;
+  font-weight: bold;
+}
+
+/* Notification Bell Display */
+.notification-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Copy Text */
+.copy-text {
+  cursor: pointer;
+}
+
+/* Status and Type Tags */
+.type-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Action Menu Items */
+.action-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-menu-item.danger {
+  color: #ff4d4f;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sponsorship-container {
+    padding: 16px;
+  }
+  
+  .tab-buttons {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+  
+  .tab-button {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 16px;
+    min-height: 48px;
+  }
+  
+  .tab-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+  
+  .controls-section {
+    justify-content: center;
+  }
+  
+  .main-title {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tab-button {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+  
+  .tab-icon {
+    font-size: 16px;
+  }
+  
+  .search-wrapper {
+    max-width: 100%;
+  }
+}

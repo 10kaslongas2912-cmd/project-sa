@@ -60,6 +60,7 @@ export interface UpdateDogRequest {
   photo_url?: string | null;
   character?: string | null;
   personality_ids?: number[];
+  kennel_id?: number | null;
 }
 
 export interface DogFilters{

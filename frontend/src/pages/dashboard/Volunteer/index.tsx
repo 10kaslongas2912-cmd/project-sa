@@ -129,93 +129,92 @@ const VolunteerApprovalsPage: React.FC = () => {
   const filtered = list.filter((v) => (filter === "all" ? true : statusOf(v) === filter));
 
   return (
-    <>
-      <div className="volunteer-page-container admin-approvals">
-        <div className="volunteer-form">
-          <h1 className="volunteer-title">อนุมัติอาสาสมัคร</h1>
+    <div className="volunteer-page-container admin-approvals">
+      <div className="volunteer-form">
+        <h1 className="volunteer-title">อนุมัติอาสาสมัคร</h1>
 
-          {/* toolbar */}
-          <div className="admin-toolbar">
-            <div className="filter-group">
-              <label>แสดง:</label>
-              <select value={filter} onChange={(e) => setFilter(e.target.value as any)}>
-                <option value="pending">รออนุมัติ</option>
-                <option value="approved">อนุมัติแล้ว</option>
-                <option value="rejected">ไม่อนุมัติ</option>
-                <option value="all">ทั้งหมด</option>
-              </select>
-            </div>
-            <button className="submit-btn" onClick={load} disabled={loading}>
-              รีเฟรช
-            </button>
+        {/* toolbar */}
+        <div className="admin-toolbar">
+          <div className="filter-group">
+            <label>แสดง:</label>
+            <select value={filter} onChange={(e) => setFilter(e.target.value as any)}>
+              <option value="pending">รออนุมัติ</option>
+              <option value="approved">อนุมัติแล้ว</option>
+              <option value="rejected">ไม่อนุมัติ</option>
+              <option value="all">ทั้งหมด</option>
+            </select>
           </div>
+          <button className="submit-btn" onClick={load} disabled={loading}>
+            รีเฟรช
+          </button>
+        </div>
 
-          {error && <div className="error-message">{error}</div>}
+        {error && <div className="error-message">{error}</div>}
 
-          {loading ? (
-            <div className="loading">กำลังโหลด...</div>
-          ) : filtered.length === 0 ? (
-            <div className="empty">ไม่พบรายการ</div>
-          ) : (
-            <div className="cards">
-              {filtered.map((v) => {
-                const s = statusOf(v);
-                return (
-                  <div key={v.id} className="card">
-                    <div className="card-row head">
-                      <div className="name">{displayName(v)}</div>
-                      <span className={`badge ${s}`}>{s.toUpperCase()}</span>
-                    </div>
+        {loading ? (
+          <div className="loading">กำลังโหลด...</div>
+        ) : filtered.length === 0 ? (
+          <div className="empty">ไม่พบรายการ</div>
+        ) : (
+          <div className="cards">
+            {filtered.map((v) => {
+              const s = statusOf(v);
+              return (
+                <div key={v.id} className="card">
+                  <div className="card-row head">
+                    <div className="name">{displayName(v)}</div>
+                    <span className={`badge ${s}`}>{s.toUpperCase()}</span>
+                  </div>
 
-                    <div className="card-row">
-                      <div className="label">วันที่สะดวก</div>
-                      <div className="value">
-                        {weekdayOf(v.working_date)}
-                        {v.working_time ? ` • ${v.working_time}` : ""}
-                      </div>
-                    </div>
-
-                    <div className="card-row">
-                      <div className="label">ทักษะ</div>
-                      <div className="value">{v.skill || "-"}</div>
-                    </div>
-
-                    <div className="card-row">
-                      <div className="label">ที่อยู่</div>
-                      <div className="value">{v.address || "-"}</div>
-                    </div>
-
-                    <div className="card-row">
-                      <div className="label">ติดต่อฉุกเฉิน</div>
-                      <div className="value">{v.another_contact || "-"}</div>
-                    </div>
-
-                    <div className="actions">
-                      <button
-                        className="btn reject"
-                        onClick={() => doUpdate(v.id, "rejected")}
-                        disabled={updatingId === v.id || s === "rejected"}
-                        title="Reject"
-                      >
-                        ไม่อนุมัติ
-                      </button>
-                      <button
-                        className="btn approve"
-                        onClick={() => doUpdate(v.id, "approved")}
-                        disabled={updatingId === v.id || s === "approved"}
-                        title="Approve"
-                      >
-                        อนุมัติ
-                      </button>
+                  <div className="card-row">
+                    <div className="label">วันที่สะดวก</div>
+                    <div className="value">
+                      {weekdayOf(v.working_date)}
+                      {v.working_time ? ` • ${v.working_time}` : ""}
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+
+                  <div className="card-row">
+                    <div className="label">ทักษะ</div>
+                    <div className="value">{v.skill || "-"}</div>
+                  </div>
+
+                  <div className="card-row">
+                    <div className="label">ที่อยู่</div>
+                    <div className="value">{v.address || "-"}</div>
+                  </div>
+
+                  <div className="card-row">
+                    <div className="label">ติดต่อฉุกเฉิน</div>
+                    <div className="value">{v.another_contact || "-"}</div>
+                  </div>
+
+                  {/* renamed to avoid global collisions */}
+                  <div className="approval-actions">
+                    <button
+                      className="btn reject"
+                      onClick={() => doUpdate(v.id, "rejected")}
+                      disabled={updatingId === v.id || s === "rejected"}
+                      title="Reject"
+                    >
+                      ไม่อนุมัติ
+                    </button>
+                    <button
+                      className="btn approve"
+                      onClick={() => doUpdate(v.id, "approved")}
+                      disabled={updatingId === v.id || s === "approved"}
+                      title="Approve"
+                    >
+                      อนุมัติ
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 };
 

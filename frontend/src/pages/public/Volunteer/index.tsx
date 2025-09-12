@@ -266,7 +266,7 @@ const VolunteerPage: React.FC = () => {
             </div>
             <p className="status-desc">คุณต้องเข้าสู่ระบบก่อนจึงจะลงทะเบียนอาสาสมัครได้</p>
             <div className="status-actions">
-              <a href="/auth" className="submit-btn btn-inline">ไปหน้าเข้าสู่ระบบ</a>
+              <a href="/auth/users" className="submit-btn btn-inline">ไปหน้าเข้าสู่ระบบ</a>
             </div>
           </div>
         </div>

@@ -312,3 +312,90 @@
   border-radius: 12px;
   z-index: 5;
 }
+
+/* --- Add-modal grid & multi-select states --- */
+.dog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  padding: 8px 2px 2px;
+}
+
+.dog-card {
+  position: relative;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f8d7a1 0%, #f3e8ff 100%);
+  text-align: center;
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease, background .15s ease;
+  cursor: pointer;
+}
+
+.dog-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,.12);
+}
+
+.dog-card.selected {
+  border-color: #2563eb;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, .25);
+}
+
+.dog-card.selected::after {
+  content: "✓";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.dog-card-name {
+  font-weight: 700;
+}
+
+/* modal actions with left/right areas */
+.modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  gap: 12px;
+}
+
+.modal-actions .left { flex: 1; }
+.modal-actions .right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-actions .selection-info {
+  font-weight: 600;
+  color: #1f2937;
+}
+.modal-actions .selection-info.dim {
+  color: #6b7280;
+}
+
+/* optional: make ghost button subtle */
+.modal-actions .ghost {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 600;
+}
+.modal-actions .ghost:hover {
+  background: #f9fafb;
+}
+
+/* keep your existing modal/backdrop styles; only additions above are required */

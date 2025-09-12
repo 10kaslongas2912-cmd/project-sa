@@ -292,7 +292,7 @@ const styles = {
     lineHeight: '55px',
     color: '#253C90',
     margin: '0 0 20px 0',
-    fontFamily: 'Anakotmai, sans-serif',
+    fontFamily: 'Anakotmai-Bold, sans-serif',
   },
   eventDescription: {
     width: '100%',

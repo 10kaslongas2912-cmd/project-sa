@@ -27,35 +27,8 @@ func seedStaffs(db *gorm.DB) error {
 	}
 
 	active := "active"
-	onLeave := "on_leave"
 
 	staffs := []entity.Staff{
-		{
-			FirstName:   "Pongsak",
-			LastName:    "Suwan",
-			Username:    "manager1",
-			Password:    pw, // bcrypt
-			GenderID:    male.ID,
-			DateOfBirth: "1990-02-10",
-			Phone:       "0810000001",
-			Email:       "manager1@example.com",
-			Status:      &active,
-			Note:        pointer.P("General manager"),
-			ZoneID:      zoneA.ID,
-		},
-		{
-			FirstName:   "Nattaya",
-			LastName:    "Chaiyasit",
-			Username:    "manager2",
-			Password:    pw,
-			GenderID:    female.ID,
-			DateOfBirth: "1992-06-25",
-			Phone:       "0810000002",
-			Email:       "manager2@example.com",
-			Status:      &onLeave,
-			Note:        pointer.P("Ops manager"),
-			ZoneID:      zoneB.ID,
-		},
 		{
 			FirstName:   "Wichai",
 			LastName:    "Srisuruk",
@@ -67,6 +40,20 @@ func seedStaffs(db *gorm.DB) error {
 			Email:       "wichi@example.com",
 			Status:      &active,
 			PhotoURL:    pointer.P(fmt.Sprintf("%s/static/images/staff_profile/staff1.png", PublicBaseURL)),
+			Note:        pointer.P("Ops manager"),
+			ZoneID:      zoneB.ID,
+		},
+		{
+			FirstName:   "Kittisak",
+			LastName:    "Kerdprasop",
+			Username:    "kittisak",
+			Password:    pw,
+			GenderID:    female.ID,
+			DateOfBirth: "1992-06-25",
+			Phone:       "0999999999",
+			Email:       "kittisak@example.com",
+			Status:      &active,
+			PhotoURL:    pointer.P(fmt.Sprintf("%s/static/images/staff_profile/staff2.png", PublicBaseURL)),
 			Note:        pointer.P("Ops manager"),
 			ZoneID:      zoneB.ID,
 		},

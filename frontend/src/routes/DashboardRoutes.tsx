@@ -19,6 +19,8 @@ const Volunteer = Loadable(lazy(() => import("../pages/dashboard/Volunteer")));
 /// ==============================|| DASHBOARD ROUTING ||============================== //
 const DonationStaff = Loadable(lazy(() => import("../pages/dashboard/Donation/index")));
 // ==============================|| DASHBOARD ROUTING ||============================== //
+
+const Sponsorship = Loadable(lazy(() => import("../pages/dashboard/Sponsorship")))
 export const dashboardRoutes: RouteObject = {
   path: "dashboard",
   element: <DashboardLayout />,
@@ -96,6 +98,10 @@ export const dashboardRoutes: RouteObject = {
     {
       path: "donation",
       element: <DonationStaff />
+    },
+    {
+      path: "sponsorships",
+      element: <Sponsorship />
     }
   ]
 };
