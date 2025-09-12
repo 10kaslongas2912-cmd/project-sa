@@ -21,8 +21,6 @@ const mpHeaders = { "Content-Type": "multipart/form-data" };
 import type { CreateAdoptionRequest, UpdateStatusRequest } from "../interfaces/Adoption";
 import type { CreateSponsorshipRequest } from "../interfaces/Sponsorship";
 import type { CreateManageRequest,UpdateManageRequest } from "../interfaces/Manage";
-import { g } from "framer-motion/client";
-
 import type { CreateEventRequest, UpdateEventRequest } from "../interfaces/Event";
 /** ---------- AUTH ---------- */
 export const authAPI = {
