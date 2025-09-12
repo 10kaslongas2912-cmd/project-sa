@@ -1,10 +1,13 @@
 import './style.css';
 import React from 'react';
+
 import type { ZoneInterface } from '../../../interfaces/Zone';
 import type { KennelInterface } from '../../../interfaces/Kennel';
 import type { DogInterface } from '../../../interfaces/Dog';
 import { Get } from '../../../services/https';
 import { zcManagementAPI } from '../../../services/apis';
+
+import { useStaffMe } from "../../../hooks/useStaffsMe"; 
 
 interface Box {
   id: number;      // dog id
@@ -59,9 +62,26 @@ const MIN_SPINNER_MS = 700; // 👈 adjust loader minimum visible time (ms)
 
 const ZoneCageManagementPage = () => {
   // selections (string IDs)
+  const { staff, loading: staffLoading } = useStaffMe();
+  // unwrap axios shapes (res / res.data / res.data.data)
+  const rawStaff = React.useMemo(() => {
+    const s: any = staff;
+    if (!s) return null;
+    const lvl1 = s?.data ?? s;
+    return (lvl1?.data ?? lvl1) || null;
+  }, [staff]);
+
+  // stable numeric staff id (supports ID/id/staff_id/staffId)
+  const staffId = React.useMemo(() => {
+    const v: any = rawStaff?.ID ?? rawStaff?.id ?? rawStaff?.staff_id ?? rawStaff?.staffId ?? null;
+    const n = Number(v);
+    return Number.isFinite(n) && n > 0 ? n : null;
+  }, [rawStaff]);
+
+  const staffReady = !staffLoading && !!staffId;
+
   const [selectedZone, setSelectedZone] = React.useState<string | null>(null);
   const [selectedCage, setSelectedCage] = React.useState<string | null>(null);
-
   // UI state
   const [isEditing, setIsEditing] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
@@ -74,11 +94,11 @@ const ZoneCageManagementPage = () => {
   const [cages, setCages] = React.useState<KennelInterface[]>([]);
   const [k00Id, setK00Id] = React.useState<number | null>(null); // kennel "00" id
 
-  // Add modal
+  // Add modal (now multi-select)
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
   const [addLoading, setAddLoading] = React.useState(false);
   const [unassignedDogs, setUnassignedDogs] = React.useState<DogInterface[]>([]);
-  const [selectedDogIdForAdd, setSelectedDogIdForAdd] = React.useState<string>('');
+  const [selectedDogIdsForAdd, setSelectedDogIdsForAdd] = React.useState<Set<string>>(new Set());
 
   // original dogs in current cage (for diff on Save)
   const originalDogIdsRef = React.useRef<Set<number>>(new Set());
@@ -288,7 +308,10 @@ const ZoneCageManagementPage = () => {
   const handleSave = async () => {
     if (!selectedCage) return;
 
-    // Capacity check BEFORE any API calls
+    if (staffLoading) { alert('กำลังโหลดข้อมูลพนักงาน โปรดลองอีกครั้ง'); return; }
+    if (!staffReady)  { alert('ไม่พบข้อมูลพนักงาน กรุณาเข้าสู่ระบบใหม่'); return; }
+
+    // capacity check (unchanged)
     const originalCount = originalDogIdsRef.current.size;
     const removed = Array.from(markedForDeletion);
 
@@ -307,23 +330,45 @@ const ZoneCageManagementPage = () => {
     setSaving(true);
     try {
       const kennelIdNum = Number(selectedCage);
-
-      // wrap ops with guards so failures become rejections
       const ops: Promise<any>[] = [];
-      for (const id of added) ops.push(guardAssign(kennelIdNum, id));
-      for (const id of removed) ops.push(guardRemove(kennelIdNum, id));
 
-      const results = await Promise.allSettled(ops);
-      const failed = results.filter((r) => r.status === 'rejected');
-      if (failed.length) {
-        console.error('Some kennel updates failed:', failed);
-        return; // keep edit mode
+      // assign ops + logs
+      for (const id of added) {
+        ops.push(guardAssign(kennelIdNum, id));
+        ops.push(
+          zcManagementAPI.createLog({
+            kennel: { id: kennelIdNum },
+            dog:    { ID: id },
+            staff:  { ID: staffId },
+            action: "assign",
+          }).catch(() => null) // <- don't block on log
+        );
       }
 
-      // SUCCESS → refetch to sync & set new baseline
-      const ref = await zcManagementAPI.getDogsInKennel(Number(selectedCage));
-      const dogs: DogInterface[] =
-        Array.isArray(ref) ? (ref as any) : (ref as any)?.data ?? [];
+      // remove ops + logs
+      for (const id of removed) {
+        ops.push(guardRemove(kennelIdNum, id));
+        ops.push(
+          zcManagementAPI.createLog({
+            kennel: { id: kennelIdNum },
+            dog:    { ID: id },
+            staff:  { ID: staffId },
+            action: "remove",
+          }).catch(() => null)
+        );
+      }
+
+      const results = await Promise.allSettled(ops);
+      const failed = results.filter(r => r.status === 'rejected');
+      if (failed.length) {
+        console.error('Some kennel updates failed:', failed);
+        alert('บางรายการบันทึกไม่สำเร็จ ลองใหม่อีกครั้ง');
+        return;
+      }
+
+      // refresh baseline (unchanged)
+      const ref = await zcManagementAPI.getDogsInKennel(kennelIdNum);
+      const dogs: DogInterface[] = Array.isArray(ref) ? (ref as any) : (ref as any)?.data ?? [];
       const mapped = dogs.map((d: any) => ({
         id: Number(getDogId(d)),
         zone: selectedZone!,
@@ -332,12 +377,12 @@ const ZoneCageManagementPage = () => {
         photo: getDogPhoto(d),
       }));
       setBoxes(mapped);
-      originalDogIdsRef.current = new Set(mapped.map((m) => m.id));
-
+      originalDogIdsRef.current = new Set(mapped.map(m => m.id));
       setMarkedForDeletion(new Set());
       setIsEditing(false);
     } catch (e) {
       console.error('save failed', e);
+      alert('บันทึกไม่สำเร็จ');
     } finally {
       setSaving(false);
     }
@@ -410,46 +455,49 @@ const ZoneCageManagementPage = () => {
       alert('กรงนี้เต็มแล้ว');
       return;
     }
-    setSelectedDogIdForAdd('');
+    setSelectedDogIdsForAdd(new Set());
     setIsAddModalOpen(true);
     await fetchUnassignedDogs(); // always refresh list to reflect staged changes
   };
 
   const closeAddModal = () => {
     setIsAddModalOpen(false);
-    setSelectedDogIdForAdd('');
+    setSelectedDogIdsForAdd(new Set());
   };
 
   const handleConfirmAdd = () => {
-    if (!selectedZone || !selectedCage || !selectedDogIdForAdd) return;
-    if (plannedCount >= capacityForSelected) {
-      alert('กรงนี้เต็มแล้ว');
+    if (!selectedZone || !selectedCage) return;
+
+    const selectedIds = Array.from(selectedDogIdsForAdd);
+    const remainingCapacity = Math.max(0, Number(capacityForSelected) - plannedCount);
+
+    if (selectedIds.length === 0) return;
+    if (selectedIds.length > remainingCapacity) {
+      alert(`เลือกได้สูงสุด ${remainingCapacity} ตัว (ตามความจุคงเหลือ)`);
       return;
     }
 
-    const dog = unassignedDogs.find((d) => getDogId(d) === selectedDogIdForAdd);
-    if (!dog) return;
+    const dogById = new Map(unassignedDogs.map((d) => [getDogId(d), d]));
 
-    const dogNumericId = Number(getDogId(dog));
-    // prevent duplicates in UI
-    if (boxes.some((b) => b.id === dogNumericId)) {
-      closeAddModal();
-      return;
-    }
+    const toAppend = selectedIds
+      .map((id) => dogById.get(id))
+      .filter(Boolean)
+      .filter((dog) => !boxes.some((b) => String(b.id) === getDogId(dog)));
+
+    if (toAppend.length === 0) { closeAddModal(); return; }
 
     setBoxes((prev) => [
       ...prev,
-      {
-        id: dogNumericId,
+      ...toAppend.map((dog: any) => ({
+        id: Number(getDogId(dog)),
         zone: selectedZone!,
         cage: selectedCage!,
         data: getDogName(dog),
         photo: getDogPhoto(dog),
-      },
+      })),
     ]);
 
-    // instant feedback while modal is open
-    setUnassignedDogs((prev) => prev.filter((d) => getDogId(d) !== selectedDogIdForAdd));
+    setUnassignedDogs((prev) => prev.filter((d) => !selectedDogIdsForAdd.has(getDogId(d))));
     closeAddModal();
   };
 
@@ -476,6 +524,9 @@ const ZoneCageManagementPage = () => {
   };
   const rowStyle: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 };
   const nameStyle: React.CSSProperties = { fontWeight: 700 };
+
+  const selectedCount = selectedDogIdsForAdd.size;
+  const remainingCapacity = Math.max(0, Number(capacityForSelected) - plannedCount);
 
   return (
     <>
@@ -663,12 +714,23 @@ const ZoneCageManagementPage = () => {
                   const id = getDogId(d);
                   const name = getDogName(d);
                   const photo = getDogPhoto(d);
-                  const selected = id === selectedDogIdForAdd;
+                  const selected = selectedDogIdsForAdd.has(id);
+
+                  const toggle = () => {
+                    setSelectedDogIdsForAdd((prev) => {
+                      const next = new Set(prev);
+                      if (next.has(id)) next.delete(id);
+                      else next.add(id);
+                      return next;
+                    });
+                  };
+
                   return (
                     <button
                       key={id}
                       className={`dog-card ${selected ? 'selected' : ''}`}
-                      onClick={() => setSelectedDogIdForAdd(id)}
+                      onClick={toggle}
+                      aria-pressed={selected}
                       title={name}
                     >
                       {photo ? (
@@ -710,15 +772,27 @@ const ZoneCageManagementPage = () => {
             )}
 
             <div className="modal-actions">
-              <button onClick={closeAddModal} className="ghost">
-                ยกเลิก
-              </button>
-              <button
-                onClick={handleConfirmAdd}
-                disabled={!selectedDogIdForAdd || plannedCount >= capacityForSelected}
-              >
-                เพิ่ม
-              </button>
+              <div className="left">
+                {selectedCount > 0 ? (
+                  <span className="selection-info">
+                    เลือกแล้ว {selectedCount} • เหลือที่ว่าง {remainingCapacity}
+                  </span>
+                ) : (
+                  <span className="selection-info dim">เลือกได้สูงสุด {remainingCapacity} ตัว</span>
+                )}
+              </div>
+              <div className="right">
+                <button onClick={closeAddModal} className="ghost">
+                  ยกเลิก
+                </button>
+                <button
+                  onClick={handleConfirmAdd}
+                  disabled={selectedCount === 0 || selectedCount > remainingCapacity}
+                  title={selectedCount > remainingCapacity ? `เหลือที่ว่าง ${remainingCapacity}` : undefined}
+                >
+                  เพิ่ม{selectedCount ? ` (${selectedCount})` : ''}
+                </button>
+              </div>
             </div>
           </div>
         </div>

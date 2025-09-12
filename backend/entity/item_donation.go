@@ -10,7 +10,7 @@ type ItemDonation struct {
 	DonationID uint      `json:"donation_id"`
 	Donation   *Donation `gorm:"foreignKey:DonationID" json:"donation"`
 
-	ItemID uint `json:"item_id"`
+	ItemID uint  `json:"item_id"`
 	Item   *Item `gorm:"foreignKey:ItemID" json:"item"`
 
 	UnitID uint  `json:"unit_id"`

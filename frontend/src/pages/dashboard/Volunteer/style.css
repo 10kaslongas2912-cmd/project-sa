@@ -1,6 +1,5 @@
 /* Enhanced styles to match the dog management page design */
-
-.admin-approvals .admin-toolbar {
+.volunteer-page-container.admin-approvals .admin-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -13,19 +12,19 @@
   border: 1px solid #e5e7eb;
 }
 
-.admin-approvals .filter-group {
+.volunteer-page-container.admin-approvals .filter-group {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.admin-approvals .filter-group label {
+.volunteer-page-container.admin-approvals .filter-group label {
   font-weight: 600;
   color: #374151;
   font-size: 16px;
 }
 
-.admin-approvals .filter-group select {
+.volunteer-page-container.admin-approvals .filter-group select {
   padding: 12px 16px;
   border: 2px solid #e5e7eb;
   border-radius: 12px;
@@ -35,13 +34,13 @@
   transition: all 0.2s ease-in-out;
 }
 
-.admin-approvals .filter-group select:focus {
+.volunteer-page-container.admin-approvals .filter-group select:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.admin-approvals .submit-btn {
+.volunteer-page-container.admin-approvals .submit-btn {
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
   border: none;
@@ -54,20 +53,20 @@
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
 }
 
-.admin-approvals .submit-btn:hover {
+.volunteer-page-container.admin-approvals .submit-btn:hover {
   background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-.admin-approvals .submit-btn:disabled {
+.volunteer-page-container.admin-approvals .submit-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
 }
 
-.admin-approvals .loading,
-.admin-approvals .empty {
+.volunteer-page-container.admin-approvals .loading,
+.volunteer-page-container.admin-approvals .empty {
   padding: 48px;
   text-align: center;
   color: #6b7280;
@@ -78,7 +77,7 @@
   font-weight: 500;
 }
 
-.admin-approvals .error-message {
+.volunteer-page-container.admin-approvals .error-message {
   background: linear-gradient(135deg, #fef2f2 0%, #fde8e8 100%);
   color: #dc2626;
   padding: 16px 20px;
@@ -89,13 +88,13 @@
   box-shadow: 0 2px 8px rgba(220, 38, 38, 0.1);
 }
 
-.admin-approvals .cards {
+.volunteer-page-container.admin-approvals .cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   gap: 24px;
 }
 
-.admin-approvals .card {
+.volunteer-page-container.admin-approvals .card {
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 20px;
@@ -105,7 +104,7 @@
   position: relative;
 }
 
-.admin-approvals .card::before {
+.volunteer-page-container.admin-approvals .card::before {
   content: '';
   position: absolute;
   top: 0;
@@ -117,16 +116,16 @@
   transition: opacity 0.3s ease-in-out;
 }
 
-.admin-approvals .card:hover {
+.volunteer-page-container.admin-approvals .card:hover {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   transform: translateY(-4px);
 }
 
-.admin-approvals .card:hover::before {
+.volunteer-page-container.admin-approvals .card:hover::before {
   opacity: 1;
 }
 
-.admin-approvals .card-row {
+.volunteer-page-container.admin-approvals .card-row {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -134,11 +133,11 @@
   border-bottom: 1px solid #f8fafc;
 }
 
-.admin-approvals .card-row:last-of-type {
+.volunteer-page-container.admin-approvals .card-row:last-of-type {
   border-bottom: none;
 }
 
-.admin-approvals .card-row.head {
+.volunteer-page-container.admin-approvals .card-row.head {
   padding: 24px 24px 20px 24px;
   margin-bottom: 8px;
   border-bottom: 2px solid #f1f5f9;
@@ -146,7 +145,7 @@
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
 }
 
-.admin-approvals .name {
+.volunteer-page-container.admin-approvals .name {
   font-weight: 700;
   font-size: 20px;
   color: #1e293b;
@@ -156,7 +155,7 @@
   background-clip: text;
 }
 
-.admin-approvals .label {
+.volunteer-page-container.admin-approvals .label {
   color: #64748b;
   font-size: 14px;
   font-weight: 600;
@@ -166,7 +165,7 @@
   letter-spacing: 0.5px;
 }
 
-.admin-approvals .value {
+.volunteer-page-container.admin-approvals .value {
   color: #334155;
   font-size: 14px;
   font-weight: 500;
@@ -175,7 +174,7 @@
   line-height: 1.5;
 }
 
-.admin-approvals .badge {
+.volunteer-page-container.admin-approvals .badge {
   padding: 8px 16px;
   border-radius: 25px;
   font-size: 12px;
@@ -186,42 +185,46 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.admin-approvals .badge.pending { 
+.volunteer-page-container.admin-approvals .badge.pending { 
   background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
   color: #1e40af; 
   border-color: #93c5fd; 
 }
 
-.admin-approvals .badge.approved { 
+.volunteer-page-container.admin-approvals .badge.approved { 
   background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
   color: #065f46; 
   border-color: #6ee7b7; 
 }
 
-.admin-approvals .badge.rejected { 
+.volunteer-page-container.admin-approvals .badge.rejected { 
   background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
   color: #b91c1c; 
   border-color: #fca5a5; 
 }
 
-.admin-approvals .badge.unknown,
-.admin-approvals .badge.none { 
+.volunteer-page-container.admin-approvals .badge.unknown,
+.volunteer-page-container.admin-approvals .badge.none { 
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   color: #475569; 
   border-color: #cbd5e1; 
 }
 
-.admin-approvals .actions {
+/* ✅ renamed from .actions to avoid global collisions */
+.volunteer-page-container.admin-approvals .approval-actions {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 12px;
   margin-top: 0;
   padding: 24px;
   background: linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%);
   border-top: 1px solid #f1f5f9;
+  width: 100%;
 }
 
-.admin-approvals .btn {
+/* buttons */
+.volunteer-page-container.admin-approvals .btn {
   border: none;
   border-radius: 12px;
   padding: 12px 24px;
@@ -235,9 +238,10 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
+  text-align: center;
 }
 
-.admin-approvals .btn::before {
+.volunteer-page-container.admin-approvals .btn::before {
   content: '';
   position: absolute;
   top: 0;
@@ -246,94 +250,92 @@
   height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
   transition: left 0.5s ease-in-out;
-}
-
-.admin-approvals .btn:hover:not(:disabled)::before {
-  left: 100%;
-}
-
-.admin-approvals .btn.approve { 
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: white; 
   text-align: center;
 }
 
-.admin-approvals .btn.approve:hover:not(:disabled) { 
+.volunteer-page-container.admin-approvals .btn:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+.volunteer-page-container.admin-approvals .btn.approve { 
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white; 
+}
+
+.volunteer-page-container.admin-approvals .btn.approve:hover:not(:disabled) { 
   background: linear-gradient(135deg, #059669 0%, #047857 100%);
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
 }
 
-.admin-approvals .btn.reject  { 
+.volunteer-page-container.admin-approvals .btn.reject  { 
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white; 
-  text-align: center;
 }
 
-.admin-approvals .btn.reject:hover:not(:disabled) { 
+.volunteer-page-container.admin-approvals .btn.reject:hover:not(:disabled) { 
   background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
 }
 
-.admin-approvals .btn:disabled { 
+.volunteer-page-container.admin-approvals .btn:disabled { 
   opacity: 0.5; 
   cursor: not-allowed;
   transform: none;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.admin-approvals .btn:disabled::before {
+.volunteer-page-container.admin-approvals .btn:disabled::before {
   display: none;
 }
 
 /* Enhanced responsive design */
 @media (max-width: 768px) {
-  .admin-approvals .cards {
+  .volunteer-page-container.admin-approvals .cards {
     grid-template-columns: 1fr;
     gap: 20px;
   }
   
-  .admin-approvals .admin-toolbar {
+  .volunteer-page-container.admin-approvals .admin-toolbar {
     flex-direction: column;
     align-items: stretch;
     gap: 16px;
     padding: 16px;
   }
   
-  .admin-approvals .filter-group {
+  .volunteer-page-container.admin-approvals .filter-group {
     justify-content: space-between;
   }
   
-  .admin-approvals .card-row {
+  .volunteer-page-container.admin-approvals .card-row {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
     padding: 16px 20px;
   }
   
-  .admin-approvals .card-row.head {
+  .volunteer-page-container.admin-approvals .card-row.head {
     padding: 20px;
   }
   
-  .admin-approvals .value {
+  .volunteer-page-container.admin-approvals .value {
     text-align: left;
     margin-top: 4px;
   }
   
-  .admin-approvals .actions {
-    flex-direction: column;
-    gap: 12px;
+  .volunteer-page-container.admin-approvals .approval-actions {
+
     padding: 20px;
   }
   
-  .admin-approvals .btn {
+  .volunteer-page-container.admin-approvals .btn {
     width: 100%;
   }
 }
 
 /* Additional enhancements */
-.admin-approvals .volunteer-title {
+.volunteer-page-container.admin-approvals .volunteer-title {
   background: #FF6600;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -344,23 +346,23 @@
   text-align: center;
 }
 
-.admin-approvals .volunteer-page-container {
+.volunteer-page-container.admin-approvals {
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   min-height: 100vh;
   padding: 32px 20px;
 }
 
-.admin-approvals .volunteer-form {
+.volunteer-page-container.admin-approvals .volunteer-form {
   max-width: 1400px;
   margin: 0 auto;
 }
 
 /* Loading animation */
-.admin-approvals .loading {
+.volunteer-page-container.admin-approvals .loading {
   position: relative;
 }
 
-.admin-approvals .loading::after {
+.volunteer-page-container.admin-approvals .loading::after {
   content: '';
   display: inline-block;
   width: 20px;

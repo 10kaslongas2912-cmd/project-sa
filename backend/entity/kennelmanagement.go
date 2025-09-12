@@ -7,4 +7,5 @@ type KennelManagement struct {
 	Dog      *Dog `gorm:"foreignKey:DogID"`
 	StaffID  uint
 	Staff    *Staff `gorm:"foreignKey:StaffID"`
+	Action   string `gorm:"not null"`
 }

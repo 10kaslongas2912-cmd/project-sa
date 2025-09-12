@@ -2,12 +2,10 @@ import React, { useState, useEffect } from "react";
 import './style.css';
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";
-
 import { donationAPI } from "../../../../services/apis";
 import type { DonorInterface, MoneyDonationInterface, CreateDonationRequest } from "../../../../interfaces/Donation";
-
+import qrcode from "/Users/10kxz/Desktop/project-sa/frontend/src/assets/qr-code.png"
 // ใช้ Base64 placeholder แทนการ import ไฟล์
-const qr_code = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y5ZjlmOSIgc3Ryb2tlPSIjZGRkIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8dGV4dCB4PSIxNTAiIHk9IjE1MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNjY2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iMC4zZW0iPkdSIENvZGU8L3RleHQ+Cjwvc3ZnPgo=";
 
 const MobileBankingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -137,8 +135,6 @@ const MobileBankingPage: React.FC = () => {
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
-  const handleSaveQrCode = () => { /* ... implementation ... */ };
-  const handleRefreshQrCode = () => { /* ... implementation ... */ };
 
   return (
     <>
@@ -158,16 +154,11 @@ const MobileBankingPage: React.FC = () => {
             <>
               <p className="timer">เวลาที่เหลือ: {formatTime(timeLeft)}</p>
               <div className="qr-code-container">
-                <img src={qr_code} className="qr-code-image" alt="QR Code สำหรับชำระเงิน" />
+                <img src={qrcode} className="qr-code-image" alt="QR Code สำหรับชำระเงิน" />
               </div>
             </>
           )}
           <div className="button-group">
-            {!isExpired && (
-              <button onClick={handleSaveQrCode} className="save-qr-button">
-                บันทึก QR Code
-              </button>
-            )}
             <button 
               onClick={handleFinish} 
               className="submit-button"

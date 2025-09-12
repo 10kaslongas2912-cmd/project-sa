@@ -71,12 +71,24 @@ func UpdateDogInKennel(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"updated": res.RowsAffected, "dog_id": dogID, "kennel_id": kennelID})
+	staffID := uint(0)
+	if v, ok := c.Get("staff_id"); ok {
+		if id, ok2 := v.(uint); ok2 {
+			staffID = id
+		}
+	}
+
+	// When logging:
+	log := entity.KennelManagement{
+		KennelID: kennelID,
+		DogID:    dogID,
+		StaffID:  staffID,
+		Action:   "assign", // or "remove"
+	}
+	_ = configs.DB().Create(&log)
 }
 
-// DELETE /kennel/:kennel_id/dog   (?dog_id=) or { dog_id }
-// Option B: write 0 instead of NULL to "unassign" the kennel.
-// NOTE: Ensure you do NOT have a strict DB-level FK on dogs.kennel_id,
-// otherwise writing 0 will fail. (GORM doesn't add strict FKs by default.)
+
 func DeleteDogFromKennel(c *gin.Context) {
 	kid64, _ := strconv.ParseUint(c.Param("kennel_id"), 10, 64)
 	kennelID := uint(kid64)
@@ -102,9 +114,6 @@ func DeleteDogFromKennel(c *gin.Context) {
 		return
 	}
 
-	// Keep the guard so we only unassign if the dog is in this kennel.
-	// If you want to allow “unassign regardless of current kennel”,
-	// change WHERE to only "id = ?".
 	res := configs.DB().Model(&entity.Dog{}).
 		Where("id = ? AND kennel_id = ?", dogID, kennelID).
 		Update("kennel_id", 0)
@@ -114,6 +123,21 @@ func DeleteDogFromKennel(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"updated": res.RowsAffected, "dog_id": dogID, "kennel_id": kennelID})
+	staffID := uint(0)
+	if v, ok := c.Get("staff_id"); ok {
+		if id, ok2 := v.(uint); ok2 {
+			staffID = id
+		}
+	}
+
+	// When logging:
+	log := entity.KennelManagement{
+		KennelID: kennelID,
+		DogID:    dogID,
+		StaffID:  staffID,
+		Action:   "unassign",
+	}
+	_ = configs.DB().Create(&log)
 }
 
 func preloadDog(db *gorm.DB) *gorm.DB {
@@ -166,4 +190,46 @@ func GetAll(c *gin.Context) {
 		"zones":   zones,
 		"kennels": kennels,
 	})
+}
+
+type CreateZCManagementLogRequest struct {
+    KennelID uint   `json:"kennel_id" binding:"required"`
+    DogID    uint   `json:"dog_id" binding:"required"`
+    StaffID  uint   `json:"staff_id" binding:"required"`
+    Action   string `json:"action" binding:"required"` // "assign" or "remove"
+}
+
+func CreateZCManagementLog(c *gin.Context) {
+    var req struct {
+        KennelID uint   `json:"kennel_id" binding:"required"`
+        DogID    uint   `json:"dog_id" binding:"required"`
+        Action   string `json:"action" binding:"required"`
+    }
+    if err := c.ShouldBindJSON(&req); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    staffID := uint(0)
+    if v, ok := c.Get("staff_id"); ok {
+        if id, ok2 := v.(uint); ok2 {
+            staffID = id
+        }
+    }
+    if staffID == 0 {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "staff_id not found in context"})
+        return
+    }
+
+    log := entity.KennelManagement{
+        KennelID: req.KennelID,
+        DogID:    req.DogID,
+        StaffID:  staffID,
+        Action:   req.Action,
+    }
+    if err := configs.DB().Create(&log).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"message": "log created", "data": log})
 }

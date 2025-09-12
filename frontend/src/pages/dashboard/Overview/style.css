@@ -1,11 +1,238 @@
-.overview { display:flex; flex-direction:column; gap:16px; }
-.ov-title{ margin-bottom:4px!important; }
-.ov-sub{ color:#6b7280; margin-bottom:8px; }
+/* Overview Page Styles */
+.overview {
+  padding: 24px;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
 
-/* สถิติ (div3) */
-.stat { border-radius:12px; }
-.stat .k{ font-size:28px; font-weight:800; line-height:1; }
-.stat .l{ color:#6b7280; }
+.ov-title {
+  color: #2c3e50;
+  margin-bottom: 8px !important;
+  font-weight: 600;
+}
 
-/* อัปเดตล่าสุด (div4) */
-.ov-recent .ant-list-item{ padding:12px 0; }
+.ov-sub {
+  color: #7f8c8d;
+  margin-bottom: 32px !important;
+  font-size: 16px;
+}
+
+/* Loading State */
+.overview-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+/* Stats Section */
+.ov-stats {
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: none;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card .ant-card-body {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stat-icon {
+  font-size: 32px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-number {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+  color: #2c3e50;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+/* Different colors for each stat type */
+.stat-card.shelter {
+  border-left: 4px solid #3498db;
+}
+
+.stat-card.shelter .stat-icon {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.stat-card.adopted {
+  border-left: 4px solid #e74c3c;
+}
+
+.stat-card.adopted .stat-icon {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.stat-card.money {
+  border-left: 4px solid #f39c12;
+}
+
+.stat-card.money .stat-icon {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+}
+
+.stat-card.items {
+  border-left: 4px solid #9b59b6;
+}
+
+.stat-card.items .stat-icon {
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+}
+
+.stat-card.vaccination {
+  border-left: 4px solid #27ae60;
+}
+
+.stat-card.vaccination .stat-icon {
+  background: linear-gradient(135deg, #27ae60, #229954);
+}
+
+.stat-card.sponsored {
+  border-left: 4px solid #16a085;
+}
+
+.stat-card.sponsored .stat-icon {
+  background: linear-gradient(135deg, #16a085, #138d75);
+}
+
+/* Recent Updates Section */
+.ov-recent {
+  margin-top: 32px;
+}
+
+.recent-updates-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: none;
+}
+
+.recent-updates-card .ant-card-head {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+}
+
+.recent-updates-card .ant-card-head-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.recent-update-item {
+  padding: 16px 0 !important;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.recent-update-item:last-child {
+  border-bottom: none;
+}
+
+.recent-update-item .ant-list-item-meta-title {
+  margin-bottom: 8px;
+  color: #2c3e50;
+}
+
+.update-note {
+  color: #34495e;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.update-time {
+  color: #95a5a6;
+  font-size: 12px;
+}
+
+.update-tag {
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 12px;
+  margin: 0;
+}
+
+.no-updates {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .overview {
+    padding: 16px;
+  }
+  
+  .ov-title {
+    font-size: 24px !important;
+  }
+  
+  .ov-sub {
+    font-size: 14px;
+    margin-bottom: 24px !important;
+  }
+  
+  .stat-card .ant-card-body {
+    padding: 16px;
+    gap: 12px;
+  }
+  
+  .stat-icon {
+    font-size: 24px;
+    width: 48px;
+    height: 48px;
+  }
+  
+  .stat-number {
+    font-size: 22px;
+  }
+  
+  .stat-label {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 576px) {
+  .stat-card .ant-card-body {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+  
+  .stat-number {
+    font-size: 24px;
+  }
+}

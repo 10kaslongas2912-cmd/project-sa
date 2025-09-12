@@ -4,6 +4,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useDog } from "../../../../hooks/useDog";
 import { ageText } from "../../../../utils/date";
 // Hook สำหรับเช็คสถานะ login (มีอยู่แล้ว)
+import Button from '../../../../components/Button/buttonsss';
 import { useAuthUser } from "../../../../hooks/useAuth";
 import './style.css';
 
@@ -36,7 +37,7 @@ const Doglist: React.FC = () => {
       // 2. ส่ง state 'from' ที่มีค่าเป็น location ปัจจุบันไปด้วย
       //    เพื่อให้หน้า login รู้ว่าล็อกอินเสร็จแล้วต้องกลับมาที่นี่
       alert("คุณยังไม่ได้ล็อกอิน โปรดล็อกอินเพื่อรับเลี้ยงสุนัข");
-      navigate('/auth', { state: { from: location } });
+      navigate('/auth/users', { state: { from: location } });
     }
   };
 
@@ -135,9 +136,9 @@ const Doglist: React.FC = () => {
           <div className="sponsor-call-to-action">
             <h3>สนใจอยากรับเลี้ยงน้อง {dog.name}</h3>
             <p>กรอกแบบฟรอมเพื่อขอรับเลี้ยงน้อง {dog.name} </p>
-            <button className="sponsor-button" onClick={handleAdoptClick}>
+            <Button  onClick={handleAdoptClick}>
               รับเลี้ยง
-            </button>
+            </Button>
           </div>
         </div>
       </div>
